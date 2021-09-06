@@ -1,10 +1,15 @@
+//import * as thre from 'three.module.js'
+
 function addSecondButton()
 {
     let eButt = document.createElement("button");
     eButt.innerHTML = "Button TWO";
     
     let eFooter = document.querySelector("footer");
-    eFooter.appendChild(eButt);
+    if (eFooter)
+    {
+        eFooter.appendChild(eButt);
+    }
 
     return eButt;
 }
@@ -22,8 +27,9 @@ if (eSpamBox)
 {
     for(let i = 0; i < 50; ++i)
     {
-        let eNew = document.createElement("p");
+        let eNew = document.createElement("span");
         eNew.innerHTML = "SpamBoxContent".toUpperCase();
+        eNew.className = "spambox";
         eSpamBox.appendChild(eNew);
     }
 }

@@ -6,52 +6,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="Resources/styles.css">
     <title>Website #1!</title>
+
+    <!--
+    <script type="module">import * as THREE from './three.module.js';</script>
+    -->
+    
 </head>
-<body>
-    <header>
-        <h1>This is website number 1</h1>
+    <body>
+        <header>
+            <h1>This is website number 1</h1>
+            
+        </header>
+        <main>
+            <div class="content">
+                <p>THIS IS ON</p>
+
+                <ul>
+                    <li><a href="websiteNumTwo.html">Go to website 2</a></li>
+                </ul>
+
+                <section id="spambox">
+                    <p>This is Super</p>
+                </section>
+
+                <p>This is using the ul tag:</p>
+                <ul>
+                    <em><li>Elem 1</li></em>
+                    <strong><li>Elem 2</li></strong>
+                    <li>Elem 3</li>
+                </ul>
+
+                <p>This is using the ol tag:</p>
+                <ol>
+                    <li>Elem 1</li>
+                    <li>Elem 2</li>
+                    <li>Elem 3</li>
+                </ol>
+            </div>
+        </main>
+
+        <footer>
+            <button>This is my button</button>
+        </footer>
+    <!--
+        <script>
+            let eButt = document.createElement("button");
+            eButt.innerHTML = "Button TWO";
+            document.body.appendChild(eButt);
+        </script>
+    -->
+        <script src="mainJS.js"></script>
         
-    </header>
-    <main>
-        <div class="content">
-            <p>THIS IS ON</p>
 
-            <ul>
-                <li><a href="websiteNumTwo.html">Go to website 2</a></li>
-            </ul>
 
-            <section id="spambox">
-                <p>This is Super</p>
-            </section>
-
-            <p>This is using the ul tag:</p>
-            <ul>
-                <em><li>Elem 1</li></em>
-                <strong><li>Elem 2</li></strong>
-                <li>Elem 3</li>
-            </ul>
-
-            <p>This is using the ol tag:</p>
-            <ol>
-                <li>Elem 1</li>
-                <li>Elem 2</li>
-                <li>Elem 3</li>
-            </ol>
-        </div>
-    </main>
-
-    <footer>
-        <button>This is my button</button>
-    </footer>
-<!--
-    <script>
-        let eButt = document.createElement("button");
-        eButt.innerHTML = "Button TWO";
-        document.body.appendChild(eButt);
-    </script>
--->
-
-    <script src="mainJS.js"></script>
-
-</body>
+    </body>
 </html>

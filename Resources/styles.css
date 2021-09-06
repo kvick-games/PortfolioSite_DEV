@@ -1,6 +1,6 @@
 :root{
     --color-bg-1:rgb(35, 36, 44);
-    --color-bg-2:rgba(51, 61, 78, 0.5);
+    --color-bg-2:rgba(68, 87, 119, 0.5);
     --color-bg-3:rgba(0, 0, 0, 0.5);
     --color-border-1:rgba(0, 0, 0, 0.5);
 }
@@ -22,8 +22,11 @@ header {
     height: 150px;
     text-align: center;
 
+    margin-bottom: 300px;
+    box-shadow: 25px rgba(1 0 0 1);
+/*
     border: 3px solid var(--color-border-1);
-    border-radius: 30px;
+    border-radius: 30px;*/
 }
 
 main {
@@ -32,21 +35,23 @@ main {
     background-image: url('BigFish.jpg');
 
     height: 100%;
-    position: relative;
-    padding: 0 auto 150px;
+    padding: 100px;
 }
 
 .content {
     background-color: var(--color-bg-3);
-    width: 30%;
+    min-width: 500px;
+    max-width: 1000px;
+
     height: 80%;
     padding: 45px;
-    position: relative;
 
-    margin-top: 50px;
+    margin-top: 10px;
     margin-bottom: 160px;
     margin-left: auto;
     margin-right: auto;
+
+    display: inline-block;
 }
 
 footer {
@@ -69,4 +74,12 @@ ul {
 button {
     font-size: 23px;
     padding: 25px;
+}
+
+.spambox {
+    padding: 0;
+    width: 20px;
+    position: relative;
+    margin: 0;
+    text-align: 0;
 }
