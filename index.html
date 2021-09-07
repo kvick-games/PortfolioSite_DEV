@@ -15,10 +15,26 @@
     <body>
         <header>
             <h1>This is website number 1</h1>
-            
+            <nav class="nav-header">
+                <ul class="nav-header-list">
+                    <li class="header-list-elem"><a href="test-navigation.html">To TestNavigation</a></li>
+                    <li class="header-list-elem"><a href="B.html">Two</a></li>
+                    <li class="header-list-elem"><a href="C.html">Three</a></li>
+                </ul>
+            </nav>
         </header>
+        
+        
+        <div id="mainSideBar" class="sidebar">
+            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
+            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
+            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
+            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
+            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
+        </div>
         <main>
-            <div class="content">
+            
+            <div id="mainContent" class="mainContent">
                 <p>THIS IS ON</p>
 
                 <ul>
@@ -45,8 +61,16 @@
             </div>
         </main>
 
+        <div id="navIcon" onclick="toggleOpenNav()">
+            <img id="navIconImage" src="Resources/NavCollapsedIcon.png"/>
+            <div class="navIconOverlay"></div>
+            <!--
+                <div style="background-color:blue; width: 550px; height: 550px;"></div>
+            -->
+        </div>
+
         <footer>
-            <button>This is my button</button>
+            <button>This is HTML button</button>
         </footer>
     <!--
         <script>
