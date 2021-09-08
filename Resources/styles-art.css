@@ -1,0 +1,110 @@
+html {
+    font-family: sans-serif;
+}
+
+body {
+    background-color: rgb(32, 32, 32);
+    color: white;
+}
+
+header {
+    background-color: rgba(0, 0, 0, 0);
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    z-index: 5;
+}
+
+#header-left {
+    float: left;
+    padding: 0;
+    padding-left: 50px;
+
+}
+
+header nav {
+    float: right;
+
+    position: absolute;
+    top: 50%;
+    right: 0px;
+
+    text-align: right;
+    
+    padding-right: 30px;
+    transform: translateY(-50%);
+}
+
+.header-nav-button {
+    background-color: rgb(68, 98, 105);
+    margin-right: 5px;
+    width: 120px;
+    float: right;
+    list-style: none;
+    
+
+    text-align: right;
+
+}
+
+header nav a {
+    color: white;
+    padding-right: 10px;
+    text-decoration: none;
+}
+
+p {
+    
+}
+
+main {
+    background-color: rgb(20, 20, 20);
+    position: relative;
+
+    padding-top: 100px;
+}
+
+img {
+    position: relative;
+
+    width: 100%;
+    height: auto;
+
+    padding-bottom: 50px;
+
+    display: flex;
+
+}
+
+.horizontallySorted-images {
+    float: left;
+
+    width: 100%;
+    height: auto;
+
+    
+}
+
+.boxoboxes {
+    display: flex;
+}
+
+.box {
+    background-color: rgb(25, 122, 212);
+    height: 100px;
+    width: 100px;
+    border: solid 2px white;
+}
+
+/*
+.horizontallySorted-images img {
+    float: left;
+
+    width: 50%;
+    height: auto;
+}
+*/
