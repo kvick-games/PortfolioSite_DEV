@@ -12,7 +12,7 @@
 }
 
 html {
-    
+    font-family: sans-serif;
 }
 
 body {
@@ -68,6 +68,8 @@ header h1 {
 {
     list-style-type: none;
     position: relative;
+
+    float: right;
 }
 
 .header-list-elem
@@ -151,11 +153,13 @@ button {
     text-align: 0;
 }
 
+/*--------------------------------------------------------------------------*/
+/*Nav Sidebar*/
 #navIcon {
-    width: 80px;
+    width: 50px;
     height: auto;
     position: fixed;
-    top: 450px;
+    top: 250px;
     left: 10px;
     box-shadow: 0 0 20px black;
 

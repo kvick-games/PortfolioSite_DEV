@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="Resources/styles.css">
-    <title>Website #1!</title>
+    <title>Mike's Stuff</title>
 
     <!--
     <script type="module">import * as THREE from './three.module.js';</script>
@@ -14,28 +14,19 @@
 </head>
     <body>
         <header>
-            <h1>This is website number 1</h1>
+            <h1>Mike's Stuff</h1>
             <nav class="nav-header">
                 <ul class="nav-header-list">
                     <li class="header-list-elem"><a href="test-navigation.html">To TestNavigation</a></li>
-                    <li class="header-list-elem"><a href="B.html">Two</a></li>
+                    <li class="header-list-elem"><a href="site-videoArea.html">Videos</a></li>
                     <li class="header-list-elem"><a href="C.html">Three</a></li>
                 </ul>
             </nav>
         </header>
         
-        
-        <div id="mainSideBar" class="sidebar">
-            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
-            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
-            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
-            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
-            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
-        </div>
         <main>
-            
             <div id="mainContent" class="mainContent">
-                <p>THIS IS ON</p>
+                <p id="spam1">THIS IS ON</p>
 
                 <ul>
                     <li><a href="websiteNumTwo.html">Go to website 2</a></li>
@@ -60,6 +51,14 @@
                 </ol>
             </div>
         </main>
+
+        <div id="mainSideBar" class="sidebar">
+            <p class="sideBar-content">THIS IS THE SIDEBAR!</p>
+            <p class="sideBar-content"><a href="#spam1">Spam 1</a></p>
+            <p class="sideBar-content"><a href="#spam25">THIS IS THE SIDEBAR!</a></p>
+            <p class="sideBar-content"><a href="#spam55">THIS IS THE SIDEBAR!</a></p>
+            <p class="sideBar-content"><a href="#spam75">THIS IS THE SIDEBAR!</a></p>
+        </div>
 
         <div id="navIcon" onclick="toggleOpenNav()">
             <img id="navIconImage" src="Resources/NavCollapsedIcon.png"/>

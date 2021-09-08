@@ -1,6 +1,6 @@
 //import * as thre from 'three.module.js'
 
-function addSecondButton()
+function addFooterButton_Second()
 {
     let eButt = document.createElement("button");
     eButt.innerHTML = "Wipeout";
@@ -14,13 +14,13 @@ function addSecondButton()
     return eButt;
 }
 
-function onButtPressed()
+function onSecondFooterButtonPressed()
 {
     document.body.innerHTML = "WIPEOUUUUTTTTT!!!!";
 }
 
-let eButter = addSecondButton();
-eButter.onclick = onButtPressed;
+let eButter = addFooterButton_Second();
+eButter.onclick = onSecondFooterButtonPressed;
 
 let eSpamBox = document.getElementById("spambox");
 if (eSpamBox)
@@ -28,8 +28,10 @@ if (eSpamBox)
     for(let i = 0; i < 225; ++i)
     {
         let eNew = document.createElement("p");
-        eNew.innerHTML = "SpamBoxContent".toUpperCase();
+        eNew.innerHTML = i.toString() + " - SpamBoxContent";
         eNew.className = "spambox";
+        eNew.id = "spam" + i.toString();
+
         //eNew.style.display = "inline-block";
         eNew.style.width = "115px";
         eSpamBox.appendChild(eNew);
@@ -80,7 +82,7 @@ function openNav()
         console.error("Failed to get maincontent");
     }
 
-    document.getElementById("navIcon").style.left = navBarExpandedLeftOffset + "px";
+    document.getElementById("navIcon").style.left = offsetLeft + "px";
 }
 
 function closeNav()
