@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="headerText" content="VIDEO">
+
+        <title>VIDEO</title>
+
+        <link rel="stylesheet" href="./Resources/styles-global.css">
+        <link rel="stylesheet" href="Resources/styles-video.css">
+
+    </head>
+    <body>
+        <header id="templateHeader">
+            
+        </header>
+        <div class="video-container">
+            <video class="background-video" muted autoplay playsinline loop onclick="this.play()">
+                <source src="./Resources/Videos/BounceAnim.mp4" type="video/mp4">
+                
+            </video>
+            <div class="video-overlay">
+                <p>Bouncing Ball</p>
+            </div>
+        </div>
+
+        <iframe id="kaibutsu-video" src="https://www.youtube.com/embed/XFLD27t2Ejk" title="KAIBUTSU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+        <div class="video-container">
+            <video class="background-video" muted autoplay playsinline loop>
+                <source src="./Resources/Videos/ClayRenderTest.mkv" type="video/mp4">
+                
+            </video>
+            <div class="video-overlay">
+                <p>Clay render</p>
+            </div>
+        </div>
+        
+        
+        <footer>
+            <p>This is the footer</p>
+        </footer>
+
+        <script src="script-global.js"></script>
+
+    </body>
+</html>

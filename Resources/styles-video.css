@@ -1,61 +1,10 @@
-html {
-    font-family: sans-serif;
-}
 
 body {
     background-color: rgb(37, 36, 36);
     color: white;
 }
 
-header {
-    background-color: rgba(0, 0, 0, 0);
-    position: fixed;
-    top: 0;
-    left: 0;
 
-    width: 100%;
-    z-index: 5;
-}
-
-.HeaderTitle {
-    float: left;
-
-    padding-left: 50px;
-}
-
-header nav {
-    float: right;
-
-    position: absolute;
-    top: 50%;
-    right: 0px;
-
-    text-align: right;
-    
-    padding-right: 30px;
-    transform: translateY(-50%);
-}
-
-.header-nav-button {
-    background-color: rgba(199, 59, 59, 0.959);
-    margin-right: 5px;
-    width: 120px;
-
-    float: right;
-}
-
-.header-nav-button a {
-    color: white;
-    text-decoration: none;
-
-    padding-right: 10px;
-}
-
-header ul {
-    float: right;
-
-    list-style: none;
-}
 
 footer {
     position: fixed;

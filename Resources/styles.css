@@ -11,10 +11,6 @@
     /*color : rgb(163, 76, 76);*/
 }
 
-html {
-    font-family: sans-serif;
-}
-
 body {
     color: rgb(204, 197, 197);
     background-color: var(--color-bg-1);
@@ -64,10 +60,10 @@ header h1 {
     overflow: hidden;
 }
 
-.nav-header-list
-{
-    list-style-type: none;
-    position: relative;
+.header-nav-button {
+    background-color: rgba(199, 59, 59, 0.959);
+    margin-right: 5px;
+    width: 120px;
 
     float: right;
 }

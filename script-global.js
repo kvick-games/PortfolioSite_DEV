@@ -1,0 +1,80 @@
+class LinkDesc
+{
+    constructor(href, text)
+    {
+        this.href = linkString;
+        this.text = text;
+    }
+}
+
+function createHeader_default()
+{
+    let arrHeaderSites = [
+        {
+            "href" : "./site-audio-root.html",
+            "text" : "AUDIO"
+        },
+        {
+            "href" : "./site-video-root.html",
+            "text" : "VIDEO"
+        },
+        {
+            "href" : "./site-code-root.html",
+            "text" : "CODE"
+        },
+        {
+            "href" : "./site-fx-root.html",
+            "text" : "FX"
+        },
+        {
+            "href" : "./site-art-root.html",
+            "text" : "ART"
+        },
+    ];
+
+    let eHeader = document.getElementById("templateHeader");
+    if (eHeader)
+    {
+        let eTitle = document.createElement("h1");
+        eTitle.className = "HeaderTitle";
+
+        let sHeaderText = "SCRIPT_TEST";
+        let sHeaderMetadata = document.head.querySelector("meta[name=\"headerText\"]").content;
+        console.log("headerText: " + sHeaderMetadata);
+        if (sHeaderMetadata)
+        {
+            sHeaderText = sHeaderMetadata;
+        }
+
+        eTitle.innerHTML = sHeaderText;
+        eHeader.appendChild(eTitle);
+
+        let eNav = document.createElement("nav");
+        eHeader.appendChild(eNav);
+
+        let eList = document.createElement("ul");
+        eNav.appendChild(eList);
+
+        for (const linkData of arrHeaderSites)
+        {
+            let eListElem = document.createElement("li");
+            eListElem.className = "header-nav-button";
+
+            eList.appendChild(eListElem);
+            
+            let eLink = document.createElement("a");
+            eLink.setAttribute("href", linkData.href);
+            eLink.innerHTML = linkData.text;
+
+            eListElem.appendChild(eLink);
+        }
+    }
+    else
+    {
+        console.log("Failed to find 'templateHeader' element");
+    }
+}
+
+console.log("Running global script");
+
+createHeader_default();
