@@ -39,11 +39,15 @@ function createHeader_default()
         eTitle.className = "HeaderTitle";
 
         let sHeaderText = "SCRIPT_TEST";
-        let sHeaderMetadata = document.head.querySelector("meta[name=\"headerText\"]").content;
-        console.log("headerText: " + sHeaderMetadata);
-        if (sHeaderMetadata)
+        let eMeta = document.head.querySelector("meta[name=\"headerText\"]");
+        if (eMeta)
         {
-            sHeaderText = sHeaderMetadata;
+            let sHeaderMetadata = eMeta.content;
+            console.log("headerText: " + sHeaderMetadata);
+            if (sHeaderMetadata)
+            {
+                sHeaderText = sHeaderMetadata;
+            }
         }
 
         eTitle.innerHTML = sHeaderText;
@@ -65,7 +69,7 @@ function createHeader_default()
             let eLink = document.createElement("a");
             eLink.setAttribute("href", linkData.href);
             eLink.innerHTML = linkData.text;
-
+            
             eListElem.appendChild(eLink);
         }
     }
