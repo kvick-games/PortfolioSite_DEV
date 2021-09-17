@@ -5,8 +5,14 @@ let g_points = [];
 let g_sticks = [];
 let g_bodies = [];
 
+let g_pinnedPoint;
+
 let g_gravity = 0.5;
 let g_friction = 0.99;
+
+let g_time = 0;
+let g_releaseConstraint = false;
+
 
 class Poly
 {
@@ -69,18 +75,15 @@ class VStick
         let vDiff = p2.Sub(p1);
         let pointDist = vDiff.Length();
         
-        //let ptMid = this.Midpoint();
-        //let halfLen = pointDist / 2.0;
-
-        //let n_p2_To_p1 = p1.Sub(p2).Normalized();
-        //let ptTarget_p1 = ptMid.Add(n_p2_To_p1.MultScalar( halfLen));
-        //let ptTarget_p2 = ptMid.Add(n_p2_To_p1.MultScalar(-halfLen));
-
         let diff = this.length - pointDist;
         let percentDiff = diff / this.length / 2.0;
 
+        percentDiff = Math.sign(percentDiff) * Math.min(Math.abs(percentDiff), 0.3);
+
         let offsetX = vDiff.x * percentDiff;
         let offsetY = vDiff.y * percentDiff;
+
+        console.log(percentDiff);
         
         if (!this.p1.GetPinned())
             this.p1.pos.SubEq(new Vector2(offsetX, offsetY));
@@ -110,7 +113,7 @@ class VStick
         //stroke(255, 0, 0);
         //line(this.p1.pos.x, this.p1.pos.y, this.p2.pos.x, this.p2.pos.y);
 
-        stroke(155, 255, 0);
+        stroke(155, 255, 0, 255);
         strokeWeight(5);
         let vLine = this.GetP1ToP2().Normalized();
         let vLineHalf = vLine.MultScalar(this.length * 0.5);
@@ -136,26 +139,27 @@ class VPoint
         this.color = color;
         this.pinned = false;
 
-        console.log(this.pos.ToString());
-        console.log(this.pos_old.ToString());
-        console.log("--");
-
-        this.radius = 25;
+        this.radius = 15;
     }
 
     Update()
     {
+        if (this.pinned)
+            return;
+
         let vel = this.pos.Sub(this.pos_old);
         vel = vel.MultScalar(g_friction);
         this.pos_old = this.pos;
         this.pos = this.pos.Add(vel);
 
-        //console.log(vel.ToString());
         this.pos_old.y -= g_gravity;
     }
 
     UpdateConstraints()
     {
+        //if (this.pinned)
+        //    return;
+
         if (this.pos.x > g_canvas_width - this.radius)
         {
             this.pos.x = g_canvas_width - this.radius;
@@ -198,18 +202,28 @@ class VPoint
 
     Draw()
     {
-        let finalColor = this.color.GetOutputColor();
+        let finalColor;
+        if (this.pinned)
+        {
+            finalColor = new Color(0, 0, 1);
+        }
+        else
+        {
+            finalColor = this.color.GetOutputColor();
+        }
+        
         stroke(0, 0, 0);
-        fill(finalColor.r, finalColor.g, finalColor.b);
+        fill(finalColor.r, finalColor.g, finalColor.b, 255);
         circle(this.pos.x, this.pos.y, this.radius);
     }
 }
 
-let g_pinnedPoint;
+
 
 function CreateGeo()
 {
-    let baseStickLen = 100;
+    let baseStickLen = 55;
+
     //Create box
     let red = new Color(1.0, 0.0, 0.0);
     g_points.push(new VPoint(new Vector2(150, 150), red));
@@ -225,7 +239,7 @@ function CreateGeo()
 
     //Cross-section
     g_sticks.push(new VStick(g_points[0], g_points[2], (new Vector2(baseStickLen, baseStickLen)).Length(), false));
-    //g_sticks.push(new VStick(g_points[1], g_points[3], (new Vector2(200, 200)).Length()));
+    g_sticks.push(new VStick(g_points[1], g_points[3], (new Vector2(baseStickLen, baseStickLen)).Length(), false));
 
     g_bodies.push(new VBody(
         [
@@ -239,21 +253,29 @@ function CreateGeo()
             2, 0, 3
         ]
         ));
-
+    
     //Create a rope
+    
     //push returns the length of the array, so - 1 is equal to the current index
-    let r1 = g_points.push(new VPoint(new Vector2(250, 150), red)) - 1;
-    let r2 = g_points.push(new VPoint(new Vector2(300, 150), red)) - 1;
-    let r3 = g_points.push(new VPoint(new Vector2(350, 150), red)) - 1;
-    g_pinnedPoint = g_points[r3];
+    let numPoints = 3;
+    let ropePoints = [];
+    
+    ropePoints.push(new VPoint(new Vector2(200, 150), red));
+    g_sticks.push(new VStick(g_points[g_points.length-2], ropePoints[0], baseStickLen));
+
+    for (let i = 1; i < numPoints; ++i)
+    {
+        ropePoints.push(new VPoint(new Vector2(200 + i * 25, 150), red));
+        g_sticks.push(new VStick(ropePoints[i - 1], ropePoints[i], baseStickLen));
+    }
+    g_pinnedPoint = ropePoints[ropePoints.length-1];
     g_pinnedPoint.SetPinned(true);
 
-    g_sticks.push(new VStick(g_points[r1-2], g_points[r1], baseStickLen));
-    g_sticks.push(new VStick(g_points[r1], g_points[r2], baseStickLen));
-    g_sticks.push(new VStick(g_points[r2], g_points[r3], baseStickLen));
+    for(let ropePoint of ropePoints)
+    {
+        g_points.push(ropePoint);
+    }
 }
-
-let g_time = 0;
 
 //MAIN STUFF
 function setup()
@@ -261,27 +283,41 @@ function setup()
     createCanvas(g_canvas_width, g_canvas_height);
     background(50);
 
+    //g_pinPoint = new Vector2(g_canvas_width * 0.5, 50);
+
     CreateGeo();
 
 }
 
-function draw()
+function Update()
 {
     g_time += 0.05;
+
+    if (mouseIsPressed)
+    {
+        //g_releaseConstraint = !g_releaseConstraint;
+        //g_sticks.clear();
+        g_pinnedPoint.pos = Lerp2(g_pinnedPoint.pos, GetMousePos(), 0.1);
+    }
+}
+
+function draw()
+{
+    Update();
+
     clear();
     //fill(255);
     //circle(0, 0, 500);
 
+    /*
     g_pinnedPoint.pos = new Vector2(
           g_canvas_width * 0.5 + Math.sin(g_time) * 150
         , 100 + Math.sin(g_time * 1.1) * 50
     );
+    */
 
     for(let vpoint of g_points)
     {
-        if (vpoint.GetPinned())
-            continue;
-
         vpoint.Update();
         vpoint.UpdateConstraints();
     }
@@ -292,7 +328,7 @@ function draw()
 
     for(let vpoint of g_points)
     {
-        //vpoint.Draw();
+        vpoint.Draw();
     }
 
     stroke(255);
@@ -305,10 +341,12 @@ function draw()
         }
     }
 
+    /*
     for (let vBody of g_bodies)
     {
         vBody.Draw();
     }
+    */
 }
 
 //MOUSE STUFF
@@ -327,12 +365,12 @@ function MouseIsInCanvas()
 
 function mousePressed()
 {
-    
+    g_pinnedPoint.SetPinned(false);
 }
 
 function mouseReleased()
 {
-    
+    g_pinnedPoint.SetPinned(true);
 }
 
 function mouseDragged()
