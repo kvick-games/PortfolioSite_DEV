@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code - Graph Traversal</title>
+
+    <link href="Resources/styles-global.css" rel="stylesheet">
+
+</head>
+<body>
+    Graph traversal
+    <br>
+    <div class="slider-value">
+        <input class="range-slider" id="range-slider-01" type="range" min="0" max="1" step="0.001" value="1">
+        <p id="range-slider-01-text">NumHere</p>
+    </div>
+
+    <!--Select start or target-->
+    <div class="toolHeader-01">
+        <div class="toolContainer-01">
+            <div>
+                <input type="radio" id="radio-algo-bfs" name="algo" value="bfs" checked>
+                <label for="bfs">Breadth-First</label>
+            </div>
+            <div>
+                <input type="radio" id="radio-algo-dfs" name="algo" value="dfs">
+                <label for="dfs">Depth-First</label>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="lib/p5.js"></script>
+    <script src="Code/code-graphTraversal-01.js"></script>
+</body>
+</html>

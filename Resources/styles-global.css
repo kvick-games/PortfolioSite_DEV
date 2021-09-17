@@ -2,9 +2,7 @@ html {
     font-family: sans-serif;
 }
 
-html {
-    font-family: sans-serif;
-}
+
 
 body {
     background-color: rgb(20, 20, 20);
@@ -65,4 +63,26 @@ header ul {
 canvas 
 {
     border: 1px solid rgba(255, 255, 255, 0.377);
+}
+
+.range-slider 
+{
+    width: 80%;
+}
+
+.slider-value
+{
+    display: flex;
+    background-color: rgba(63, 63, 63, 0.377);
+}
+
+.toolContainer-01
+{
+    background-color: rgb(51, 51, 51);
+}
+
+.toolHeader-01
+{
+    display: inline-block;
+    width: 80%;
 }
