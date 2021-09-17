@@ -257,7 +257,7 @@ function CreateGeo()
     //Create a rope
     
     //push returns the length of the array, so - 1 is equal to the current index
-    let numPoints = 3;
+    let numPoints = 6;
     let ropePoints = [];
     
     ropePoints.push(new VPoint(new Vector2(200, 150), red));
