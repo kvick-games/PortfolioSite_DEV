@@ -4,21 +4,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>p5.js example</title>
+  <title>Code - L-Systems</title>
   <style>
     body {
       padding: 0;
       margin: 0;
     }
   </style>
-  <script src="../p5.js"></script>
-  <!-- <script src="../addons/p5.sound.js"></script> -->
-  <script src="sketch.js"></script>
+  <link href="../../Resources/styles-global.css" rel="stylesheet">
 </head>
 
 <body>
   <main>
+    <h1>L-Systems</h1>
+    
+    <div id="system-01-container">
+
+    </div>
+    <br>
+
+    <input id="system-01-textInput" type="text" value="F+[+FF-F]-[-F+F+F]">
+    
   </main>
+  
+  <script src="../../lib/p5.js"></script>
+  <script src="../../lib/sikeJS.js"></script>
+  <script src="./sketch.js"></script>
+   
 </body>
 
 </html>

@@ -1,6 +1,8 @@
 let axiom = "F";
 let sentence = axiom;
 
+let printedTextElems = [];
+
 let rules = [];
 /*
 rules[0] = {
@@ -19,10 +21,27 @@ rules[0] = {
   b: "F+[+FF-F]-[-F+F+F]",
 }
 
-let len = 100;
+let len = 400;
 let angle;
 
-function generate()
+function ClearPrints()
+{
+  for(let e of printedTextElems)
+  {
+    e.remove();
+  }
+  printedTextElems = [];
+}
+
+function Reset()
+{
+  sentence = axiom;
+  len = 400;
+  ClearPrints();
+  Generate();
+}
+
+function Generate()
 {
   len *= 0.5;
   let output = "";
@@ -47,12 +66,12 @@ function generate()
 
   }
   sentence = output;
-  createP(output);
-  turtle();
+  printedTextElems.push(createP(output));
+  Turtle();
 }
 
 
-function turtle()
+function Turtle()
 {
   background(51);
   resetMatrix();
@@ -87,17 +106,39 @@ function turtle()
   }
 }
 
+let g_canvas_width = 800;
+let g_canvas_height = g_canvas_width;
+
+function OnTextFieldChanged(event)
+{
+  let eTextInput = document.getElementById("system-01-textInput");
+  let textInput = eTextInput.value;
+
+
+
+  rules[0].b = textInput;
+}
+
 function setup() {
-  createCanvas(400, 400);
+  let eCanvas = createCanvas(g_canvas_width, g_canvas_height);
+  eCanvas.parent("system-01-container");
   //noCanvas();
   angle = radians(25);
   background(51);
-  createP(axiom);
-  turtle();
-  
-  let eButton = createButton("generate");
-  eButton.mousePressed(generate);
+  Turtle();
 
+  let eTextInput = document.getElementById("system-01-textInput");
+  let textInput = eTextInput.getAttribute("value");
+  eTextInput.addEventListener('input', OnTextFieldChanged);
+
+  //Make buttons
+  let eButton_generate = createButton("generate");
+  eButton_generate.mousePressed(Generate);
+
+  let eButton_reset = createButton("reset");
+  eButton_reset.mousePressed(Reset);
+
+  createP(axiom);
 }
 
 function draw() {
