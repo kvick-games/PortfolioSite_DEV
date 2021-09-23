@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collision Detection</title>
+    <link href="../../Resources/styles-global.css" rel="stylesheet">
+</head>
+<body>
+    <script src="../../lib/p5.js"></script>
+    <script src="../../lib/sikeJS.js"></script>
+    <script src="../../lib/sike-geo.js"></script>
+    <script src="collisionDetection-01.js"></script>
+
+    <p>
+        <h2>Infinite Line against Circle</h2>
+        This example showcases the simplest case I know of to test for a collision between an infinite line
+        and a circle.
+        <br>
+        I originally found this to be really unintuitive trying to discover this without any guide to a solution.
+        <br><br>
+        In my mind this is one of many examples of the magic of computers to create illusions.
+        In this case, it is an illusion of objects 'touching' one another and registering it with rigorous mathematical
+        precision. I love collision algorithms tested against simplified abstract models of geometric primitives because
+        they are in essence 'perfect'. The only limit to the precision is the precision of your instantiation of numerical
+        precision.
+        <br><br>
+        Here the red line is the line we are testing for a collision.
+        <br><br>
+        The white line and green lines are both drawn for purposes of understanding the collision detection method.
+        <br>
+        The white line is a line drawn from an arbitrary point (start or end) of the red line.
+        <br>
+        The green line is a projected line from the circle down to the red line.
+        <br><br>
+
+        The simple magic of this method is that all you must do to detect a collision is check if the length
+        of the green line is less(or equal) than the radius of the circle.
+
+        <div id="infiniteLineVsCircle"></div>
+
+        <br><br><br>
+        <h2>Line Segment against Circle</h2>
+        This example is a more common use case, and probably more useful than the above example.
+        <br>
+        The implementation is almost identical but to find success we must take a few steps back from where we ended.
+        <br><br>
+        The only real change we need to make is to derrive and apply the parametric line equation instead of
+        simply projecting to the point of the line regardless of it's length.
+        <br>
+        We can determine the distance we are along the line and clamp the projected length to be between this length
+        and 0 and we have perfect collision detection between a line and a circle!
+        <div id="LineSegmentVsCircle"></div>
+
+    </p>
+
+</body>
+</html>
