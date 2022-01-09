@@ -220,18 +220,16 @@ class VPoint
 
     Draw()
     {
-        let finalColor;
         if (this.pinned)
         {
-            finalColor = new Color(0, 0, 1);
+            (new Color(0, 0, 1)).Fill();
         }
         else
         {
-            finalColor = this.color.GetOutputColor();
+            this.color.Fill();
         }
         
         stroke(0, 0, 0);
-        fill(finalColor.r, finalColor.g, finalColor.b, 255);
         circle(this.pos.x, this.pos.y, this.radius);
     }
 }
