@@ -11,6 +11,10 @@ function createHeader_default()
 {
     let arrHeaderSites = [
         {
+            "href" : "./site-games-root.html",
+            "text" : "GAMES"
+        },
+        {
             "href" : "./site-audio-root.html",
             "text" : "AUDIO"
         },
