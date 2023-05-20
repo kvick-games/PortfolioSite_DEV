@@ -11,10 +11,6 @@ function createHeader_default()
 {
     let arrHeaderSites = [
         {
-            "href" : "./site-games-root.html",
-            "text" : "GAMES"
-        },
-        {
             "href" : "./site-audio-root.html",
             "text" : "AUDIO"
         },
@@ -37,6 +33,10 @@ function createHeader_default()
         {
             "href" : "./site-ML-root.html",
             "text" : "ML"
+        },
+        {
+            "href" : "./site-games-root.html",
+            "text" : "GAMES"
         },
     ];
 
