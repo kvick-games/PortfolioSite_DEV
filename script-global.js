@@ -38,6 +38,10 @@ function createHeader_default()
             "href" : "./site-games-root.html",
             "text" : "GAMES"
         },
+        {
+            "href" : "./site-about.html",
+            "text" : "ABOUT"
+        },
     ];
 
     let eHeader = document.getElementById("templateHeader");
@@ -46,7 +50,7 @@ function createHeader_default()
         let eTitle = document.createElement("h1");
         eTitle.className = "HeaderTitle";
 
-        let sHeaderText = "SCRIPT_TEST";
+        let sHeaderText = "ABOUT";
         let eMeta = document.head.querySelector("meta[name=\"headerText\"]");
         if (eMeta)
         {
