@@ -30,13 +30,19 @@ function createHeader_default()
             "href" : "./site-art-root.html",
             "text" : "ART"
         },
+        /*
         {
             "href" : "./site-ML-root.html",
             "text" : "ML"
         },
+        */
         {
             "href" : "./site-games-root.html",
             "text" : "GAMES"
+        },
+        {
+            "href" : "./site-projects-root.html",
+            "text" : "PROJECTS"
         },
         {
             "href" : "./site-about.html",
