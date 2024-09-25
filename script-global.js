@@ -97,6 +97,11 @@ function createHeader_default()
     }
 }
 
+function CreateNavBar()
+{
+    
+}
+
 console.log("Running global script");
 
 createHeader_default();

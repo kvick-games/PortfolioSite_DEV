@@ -2,11 +2,12 @@ html {
     font-family: sans-serif;
 }
 
-
-
 body {
     background-color: rgb(20, 20, 20);
     color: white;
+    margin-top: 80px;
+    margin-left: 140px;
+    margin-right: 140px;
 }
 
 /* HEADER */
@@ -21,12 +22,21 @@ header {
 }
 
 .HeaderTitle {
+    display: flex;
+    flex:0%;
+    justify-content: space-between;
+    flex-wrap: wrap;
     float: left;
 
     padding-left: 50px;
 }
 
 header nav {
+    display: flex;
+    justify-content: space-between;
+    flex:0%;
+    flex-wrap: wrap;
+    flex-direction:row;
     float: right;
 
     position: absolute;
@@ -36,6 +46,7 @@ header nav {
     text-align: right;
     
     padding-right: 30px;
+    padding-left: 210px;
     transform: translateY(-50%);
 }
 
@@ -48,7 +59,9 @@ header ul {
 .header-nav-button {
     background-color: rgba(199, 59, 59, 0.959);
     margin-right: 5px;
+    margin-bottom: 5px;
     width: 120px;
+    padding-bottom: 0px;
 
     float: right;
 }
@@ -95,5 +108,8 @@ canvas
     color: rgb(199, 142, 199);
 }
 
-
+.Resume {
+    padding-top: 200px;
+    margin-top: 200px;
+}
 

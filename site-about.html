@@ -8,7 +8,7 @@
         <title>Michael Nevins - Portfolio</title>
 
         <link rel="stylesheet" href="./Resources/styles-global.css">
-        <link rel="stylesheet" href="Resources/styles.css">
+        
 
         <!--
         <script type="module">import * as THREE from './three.module.js';</script>
@@ -20,34 +20,57 @@
         <header id="templateHeader">
             
         </header>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+
         
         <main>
             <div id="mainContent" class="mainContent">
-                <h1><p id="Header">About Me</p></h1>
-                
+                <br><br><br><br><br><br><br>
                 Hello, my name is Michael Nevins.
                 <br>
                 <br>
-                This is my website that is under construction
                 <br>
                 I am a game developer by trade and I am always exploring new fields for inspiration.
-                
+                <br>
+                <br>
+                <br>
+                <br>
                 <div id="Resume">
-                    <p>Here is my resume:</p>
-                    <a href="Resources/Michael_Nevins_Resume.pdf" download>Resume</a>
+                    <div id="ResumeLink">
+                        <a href="Resources/Michael_Nevins_Resume.pdf">Resume</a>
+                    </div>
+                    <canvas id="pdfCanvas"></canvas>
+
+                    <script>
+                        const url = "Resources/Michael_Nevins_Resume.pdf";
+                    
+                        // Initialize PDF.js
+                        const loadingTask = pdfjsLib.getDocument(url);
+                        loadingTask.promise.then(function(pdf) {
+                            // Fetch the first page
+                            pdf.getPage(1).then(function(page) {
+                                const scale = 1.5;  // Scale of the PDF rendering
+                                const viewport = page.getViewport({ scale: scale });
+                    
+                                // Prepare canvas using PDF page dimensions
+                                const canvas = document.getElementById('pdfCanvas');
+                                const context = canvas.getContext('2d');
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+                    
+                                // Render the PDF page into the canvas context
+                                const renderContext = {
+                                    canvasContext: context,
+                                    viewport: viewport
+                                };
+                                page.render(renderContext);
+                            });
+                        });
+                    </script>
                 </div>
-                
             </div>
         </main>
-
-        <div id="navIcon" onclick="toggleOpenNav()">
-            <img id="navIconImage" src="Resources/NavCollapsedIcon.png"/>
-            <div class="navIconOverlay"></div>
-            <!--
-                <div style="background-color:blue; width: 550px; height: 550px;"></div>
-            -->
-        </div>
-
         
         <script src="mainJS.js"></script>
         <script src="script-global.js"></script>
