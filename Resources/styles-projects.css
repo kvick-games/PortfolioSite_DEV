@@ -21,21 +21,26 @@
     font-family: Arial, sans-serif;
     color: white; 
     text-align: center;
-
 }
 
-.projectBtn-gow {
+.project-content {
+    display: flex;
+    margin-top: 60px;
+    margin-bottom: 60px;
+}
+
+#projectBtn-gow {
     background-image: url("../Resources/Projects/GoW2018Cover.webp");
 }
 
-.projectBtn-judas {
+#projectBtn-judas {
     background-image: url("../Resources/Projects/judas-img.jpg");
 }
 
-.projectBtn-tanuki {
+#projectBtn-tanuki {
     background-image: url("../Resources/Projects/tanuki_img.jpg");
 }
 
-.projectBtn-levelGenerator {
+#projectBtn-levelGenerator {
     background-image: url("../Resources/Projects/levelGen_img.png");
 }

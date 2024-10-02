@@ -19,14 +19,28 @@
 
         <main>
             <div class="project-buttons">
-                <li><a href="project-gow-2018.html" class="projectButton projectBtn-gow">God of War (2018)</a></li>
-                <li><a href="project-judas.html" class="projectButton projectBtn-judas">Judas</a></li>
-                <li><a href="project-tanuki.html" class="projectButton projectBtn-tanuki">Tanuki</a></li>
-                <li><a href="project-levelGenerator.html" class="projectButton projectBtn-levelGenerator">Level Generator</a></li>
+                <li><button class="projectButton" id="projectBtn-gow" projectKey="gow">God of War (2018)</a></li>
+                <li><button class="projectButton" id="projectBtn-judas" projectKey="judas">Judas</a></li>
+                <li><a href="project-tanuki.html" class="projectButton" id="projectBtn-tanuki">Tanuki</a></li>
+                <li><a href="project-levelGenerator.html" class="projectButton" id="projectBtn-levelGenerator">Level Generator</a></li>
+
+                <li><button class="projectButton" id="projectBtn-hide">HIDE STUFF</a></li>
+            </div>
+
+            
+            <div class="project-content" id="projectContentDiv">
+                <div class="project-content-header" id="projectContentHeader">
+                    <h1 id="project-title">Project Title</h1>
+                    <h2 id="project-subtitle">Project Subtitle</h2>
+                    <div id="project-content-body">
+                        Project description goes here
+                    </div>
+                </div>
             </div>
 
         </main>
         
         <script src="script-global.js"></script>
+        <script src="script-project-page.js"></script>
     </body>
 </html>
