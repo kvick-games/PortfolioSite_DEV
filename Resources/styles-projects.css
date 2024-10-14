@@ -21,6 +21,7 @@
     font-family: Arial, sans-serif;
     color: white; 
     text-align: center;
+    color: transparent;
 }
 
 .project-content {
@@ -38,9 +39,13 @@
 }
 
 #projectBtn-tanuki {
-    background-image: url("../Resources/Projects/tanuki_img.jpg");
+    background-image: url("../Resources/Projects/Tanuki/MistyMorning.png");
 }
 
 #projectBtn-levelGenerator {
     background-image: url("../Resources/Projects/levelGen_img.png");
+}
+
+#projectBtn-EWA {
+    background-image: url("../Resources/Projects/EWA/EWA_Redacted.png");
 }

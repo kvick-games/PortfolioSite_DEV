@@ -7,9 +7,51 @@ const projectButtons = document.getElementsByClassName("projectButton");
 
 class ProjectPage
 {
-    constructor(projectName)
+    constructor(projectName, projectHTMLPath)
     {
         this.projectName = projectName;
+        this.projectHTMLPath = projectHTMLPath;
+    }
+
+    async LoadProjectPageHTML()
+    {
+        try 
+        {
+            //Load a project subpage
+            let response = await fetch(this.projectHTMLPath);
+            if (!response.ok)
+            {
+                throw new Error("HTTP error: " + response.status);
+            }
+
+            let data = await response.text();
+            console.log(data);
+            console.log("Inserting data");
+
+            //projectContentDiv.innerHTML = data;
+
+            return data;
+/*
+            var projectDivHTML = projectPage.projectHTMLPath;
+            var loadedProjectDiv = fetch(projectDivHTML)
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+                console.log("Inserting data");
+                
+                return data;
+            })
+            .catch(error => {
+                console.log("Error loading project sub-page: " + error);
+            });
+             */
+        }
+        catch (error)
+        {
+            console.log("Error loading project page HTML: " + error);
+            throw error;
+        }
+        
     }
 }
 
@@ -18,11 +60,16 @@ function GetProjectPage(projectName)
     switch (projectName)
     {
         case "gow":
-            return new ProjectPage("God of War(2018)");
+            return new ProjectPage("God of War(2018)", "Resources/Projects/project-site_GoW.html");
         case "judas":
-            var page = new ProjectPage("Judas");
-            
+            var page = new ProjectPage("Judas", "Resources/Projects/project-site_Judas.html");
             return page;
+        case "tanuki":
+            return new ProjectPage("Tanuki", "Resources/Projects/project-site_Tanuki.html");
+        case "LevelGenerator":
+            return new ProjectPage("Level Generator", "Resources/Projects/project-site_LevelGenerator.html");
+        case "EWA":
+            return new ProjectPage("EWA", "Resources/Projects/project-site_EWA.html");
         default:
             return new ProjectPage("blank");
     }
@@ -52,8 +99,13 @@ function GenerateProjectContentDiv(activeProjectKey)
     }
     spamText.innerHTML = spamString;
 
-    //Spam text to see the div
-    projectBodyDiv.appendChild(spamText);
+    projectPage.LoadProjectPageHTML()
+    .then(htmlContent => {
+        projectContentDiv.innerHTML = htmlContent;
+    })
+    ;
+    
+    //projectBodyDiv.appendChild(spamText);
 }
 
 function UpdateURL(projectKey)
