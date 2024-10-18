@@ -10,6 +10,7 @@ class LinkDesc
 function createHeader_default()
 {
     let arrHeaderSites = [
+        /*
         {
             "href" : "./site-audio-root.html",
             "text" : "AUDIO"
@@ -30,16 +31,17 @@ function createHeader_default()
             "href" : "./site-art-root.html",
             "text" : "ART"
         },
-        /*
+        
         {
             "href" : "./site-ML-root.html",
             "text" : "ML"
         },
-        */
+        
         {
             "href" : "./site-games-root.html",
             "text" : "GAMES"
         },
+        */
         {
             "href" : "./site-projects-root.html",
             "text" : "PROJECTS"
@@ -56,7 +58,7 @@ function createHeader_default()
         let eTitle = document.createElement("h1");
         eTitle.className = "HeaderTitle";
 
-        let sHeaderText = "ABOUT";
+        let sHeaderText = "MICHAEL NEVINS";
         let eMeta = document.head.querySelector("meta[name=\"headerText\"]");
         if (eMeta)
         {
@@ -64,7 +66,7 @@ function createHeader_default()
             console.log("headerText: " + sHeaderMetadata);
             if (sHeaderMetadata)
             {
-                sHeaderText = sHeaderMetadata;
+                sHeaderText += " - " + sHeaderMetadata;
             }
         }
 
