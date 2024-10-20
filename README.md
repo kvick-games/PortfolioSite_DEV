@@ -1,2 +1,2 @@
-# TestSite2
-figuring out git stuff....
+# Portfolio Website
+Repo for my portfolio website
