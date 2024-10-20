@@ -99,6 +99,32 @@ function createHeader_default()
     }
 }
 
+class Widget_Socials extends HTMLElement
+{
+    constructor()
+    {
+        super();
+
+        const shadow = this.attachShadow({mode: 'open'});
+
+        const button = document.createElement('button');
+        button.textContent = 'Click me';
+
+        const style = document.createElement('style');
+        style.textContent = `
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+        }
+        `;
+
+        shadow.appendChild(style);
+        shadow.appendChild(button);
+    }
+}
+
+customElements.define('widget-socials', Widget_Socials);
+
 function CreateNavBar()
 {
     
