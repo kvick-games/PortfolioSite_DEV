@@ -10,6 +10,7 @@
     margin-top: 150px;
 }
 
+/* 
 .projectButton {
     display: inline-block;
     width: 300px;
@@ -25,7 +26,62 @@
     color: white; 
     text-align: center;
     color: transparent;
+    
 }
+    */
+    .projectButton {
+        position: relative; /* Make the button container relative */
+        width: 300px;
+        height: 300px;
+        overflow: hidden; /* Keep any overflowing content inside the button */
+        background-size: cover;
+        background-position: center;
+        border-radius: 5px;
+        transition: transform 0.3s ease-in-out; /* Add smooth transform */
+        font-family: Arial, sans-serif;
+        color: transparent; /* Hide the text initially */
+        cursor: pointer;
+        border: none;
+        outline: none;
+    }
+    
+    .projectButton::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0); /* No tint initially */
+        transition: background-color 0.3s ease;
+        z-index: 1; /* Place tint above the background but below text */
+        border-radius: 5px;
+    }
+    
+    .projectButton:hover {
+        transform: scale(1.05); /* Scale on hover */
+    }
+    
+    .projectButton:hover::before {
+        background-color: rgba(0, 0, 0, 0.5); /* Add the tint on hover */
+    }
+    
+    .projectButton::after {
+        content: attr(dispText); /* Use projectKey attribute as text */
+        position: absolute;
+        top: 50%; /* Center text vertically */
+        left: 50%; /* Center text horizontally */
+        transform: translate(-50%, -50%); /* Offset for perfect centering */
+        color: white; /* White text */
+        font-size: 1.2rem; /* Adjust text size */
+        opacity: 0; /* Initially hidden */
+        transition: opacity 0.3s ease; /* Fade-in transition */
+        z-index: 2; /* Ensure text is above the tint */
+    }
+    
+    .projectButton:hover::after {
+        opacity: 1; /* Fade in the text on hover */
+    }
 
 .project-content-header {
     display: flex;
