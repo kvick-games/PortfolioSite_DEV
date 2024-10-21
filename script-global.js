@@ -109,6 +109,7 @@ class Widget_Socials extends HTMLElement
 
         const button = document.createElement('button');
         button.textContent = 'Click me';
+        button.imag
 
         const style = document.createElement('style');
         style.textContent = `
@@ -117,6 +118,8 @@ class Widget_Socials extends HTMLElement
             padding: 10px 20px;
         }
         `;
+
+
 
         shadow.appendChild(style);
         shadow.appendChild(button);
