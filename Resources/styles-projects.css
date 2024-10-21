@@ -5,14 +5,17 @@
     justify-content: center;
     list-style-type: none;
     
+    flex-wrap: wrap;
     
-    margin-top: 250px;
+    margin-top: 150px;
 }
 
 .projectButton {
     display: inline-block;
     width: 300px;
     height: 300px;
+
+    overflow-x: auto;
     background-size: cover;
     background-position: center;
     border-radius: 5px;
@@ -22,6 +25,12 @@
     color: white; 
     text-align: center;
     color: transparent;
+}
+
+.project-content-header {
+    display: flex;
+    flex-direction: column;
+    margin-right: 60px;
 }
 
 .project-content {
