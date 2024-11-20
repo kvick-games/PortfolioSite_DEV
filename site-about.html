@@ -9,10 +9,12 @@
 
         <link rel="stylesheet" href="./Resources/styles-global.css">
         
-
         <!--
         <script type="module">import * as THREE from './three.module.js';</script>
         -->
+
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" rel="stylesheet">
+        
         
     </head>
     
@@ -26,43 +28,32 @@
         
         <main>
             <div id="mainContent" class="mainContent">
-                <br><br><br><br>
-                <br>
-                I am a multi-disciplinary game developer currently working on an independent game project.<br>
-                I am an artist at heart and possess technical skills to bring anyone's vision to life.<br>
-                <br>
-                With a solid foundation in art, design, accompanied by strong technical chops, I can implement any crazy ideas that may need to be brought to life on any given day.<br>
-                My goal is to work on the most ambitous, innovative, potentially crazy projects that I can find or come up with.<br>
                 
-                <br>
-                I studied Illustration and Fine Art at Academy of Art University in San Francisco, CA.<br>
-                I later changed my education to pursuing a Bachelors of Science focused on Game Programming.<br>
-                <br>
-                I am very technical and have experience working with many programming languages and domains, including C++, C#, Python, and JavaScript.<br>
-                I have a broad range of experience and have worked on every side of game development and team sizes that range from<br>
-                solo projects, to small teams, to 350+ people on God of War.<br>
-                <br>
-                I love working with other people, especially from diverse backgrounds and disciplines, and am always seeking<br>
-                opportunities to foster positive creativity and growth in the people I work with.<br>
-                <br>
-                I invest my spare time in extra education and personal projects to keep my skills sharp and up-to-date.<br>
-                <br>
-                Currently my main development interests lie in procedural generation and finding ways to make it more effective for
-                cutting down on tedious development tasks to focus on the design of games.<br>
-                <br>
-                I just started building this website, so it is currently under construction!<br>
-                It will look prettier soon but for now here are my socials:<br>
-                <br>
-                <br>
-                <a href="https://www.linkedin.com/in/michael-nevins-690b3140/">LinkedIn</a><br>
-                <a href="https://www.artstation.com/kvick">Artstation</a><br>
-                <a href="https://x.com/kvickart">X</a><br>
-                <br>
-                <br>
-                <br>
-
-
-                
+                <div id="aboutBodyText">
+                    I am a multi-disciplinary game developer currently working on an independent game project. 
+                    I am an artist at heart and possess technical skills to bring anyone's vision to life.<br>
+                    <br>
+                    With a solid foundation in art, design, accompanied by strong technical chops, I can implement any crazy ideas that may need to be brought to life on any given day. 
+                    My goal is to work on the most ambitous, innovative, potentially crazy projects that I can find or come up with.<br>
+                    
+                    <br>
+                    I studied Illustration and Fine Art at Academy of Art University in San Francisco, CA.
+                    I later changed my education to pursuing a Bachelors of Science focused on Game Programming.<br>
+                    <br>
+                    I am very technical and have experience working with many programming languages and domains, including C++, C#, Python, and JavaScript.
+                    I have a broad range of experience and have worked on every side of game development and team sizes that range from
+                    solo projects, to small teams, to 350+ people on God of War.<br>
+                    <br>
+                    I love working with other people, especially from diverse backgrounds and disciplines, and am always seeking 
+                    opportunities to foster positive creativity and growth in the people I work with.<br>
+                    <br>
+                    I invest my spare time in extra education and personal projects to keep my skills sharp and up-to-date.<br>
+                    <br>
+                    Currently my main development interests lie in procedural generation and finding ways to make it more effective for
+                    cutting down on tedious development tasks to focus on the design of games.<br>
+                    <br>
+                    <br>
+                </div>
 
                 <div id="Resume">
                     <div id="ResumeLink">
@@ -78,7 +69,7 @@
                         loadingTask.promise.then(function(pdf) {
                             // Fetch the first page
                             pdf.getPage(1).then(function(page) {
-                                const scale = 1.5;  // Scale of the PDF rendering
+                                const scale = 0.9;  // Scale of the PDF rendering
                                 const viewport = page.getViewport({ scale: scale });
                     
                                 // Prepare canvas using PDF page dimensions
@@ -98,7 +89,22 @@
                         
                     </script>
                 </div>
+                
             </div>
+
+            <div class="toolbar">
+                <a href="https://www.linkedin.com/in/michael-nevins-690b3140/" target="_blank" title="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://www.artstation.com/kvick" target="_blank" title="Artstation">
+                    <i class="fab fa-artstation"></i>
+                </a>
+                <a href="https://x.com/kvickart" target="_blank" title="X (Twitter)">
+                    <i class="fa-brands fa-x-twitter"></i>
+                </a>
+                
+            </div>
+
         </main>
         
         <script src="mainJS.js"></script>
