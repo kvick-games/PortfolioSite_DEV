@@ -18,7 +18,7 @@ header {
     left: 0;
 
     width: 100%;
-    z-index: 5;
+    z-index: 15;
 }
 
 .HeaderTitle {
@@ -206,4 +206,16 @@ canvas
 
 .contact-form button:hover {
     background-color: #005bb5;
+}
+
+/* Vignette effect at the top */
+.vignette {
+    position: fixed; /* Sticks to the top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px; /* Adjust height as needed */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0)); /* Gradient fade */
+    pointer-events: none; /* Allows clicks to pass through */
+    z-index: 10; /* Ensure it overlays content */
 }

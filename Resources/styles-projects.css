@@ -83,6 +83,15 @@
         opacity: 1; /* Fade in the text on hover */
     }
 
+.project-bg {
+    height: 100vh; /* Full viewport height */
+    background-image: url('./Resources/Projects/EWA/EWA_Concept_01.jpg'); /* Replace with your image */
+    background-attachment: fixed; /* Key for parallax effect */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
 .project-content-header {
     display: flex;
     flex-direction: column;

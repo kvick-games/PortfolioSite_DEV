@@ -88,9 +88,15 @@ function createHeader_default()
             
             let eLink = document.createElement("a");
             eLink.setAttribute("href", linkData.href);
+            eLink.className = "header-button-link"; // Add a class for styling
+
+            eLink.setAttribute("aria-label", linkData.text); // Screen readers will read this
             eLink.innerHTML = linkData.text;
             
             eListElem.appendChild(eLink);
+
+            // Append the list element to the parent container
+            eList.appendChild(eListElem);
         }
     }
     else

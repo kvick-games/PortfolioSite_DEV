@@ -151,4 +151,13 @@ Array.from(projectButtons).forEach(button => {
 
 window.onLoad = HandleURL();
 
+// Parallax effect
+window.addEventListener('scroll', function () {
+    console.log("scrolling");
+    const parallax = document.querySelector('.project-bg');
+    let scrollPosition = window.scrollY;
+    parallax.style.backgroundPositionY = scrollPosition * 0.5 + 'px'; // Adjust speed by changing 0.5
+});
+
+
 console.log("script-project-page.js loaded");
