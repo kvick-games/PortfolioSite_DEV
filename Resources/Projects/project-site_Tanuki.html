@@ -11,11 +11,9 @@
 </div>
 <div id="project-content-body">
     
-    <div class="video-container">
-        <video width="860" height="515" controls>
-            <source src="./Resources/Projects/Tanuki/Tanuki_Trailer_01.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+    <!-- Screenshot -->
+    <div id="project-screenshot">
+        <img src="Resources/Projects/Tanuki/2.png" alt="Project Tanuki Screenshot 1">
     </div>
 
     <div id="project-main-content">
@@ -28,15 +26,37 @@
 
         Utility Scoring System<br>
         NPC AI<br>
+        Simulation-based environment<br>
+            Day/Night Cycle<br>
         Equipment System<br>
         Cooking System<br>
-        Day/Night Cycle<br>
         Dialogue System<br>
             Dialogue system
         Dynamic Quest System<br>
         Restaurant Building Mechanics<br>
         Fishing<br>
         Farming<br>
+
+        <br>
+        <h2>Cooking System</h2><br>
+        I designed the cooking system to be more flexible than a typical crafting system.
+        Dishes do not necessarily require specific ingredients but categories of ingredients.
+
+        Recipes contain a list of criteria that the ingredients must meet to be considered for the dish.
+        This allows for a very dynamic and scalable crafting system where the design can accomodate an arbitrary
+        number of rules for what must be input to create a dish.
+
+        A criteria can be defined as specifically requiring specifically, a grilled carrot, or more generally, a grilled vegetable,
+        or a carrot of any particular quality.
+
+        <h2>Simulation-based environment</h2>
+        The game is meant to feel alive and dynamic. There is a day/night cycle, weather, and seasons.
+        Actor can contain a Modifier component which will define behavior to update their simulation state.
+        <br>
+        An example of this would be the Freshness component.
+        <br>
+        The Freshness component will update based on a variety of Influences.
+        Influences are defined and can be defined by things such as temperature, time, and other factors.
 
         <br>
         <h2>Utility Scoring System</h2><br>
