@@ -71,7 +71,17 @@ header ul {
     width: 120px;
     padding-bottom: 0px;
 
+    cursor: pointer;
+
     float: right;
+
+    transition: background-color 0.3s ease, color 0.3s ease;
+    color: #ffffff;
+}
+
+.header-nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.959);
+    color: #000;
 }
 
 .header-nav-button a {
@@ -80,6 +90,10 @@ header ul {
 
     padding-right: 10px;
 }
+
+.header-nav-button:hover a.header-button-link { /* Target the <a> element on hover */
+    color: black;
+  }
 
 canvas 
 {

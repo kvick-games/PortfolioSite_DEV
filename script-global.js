@@ -75,7 +75,7 @@ function createHeader_default()
         let eTitle = document.createElement("h1");
         eTitle.className = "HeaderTitle";
 
-        let sHeaderText = "MICHAEL NEVINS";
+        let sHeaderText = "Michael Nevins";
         let eMeta = document.head.querySelector("meta[name=\"headerText\"]");
         if (eMeta)
         {
@@ -109,6 +109,14 @@ function createHeader_default()
 
             eLink.setAttribute("aria-label", linkData.text); // Screen readers will read this
             eLink.innerHTML = linkData.text;
+
+            //Make the Background color clickable
+            eListElem.addEventListener("hover", () => {
+                eListElem.style.backgroundColor = "green";
+            });
+            eListElem.addEventListener("click", () => {
+                window.location.href = linkData.href;
+            });
             
             eListElem.appendChild(eLink);
 
