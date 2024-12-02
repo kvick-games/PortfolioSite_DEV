@@ -4,6 +4,8 @@ const projectContentDiv = document.getElementById("projectContentDiv");
 const projectBodyDiv = document.getElementById("project-content-body");
 
 const projectButtons = document.getElementsByClassName("projectButton");
+const projectBg = document.getElementById('projectBgDiv');
+const projectBgImage = document.getElementById('projectBgImg');
 
 class ProjectPage
 {
@@ -151,13 +153,21 @@ Array.from(projectButtons).forEach(button => {
 
 window.onLoad = HandleURL();
 
+function UpdateParallax()
+{
+    let scrollPosition = window.scrollY;
+    let scrollRate = 0.1;
+    let bgOffset = -255.0;
+    
+    let newTopPos = bgOffset + scrollPosition * scrollRate;
+    projectBg.style.top = `${newTopPos}px`;
+}
+
 // Parallax effect
 window.addEventListener('scroll', function () {
     console.log("scrolling");
-    const parallax = document.querySelector('.project-bg');
-    let scrollPosition = window.scrollY;
-    parallax.style.backgroundPositionY = scrollPosition * 0.5 + 'px'; // Adjust speed by changing 0.5
+    UpdateParallax();
 });
 
-
+UpdateParallax();
 console.log("script-project-page.js loaded");
