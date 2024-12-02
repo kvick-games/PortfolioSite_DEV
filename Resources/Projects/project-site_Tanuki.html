@@ -13,7 +13,10 @@
     
     <!-- Screenshot -->
     <div id="project-screenshot">
-        <img src="Resources/Projects/Tanuki/2.png" alt="Project Tanuki Screenshot 1">
+        <!-- Limit the size so it only takes up a small portion of the screen -->
+
+        <img src="Resources/Projects/Tanuki/2.png" alt="Tanuki Screenshot" style="width: 50%; height: 50%;">
+
     </div>
 
     <div id="project-main-content">
@@ -22,23 +25,22 @@
 
         I plan on creating some form of public development blog to show off pieces of the game in the future.
 
-        <h1>Main Features:</h1><br><br>
+        <h1>Main Features:</h1>
 
-        Utility Scoring System<br>
+        General Purpose Utility-Based Scoring System<br>
         NPC AI<br>
-        Simulation-based environment<br>
+        Simulation-Driven World<br>
             Day/Night Cycle<br>
         Equipment System<br>
         Cooking System<br>
         Dialogue System<br>
-            Dialogue system
         Dynamic Quest System<br>
         Restaurant Building Mechanics<br>
         Fishing<br>
         Farming<br>
 
         <br>
-        <h2>Cooking System</h2><br>
+        <h2>Cooking System</h2>
         I designed the cooking system to be more flexible than a typical crafting system.
         Dishes do not necessarily require specific ingredients but categories of ingredients.
 
@@ -49,7 +51,7 @@
         A criteria can be defined as specifically requiring specifically, a grilled carrot, or more generally, a grilled vegetable,
         or a carrot of any particular quality.
 
-        <h2>Simulation-based environment</h2>
+        <h2>Simulation-Driven World</h2>
         The game is meant to feel alive and dynamic. There is a day/night cycle, weather, and seasons.
         Actor can contain a Modifier component which will define behavior to update their simulation state.
         <br>
@@ -59,7 +61,7 @@
         Influences are defined and can be defined by things such as temperature, time, and other factors.
 
         <br>
-        <h2>Utility Scoring System</h2><br>
+        <h2>Utility Scoring System</h2>
         The utility scoring system is a generic system for implementing weighted-random based decisions
         in the game. It can be ported across projects easily as it doesn't rely on any specific game mechanics.
 

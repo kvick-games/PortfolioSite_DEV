@@ -7,6 +7,23 @@ class LinkDesc
     }
 }
 
+/* Hide the header bar when scrolling down, make it reappear on scrolling up */
+const headerBar = document.getElementById("templateHeader");
+let prevScrollPos = window.scrollY;
+window.addEventListener("scroll", () => {
+    let currentScrollPos = window.scrollY;
+    if (prevScrollPos < currentScrollPos)
+    {
+        headerBar.classList.add("hide");
+    }
+    else
+    {
+        headerBar.classList.remove("hide");
+    }
+    prevScrollPos = currentScrollPos;
+    
+});
+
 function createHeader_default()
 {
     let arrHeaderSites = [
