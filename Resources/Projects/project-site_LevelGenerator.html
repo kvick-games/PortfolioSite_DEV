@@ -45,6 +45,7 @@
             
             <img src="Resources/Projects/LevelGenerator/1.png" alt="Level Generator Screenshot" style="width: 60%; height: 60%;">
             <img src="Resources/Projects/LevelGenerator/2.png" alt="Level Generator Screenshot" style="width: 60%; height: 60%;">
+            <img src="Resources/Projects/LevelGenerator/5.png" alt="Level Generator Screenshot" style="width: 60%; height: 60%;">
             <br><br><br>
             <div>
                 It was important for me to design this in such a way where it could be integrated with some gameplay mechanics so that
@@ -61,8 +62,35 @@
             An exterior shot of a generated level<br>
             <img src="Resources/Projects/LevelGenerator/3.png" alt="Level Generator Screenshot" style="width: 60%; height: 60%;">
             <img src="Resources/Projects/LevelGenerator/4.png" alt="Level Generator Screenshot" style="width: 60%; height: 60%;">
-            <img src="Resources/Projects/LevelGenerator/5.png" alt="Level Generator Screenshot" style="width: 60%; height: 60%;">
 
+            <hr>
+            <div>
+                <h3>Generation Process</h3>
+                <img src="Resources/Projects/LevelGenerator/MapGenPipeline.png" alt="Level Generator Screenshot" style="width: 100%; height: 100%;">
+                <br>
+                This is an overview of the stages of the generation process.<br><br>
+                First an abstract data strucutre of map data is generated, then the map is generated from that data.<br>
+                The map data is a serializable struct that can be used to save a generated level to be re-used later if you wanted to reload the same layout at a later time.<br>
+
+
+
+                <br>
+                The level's layout can be determined by defining Configuration's which exist as uassets.
+                <img src="Resources/Projects/LevelGenerator/Screenshot_LevelConfig.png" alt="Level Generator Screenshot" style="width: 60%; height: 60%;">
+            </div>
+
+            <hr>
+
+            <div>
+                <h3>Themes</h3>
+                Themes are defined as modular objects as well.
+                Every phase of the map generation process can reference the theme to determine which assets to use.<br>
+                <img src="Resources/Projects/LevelGenerator/Screenshot_ThemeConfig.png" alt="Level Generator Screenshot" style="width: 60%; height: 60%;">
+            </div>
+
+            
+
+            
             
         </div>
 

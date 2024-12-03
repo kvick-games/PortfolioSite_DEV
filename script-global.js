@@ -86,7 +86,7 @@ function createHeader_default()
                 sHeaderText += " - " + sHeaderMetadata;
             }
         }
-
+        
         eTitle.innerHTML = sHeaderText;
         eHeader.appendChild(eTitle);
 
