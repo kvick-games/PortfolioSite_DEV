@@ -20,6 +20,7 @@
         </div>
 
         <div>
+            <hr>
             <br>
             I spent a year on and off building a procedural level generator in Unreal Engine 5<br><br>
 
@@ -27,6 +28,14 @@
             had many opportunities to pursue them with significant time investment until this project.<br>
             <br>
             This was actually a feature I wanted to test in <a>Project EWA</a>, but I didn't want to burden the project if it didn't work out.<br>
+
+            <h4>Future goals for the project:</h4>
+                <li>Improve the usability of the level configs so generating different level types is easier.</li>
+                <li>Add support for more diverse gameplay mechanics</li>
+                <li>I would like to work with a 3D artist to see how well it would support different art styles</li>
+                <li>Exteriors and structures which don't conform to a square grid</li>
+
+                <br>
 
             <br><br>
         </div>
@@ -51,7 +60,7 @@
                 It was important for me to design this in such a way where it could be integrated with some gameplay mechanics so that
                 it didn't simply live as a tech demo that I wouldn't be able to carry over into other projects.
                 <br><br>
-                So I spent some time integrating the generated level with connections to bespoke levels which presented many challenges.
+                I spent some time integrating the generated level with connections to bespoke levels which presented many challenges.
                 <br>
                 There is a simple quest system integrated into the game that will generate quests, which the level generator will
                 then reference to generate the level. It will ensure that a room is created to support the quest so that the objective
@@ -69,7 +78,7 @@
                 <img src="Resources/Projects/LevelGenerator/MapGenPipeline.png" alt="Level Generator Screenshot" style="width: 100%; height: 100%;">
                 <br>
                 This is an overview of the stages of the generation process.<br><br>
-                First an abstract data strucutre of map data is generated, then the map is generated from that data.<br>
+                First an abstract data strucutre of map data is generated, then the map is instantiated from that data.<br>
                 The map data is a serializable struct that can be used to save a generated level to be re-used later if you wanted to reload the same layout at a later time.<br>
 
 
@@ -85,11 +94,12 @@
                 <h3>Themes</h3>
                 Themes are defined as modular objects as well.
                 Every phase of the map generation process can reference the theme to determine which assets to use.<br>
+                The screenshots above showcase different themes being applied to rooms.<br>
+                <br>
                 <img src="Resources/Projects/LevelGenerator/Screenshot_ThemeConfig.png" alt="Level Generator Screenshot" style="width: 60%; height: 60%;">
             </div>
-
             
-
+            <hr>
             
             
         </div>

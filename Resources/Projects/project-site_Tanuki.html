@@ -27,47 +27,119 @@
 
         <h1>Main Features:</h1>
 
-        General Purpose Utility-Based Scoring System<br>
-        NPC AI<br>
-        Simulation-Driven World<br>
-            Day/Night Cycle<br>
-        Equipment System<br>
-        Cooking System<br>
-        Dialogue System<br>
-        Dynamic Quest System<br>
-        Restaurant Building Mechanics<br>
-        Fishing<br>
-        Farming<br>
+        <li>NPC AI</li>
+        <li>Simulation-Driven World</li>
+        <li>General Purpose Utility-Based Scoring System</li>
+        <li>Day/Night Cycle</li>
+        <li>Equipment System</li>
+        <li>Cooking System</li>
+        <li>Dialogue System</li>
+        <li>Dynamic Quest System</li>
+        <li>Restaurant Building Mechanics</li>
+        <li>Fishing</li>
+        <li>Farming</li>
 
-        <br>
-        <h2>Cooking System</h2>
-        I designed the cooking system to be more flexible than a typical crafting system.
-        Dishes do not necessarily require specific ingredients but categories of ingredients.
+        <hr>
+        <div>
+            <br>
+            <h2>Cooking System</h2>
+            I designed the cooking system to be more flexible than a typical crafting system.
+            Dishes do not necessarily require specific ingredients but generic criteria for crafting.
+            <br><br>
+            Recipes contain a list of criteria that the ingredients must meet to be considered for the dish.
+            This allows for a very dynamic and scalable crafting system where the design can accomodate an arbitrary
+            number of rules for what must be input to create a dish.
+            <br><br>
+            A criteria can be defined as specifically requiring a grilled carrot, or more generally, a grilled vegetable,
+            or a carrot of any particular quality. This allows for the design to be very flexible and accomodate a wide
+            variety of crafting possibilities.
+            <br><br>
 
-        Recipes contain a list of criteria that the ingredients must meet to be considered for the dish.
-        This allows for a very dynamic and scalable crafting system where the design can accomodate an arbitrary
-        number of rules for what must be input to create a dish.
+            
+            <img src="Resources/Projects/Tanuki/Screenshot_Cooking_01.png" alt="Tanuki Screenshot" style="width: 80%; height: 60%;">
 
-        A criteria can be defined as specifically requiring specifically, a grilled carrot, or more generally, a grilled vegetable,
-        or a carrot of any particular quality.
+        </div>
 
-        <h2>Simulation-Driven World</h2>
-        The game is meant to feel alive and dynamic. There is a day/night cycle, weather, and seasons.
-        Actor can contain a Modifier component which will define behavior to update their simulation state.
-        <br>
-        An example of this would be the Freshness component.
-        <br>
-        The Freshness component will update based on a variety of Influences.
-        Influences are defined and can be defined by things such as temperature, time, and other factors.
+        <hr>
 
-        <br>
-        <h2>Utility Scoring System</h2>
-        The utility scoring system is a generic system for implementing weighted-random based decisions
-        in the game. It can be ported across projects easily as it doesn't rely on any specific game mechanics.
+        <div>
+            <div style="float: left; display: inline-block; width: 60%; vertical-align: top;">
+                <img src="Resources/Projects/Tanuki/QuestComplete.png" alt="Tanuki Screenshot" style="width: 100%; height: 100%;">
+            </div>
+            <div style="float: right; display: inline-block; width: 30%; vertical-align: top; text-align: right;">
+            <h2>Quest System</h2>
 
-        It is heavily used in the AI system to determine how the NPCs behave.
+            The quest system contains the capability to generate quests dynamically as well as bespoke quests.
+            </div>
+        </div>
 
+        <hr>
 
+        <div>
+            
+            <div style="float: left; display: inline-block; width: 45%; vertical-align: top;">
+                <h2>Simulation-Driven World</h2>
+                The game is meant to feel alive and dynamic. There is a day/night cycle, weather, and seasons.
+                Any actor can contain a Modifier component which will define behavior to update their simulation state.
+                <br><br>
+                An example of this would be the Freshness component.
+                <br><br>
+                The Freshness component will update based on a variety of Influences.
+                Influences are defined and can be defined by things such as temperature, time, and other factors.
+                <br><br>
+                The screenshot here shows the active simulation components and accompanyting influences for an apple on a tree.
+            </div>
+            <div style="float: right; display: inline-block; width: 40%; vertical-align: top;">
+                <img src="Resources/Projects/Tanuki/Simulation_01.png" alt="Tanuki Screenshot" style="width: 90%; height: 90%;">
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div>
+
+            <br>
+            <h2>Utility Scoring System</h2>
+            The utility scoring system is a generic system for implementing weighted-random based decisions
+            in the game. It can be ported across projects easily as it doesn't rely on any specific game mechanics.
+
+            It is heavily used in the AI system to determine how the NPCs behave.
+
+        </div>
+
+        <hr>
+
+        <div>
+            <div style="float: left; display: inline-block; width: 30%; vertical-align: top;">
+                <h2>NPCs</h2>
+                The game contains a diverse cast of NPCs that visit the player's restaurant.
+                NPCs contain unique behaviors and personalities that affect how they interact with the player and the world.
+                <br><br>
+                They offer quests, buy items, and provide the player with feedback on their restaurant.
+                <br><br>
+            </div>
+            <div style="float: right; display: inline-block; width: 60%; vertical-align: top;">
+                <img src="Resources/Projects/Tanuki/NPC_Dialogue_01.png" alt="Tanuki Screenshot" style="width: 100%; height: 100%;">
+            </div>
+        </div>
+
+        <hr>
+
+        <div>
+            <div style="float: left; display: inline-block; width: 60%; vertical-align: top;">
+                <img src="Resources/Projects/Tanuki/Building_01.png" alt="Tanuki Screenshot" style="width: 100%; height: 100%;">
+            </div>
+            <div style="float: right; display: inline-block; width: 30%; vertical-align: top; text-align: right;">
+                <h2>Building Mechanics</h2>
+                The game features a building system where the player can construct their restaurant.
+                <br><br>
+                Many structures require the player to fetch resources to build them.
+                <br><br>
+                The player can also upgrade their restaurant to increase the number of customers they can serve.
+                <br><br>
+            </div>
+        </div>
 
 
         <br><br>
