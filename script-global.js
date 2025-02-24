@@ -2,7 +2,7 @@ class LinkDesc
 {
     constructor(href, text)
     {
-        this.href = linkString;
+        this.href = href;
         this.text = text;
     }
 }
@@ -227,29 +227,73 @@ function initializeNewPageScripts() {
     // Detect which page we're on and run the appropriate initialization
     const currentPath = window.location.pathname;
     
-    if (currentPath.includes('portfolio')) {
-        // Check if the script is already loaded
-        if (typeof initializeProjectPage === 'function') {
-            initializeProjectPage();
-        } else {
-            // Load and execute the script if it's not already loaded
-            loadScript('script-project-page.js', () => {
-                if (typeof initializeProjectPage === 'function') {
-                    initializeProjectPage();
+    if (currentPath.includes('portfolio') || window.location.href.includes('site-portfolio-root.html')) {
+        // Load the project page script
+        loadScript('script-project-page.js', () => {
+            // Re-attach event listeners to project buttons
+            const projectButtons = document.getElementsByClassName("projectButton");
+            if (projectButtons && projectButtons.length > 0) {
+                console.log("Re-initializing portfolio page buttons");
+                
+                Array.from(projectButtons).forEach(button => {
+                    button.addEventListener("click", () => {
+                        const projectContentDiv = document.getElementById("projectContentDiv");
+                        if (projectContentDiv) {
+                            // Clear the project content div
+                            while (projectContentDiv.firstChild) {
+                                projectContentDiv.removeChild(projectContentDiv.firstChild);
+                            }
+                        }
+                        
+                        const buttonID = button.id;
+                        if (buttonID == "projectBtn-hide") {
+                            if (projectContentDiv) {
+                                projectContentDiv.classList.add("hidden");
+                            }
+                        } else {
+                            const projectKey = button.getAttribute("projectKey");
+                            
+                            // Update URL
+                            window.history.pushState(null, "", "?project=" + projectKey);
+                            
+                            // Generate project content
+                            const projectPage = GetProjectPage(projectKey);
+                            if (projectPage && projectContentDiv) {
+                                projectPage.LoadProjectPageHTML()
+                                .then(htmlContent => {
+                                    projectContentDiv.innerHTML = htmlContent;
+                                });
+                            }
+                        }
+                        
+                        console.log("Project button clicked: " + (projectKey || buttonID));
+                    });
+                });
+                
+                // Handle URL parameters on page load
+                const urlParams = new URLSearchParams(window.location.search);
+                const project = urlParams.get('project');
+                if (project) {
+                    const projectContentDiv = document.getElementById("projectContentDiv");
+                    if (projectContentDiv) {
+                        const projectPage = GetProjectPage(project);
+                        if (projectPage) {
+                            projectPage.LoadProjectPageHTML()
+                            .then(htmlContent => {
+                                projectContentDiv.innerHTML = htmlContent;
+                            });
+                        }
+                    }
                 }
-            });
-        }
+            }
+        });
     } else if (currentPath.includes('projects')) {
         // Initialize projects page scripts
-        if (typeof initializeMiscProjects === 'function') {
-            initializeMiscProjects();
-        } else {
-            loadScript('script-misc-projects.js', () => {
-                if (typeof initializeMiscProjects === 'function') {
-                    initializeMiscProjects();
-                }
-            });
-        }
+        loadScript('script-misc-projects.js', () => {
+            if (typeof initializeMiscProjects === 'function') {
+                initializeMiscProjects();
+            }
+        });
     }
     
     // Add more conditional initializations as needed
@@ -268,6 +312,52 @@ function loadScript(src, callback) {
     script.src = src;
     script.onload = callback;
     document.body.appendChild(script);
+}
+
+// Define the GetProjectPage function if it doesn't already exist
+// This ensures portfolio functionality works even during dynamic loading
+if (typeof GetProjectPage !== 'function') {
+    function GetProjectPage(projectName) {
+        class ProjectPage {
+            constructor(projectName, projectHTMLPath) {
+                this.projectName = projectName;
+                this.projectHTMLPath = projectHTMLPath;
+            }
+
+            async LoadProjectPageHTML() {
+                try {
+                    //Load a project subpage
+                    let response = await fetch(this.projectHTMLPath);
+                    if (!response.ok) {
+                        throw new Error("HTTP error: " + response.status);
+                    }
+
+                    let data = await response.text();
+                    console.log("Project HTML loaded successfully");
+                    return data;
+                }
+                catch (error) {
+                    console.log("Error loading project page HTML: " + error);
+                    throw error;
+                }
+            }
+        }
+        
+        switch (projectName) {
+            case "gow":
+                return new ProjectPage("God of War(2018)", "Resources/Projects/project-site_GoW.html");
+            case "judas":
+                return new ProjectPage("Judas", "Resources/Projects/project-site_Judas.html");
+            case "tanuki":
+                return new ProjectPage("Tanuki", "Resources/Projects/project-site_Tanuki.html");
+            case "LevelGenerator":
+                return new ProjectPage("Level Generator", "Resources/Projects/project-site_LevelGenerator.html");
+            case "EWA":
+                return new ProjectPage("EWA", "Resources/Projects/project-site_EWA.html");
+            default:
+                return new ProjectPage("blank");
+        }
+    }
 }
 
 // Handle browser back/forward navigation
@@ -290,7 +380,6 @@ class Widget_Socials extends HTMLElement
 
         const button = document.createElement('button');
         button.textContent = 'Click me';
-        button.imag
 
         const style = document.createElement('style');
         style.textContent = `
@@ -299,8 +388,6 @@ class Widget_Socials extends HTMLElement
             padding: 10px 20px;
         }
         `;
-
-
 
         shadow.appendChild(style);
         shadow.appendChild(button);
