@@ -10,12 +10,12 @@
 
         <link rel="stylesheet" href="./Resources/styles-global.css">
         <link rel="stylesheet" href="./Resources/styles-projects.css">
+        <link rel="stylesheet" href="./Resources/styles-misc-projects.css">
         
     </head>
 
     <body>
         
-
         <!-- Vignette Overlay -->
         <div class="vignette"></div>
 
@@ -24,30 +24,22 @@
 
         <main>
             <div class="project-buttons">
-                <li><button class="projectButton" id="projectBtn-gow" projectKey="gow" dispText="God of War">God of War</a></li>
-                <li><button class="projectButton" id="projectBtn-judas" projectKey="judas" dispText="Judas">Judas</a></li>
-                <li><button class="projectButton" id="projectBtn-levelGenerator" projectKey="LevelGenerator" dispText="Procedural Level Generator">Procedural Level Generator</a></li>
-                <li><button class="projectButton" id="projectBtn-tanuki" projectKey="tanuki" dispText="Tanuki">Tanuki</a></li>
-                <li><button class="projectButton" id="projectBtn-EWA" projectKey="EWA" dispText="EWA">EWA</a></li>
-                    
-                <!--
-                    
-                <li><button class="projectButton" id="projectBtn-hide">HIDE STUFF</a></li>
-                    -->
+                <li><button class="projectButton" id="projectBtn-musicvis" projectKey="musicvis" dispText="Music Visualizer">Music Visualizer</button></li>
+                <li><button class="projectButton" id="projectBtn-generativeart" projectKey="generativeart" dispText="Generative Art">Generative Art</button></li>
+                <!-- Add new project buttons here -->
             </div>
 
             <div class="project-bg" id="projectBgDiv">
-                <!--PUT BG IMAGES HERE-->
-                <img src="./Resources/Projects/EWA/5.png" id="projectBgImg" class="project-bg-img">
+                <!--Default background image-->
+                <img src="./Resources/Projects/Misc/misc_bg.jpg" id="projectBgImg" class="project-bg-img">
             </div>
             
             <div class="project-content" id="projectContentDiv">
-                
-            
-        </div>
+                <!-- Project content will be dynamically loaded here -->
+            </div>
         </main>
         
         <script src="script-global.js"></script>
-        <script src="script-project-page.js"></script>
+        <script src="script-misc-projects.js"></script>
     </body>
 </html>

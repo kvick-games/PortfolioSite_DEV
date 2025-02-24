@@ -60,6 +60,10 @@ function createHeader_default()
         },
         */
         {
+            "href" : "./site-portfolio-root.html",
+            "text" : "PORTFOLIO"
+        },
+        {
             "href" : "./site-projects-root.html",
             "text" : "PROJECTS"
         },

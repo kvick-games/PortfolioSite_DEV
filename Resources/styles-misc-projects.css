@@ -1,0 +1,48 @@
+/* Styles for the misc projects page */
+
+.demo-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.demo-button:hover {
+    background-color: #0056b3;
+}
+
+.project-image {
+    max-width: 100%;
+    margin: 20px 0;
+    border-radius: .5rem;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#project-content-body {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+}
+
+#project-main-content ul {
+    margin-left: 20px;
+    line-height: 1.6;
+}
+
+#project-main-content h3 {
+    margin-top: 20px;
+    color: #007BFF;
+}
+
+@media (max-width: 768px) {
+    #project-content-body {
+        padding: 10px;
+    }
+}
