@@ -1,2 +1,12 @@
 
 Resources/Projects/EWA/TEASER_02_01.mov
+
+# SSH keys
+sshkey
+sshkey.pub
+
+# Common exclusions
+.DS_Store
+node_modules/
+.env
+*.log
