@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="headerText" content="PORTFOLIO">
+        <title>Portfolio</title>
+
+        <link rel="stylesheet" href="./Resources/styles-global.css?v=red-header-type-2">
+        <link rel="stylesheet" href="./Resources/styles-projects.css?v=portfolio-redesign-2">
+        
+    </head>
+
+    <body>
+        
+
+        <!-- Vignette Overlay -->
+        <div class="vignette"></div>
+
+        <header id="templateHeader">
+        </header>
+
+        <main class="portfolio-page">
+            <section class="portfolio-overview" aria-labelledby="portfolioOverviewTitle">
+                <div class="portfolio-overview-copy">
+                    <p class="portfolio-kicker">Selected work</p>
+                    <h1 id="portfolioOverviewTitle">Gameplay, tools, and technical systems.</h1>
+                </div>
+                <div class="portfolio-overview-meta" aria-label="Portfolio focus areas">
+                    <span>AAA Production</span>
+                    <span>Independent Games</span>
+                    <span>Procedural Tools</span>
+                    <span>Web Experiments</span>
+                </div>
+            </section>
+
+            <div class="portfolio-categories">
+                <section class="portfolio-category portfolio-category-primary" aria-labelledby="portfolioCategoryGames">
+                    <div class="portfolio-category-header">
+                        <h2 id="portfolioCategoryGames">G A M E S</h2>
+                        <p>Commercial titles, independent work, and real-time development tools.</p>
+                    </div>
+                    <ul class="portfolio-category-buttons">
+                        <li class="portfolio-featured-item">
+                            <button class="projectButton" id="projectBtn-gow" projectKey="gow" dispText="God of War">
+                                <span class="project-button-label">
+                                    <span>God of War</span>
+                                    <small>AAA production / technical implementation</small>
+                                </span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="projectButton" id="projectBtn-judas" projectKey="judas" dispText="Judas">
+                                <span class="project-button-label">
+                                    <span>Judas</span>
+                                    <small>Gameplay systems / technical scripting</small>
+                                </span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="projectButton" id="projectBtn-levelGenerator" projectKey="LevelGenerator" dispText="Procedural Level Generator">
+                                <span class="project-button-label">
+                                    <span>Procedural Level Generator</span>
+                                    <small>Unreal Engine tool pipeline</small>
+                                </span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="projectButton" id="projectBtn-tanuki" projectKey="tanuki" dispText="Tanuki">
+                                <span class="project-button-label">
+                                    <span>Tanuki</span>
+                                    <small>Simulation-driven world</small>
+                                </span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="projectButton" id="projectBtn-EWA" projectKey="EWA" dispText="EWA">
+                                <span class="project-button-label">
+                                    <span>EWA</span>
+                                    <small>Solo adventure horror project</small>
+                                </span>
+                            </button>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="portfolio-category" aria-labelledby="portfolioCategoryWebTools">
+                    <div class="portfolio-category-header">
+                        <h2 id="portfolioCategoryWebTools">W E B / T O O L S</h2>
+                        <p>Small public tools and visual interfaces.</p>
+                    </div>
+                    <ul class="portfolio-category-buttons">
+                        <li>
+                            <button class="projectButton" id="projectBtn-aitimeline" projectKey="aitimeline" dispText="AI Model Timeline">
+                                <span class="project-button-label">
+                                    <span>AI Model Timeline</span>
+                                    <small>React timeline web app</small>
+                                </span>
+                            </button>
+                        </li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="project-bg" id="projectBgDiv">
+                <!--PUT BG IMAGES HERE-->
+                <img src="./Resources/Projects/EWA/5.png" id="projectBgImg" class="project-bg-img">
+            </div>
+            
+            <div class="project-content" id="projectContentDiv">
+                
+            
+        </div>
+        </main>
+        
+        <script src="script-global.js?v=red-header-type-2"></script>
+        <script src="script-project-page.js"></script>
+    </body>
+</html>

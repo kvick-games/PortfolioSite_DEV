@@ -1,2 +1,3 @@
 # PortfolioSite_DEV
-Host for dev branch of my portfolio site
+
+Host for the dev branch of my portfolio website.

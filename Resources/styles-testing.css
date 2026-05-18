@@ -1,0 +1,12 @@
+
+.boxoboxes {
+    display: flex;
+    justify-content: space-between;
+}
+
+.box {
+    background-color: rgb(25, 122, 212);
+    height: 100px;
+    width: 100px;
+    border: solid 2px white;
+}
