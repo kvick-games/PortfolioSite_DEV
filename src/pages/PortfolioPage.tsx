@@ -30,7 +30,7 @@ export default function PortfolioPage() {
       </ArticleCover.Provider>
       <nav className="case-next" aria-label="More work">
         <Link className="case-next-link" to={`/portfolio?project=${next.slug}`}>
-          <span className="meta">Next case study</span>
+          <span className="meta">Next project</span>
           <span className="case-next-title">{next.cardTitle}</span>
         </Link>
         <Link className="text-link" to="/portfolio#work">

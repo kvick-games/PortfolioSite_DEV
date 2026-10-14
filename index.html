@@ -8,17 +8,15 @@
       content="Portfolio of Michael Nevins, technical designer and multi-disciplinary game developer."
     />
     <title>Michael Nevins - Portfolio</title>
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="dark light" />
     <script>
-      // Apply the saved or system theme before first paint, so dark visitors never see a light flash.
+      // Apply the theme before first paint: dark unless the visitor chose light.
       (function () {
         var theme;
         try {
           theme = localStorage.getItem("theme");
         } catch (error) {}
-        if (theme !== "light" && theme !== "dark")
-          theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        document.documentElement.dataset.theme = theme;
+        document.documentElement.dataset.theme = theme === "light" ? "light" : "dark";
       })();
     </script>
   </head>

@@ -116,7 +116,7 @@ function GodOfWar() {
       </MenuViewer>
       <div className="chapter-foot">
         <Link className="text-link" to="/portfolio?project=god-of-war">
-          Read the God of War case study
+          More on God of War
         </Link>
       </div>
     </section>
@@ -207,7 +207,7 @@ function Tanuki() {
       </div>
       <div className="chapter-foot">
         <Link className="text-link" to="/portfolio?project=tanuki">
-          Read the Tanuki case study
+          More on Tanuki
         </Link>
       </div>
     </section>
@@ -276,7 +276,7 @@ function Tools() {
             asks for an objective, the generator makes a room to hold it.
           </p>
           <Link className="text-link" to="/portfolio?project=level-generator" data-reveal>
-            Read the Level Generator case study
+            More on the Level Generator
           </Link>
         </div>
         <figure className="levelgen-pipeline" data-reveal>

@@ -57,16 +57,17 @@
   color-scheme: light;
 }
 
-/* Dark theme: follows the system setting unless the visitor picks one
-   (index.html sets data-theme before first paint). */
+/* Dark theme: the default, unless the visitor picks light
+   (index.html sets data-theme before first paint). The night fields sit
+   a step above the black ground so sections still read. */
 :root[data-theme="dark"] {
-  --ground: #151618;
-  --ground-2: #1f2023;
-  --sheet: #1f2023;
+  --ground: #0b0b0c;
+  --ground-2: #19191b;
+  --sheet: #19191b;
   --ink: #e6e5e0;
   --ink-2: #9fa2a5;
-  --night: #0b0c0d;
-  --night-2: #17181a;
+  --night: #141416;
+  --night-2: #1f1f22;
   color-scheme: dark;
 }
 
@@ -955,7 +956,7 @@ figcaption {
   transform: translateX(-4px);
 }
 
-/* Case study articles */
+/* Project articles */
 
 .case-next {
   display: flex;
