@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 export type ProjectSlug =
   | "god-of-war"
@@ -19,7 +19,12 @@ export interface PortfolioProject {
   featured?: boolean;
   cardImage: string;
   backgroundImage: string;
-  details: string[];
+  /** Meta lines under the title (studio, role, years); may hold <Brand />. */
+  details: ReactNode[];
+  /** One or two sentences set beside the title. */
+  statement: ReactNode;
+  /** The page's key media, full width under the head. */
+  hero: ReactNode;
   Article: ComponentType;
 }
 

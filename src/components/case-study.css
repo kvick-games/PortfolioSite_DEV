@@ -1,0 +1,490 @@
+/* Project focus pages (/portfolio?project=…): CaseStudy.tsx, PortfolioPage.tsx.
+   The home page's language at article length: a black ground, the condensed
+   display face for titles, small muted meta, a 12-column grid and full-bleed
+   imagery. Nothing travels: blocks fade in place and images fade in on load.
+   Rules are scoped under .case so they win over styles.css whatever the
+   stylesheet order. */
+
+.case {
+  padding: clamp(36px, 5.4vw, 88px) var(--margin) 0;
+}
+
+/* Head: title and meta left, statement right (the home's chapter-head). */
+.case .case-head {
+  margin-bottom: clamp(36px, 4vw, 64px);
+}
+.case .case-head .case-title {
+  grid-column: 1 / span 7;
+  font-size: clamp(48px, 7.4vw, 124px);
+}
+.case .case-head .meta {
+  grid-column: 1 / span 7;
+}
+.case .case-head .statement {
+  grid-column: 8 / -1;
+}
+.case-meta-line {
+  display: block;
+}
+
+/* Hero --------------------------------------------------------------------- */
+
+.case-hero {
+  margin: 0;
+}
+.case-hero-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--ratio, 16 / 9);
+  max-height: 86vh;
+  overflow: hidden;
+  background: var(--ground-2);
+}
+.case-hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Edge to edge, its top and bottom dissolving into the ground. */
+.case-hero--bleed {
+  margin: 0 calc(var(--margin) * -1);
+}
+.case-hero--bleed .case-hero-media {
+  background: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 84%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 84%, transparent);
+}
+.case-hero--bleed figcaption {
+  padding: 0 var(--margin);
+}
+.case-hero figcaption,
+.case-figure figcaption,
+.case-caption {
+  margin-top: 12px;
+  font-size: var(--size-small);
+  line-height: 1.45;
+  color: var(--ink-2);
+  max-width: 96ch;
+  text-wrap: pretty;
+}
+.case-hero figcaption a,
+.case-caption a {
+  color: var(--ink);
+  text-underline-offset: 4px;
+}
+/* The Judas trailer as a hero: the still holds, it never zooms on hover. */
+.case .judas-trailer-still:hover img {
+  transform: none;
+}
+
+/* Body grid ---------------------------------------------------------------- */
+
+.case-body {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--gap);
+  row-gap: clamp(72px, 8vw, 136px);
+  margin-top: clamp(64px, 7vw, 120px);
+}
+.case-body > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.case-section,
+.case-split {
+  display: grid;
+  grid-template-columns: subgrid;
+  row-gap: clamp(28px, 3vw, 48px);
+}
+.case-section > * {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+.case-section > .case-section-side {
+  grid-column: 1 / span 4;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.case-section > .case-section-text {
+  grid-column: 5 / span 7;
+}
+.case-section-title {
+  font-size: clamp(28px, 2.6vw, 42px);
+  font-weight: 600;
+  font-stretch: 88%;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-wrap: balance;
+}
+.case-section-text,
+.case-split-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  max-width: 62ch;
+}
+.case-section-text p,
+.case-split-text p,
+.case-notes p {
+  text-wrap: pretty;
+}
+.case-section-text > .case-links,
+.case-split-text > .case-links {
+  margin-top: 0.6em;
+}
+
+/* Text beside one figure, settled at its foot like a caption. */
+.case-split {
+  align-items: end;
+}
+.case-split > .case-split-text {
+  grid-column: 1 / span 5;
+}
+.case-split > figure {
+  grid-column: 7 / -1;
+}
+/* An interface capture stays near its own size, so it doesn't outweigh its copy. */
+.case-split > .case-figure--natural {
+  grid-column: 8 / -1;
+}
+.case-split .case-section-title {
+  margin-bottom: 0.4em;
+}
+
+/* Quiet lists: small, muted, one item a line. */
+.case-aside-title {
+  margin-bottom: 10px;
+  font-size: var(--size-small);
+  font-weight: 600;
+  line-height: 1.45;
+}
+.case-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: var(--size-small);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.case-section-text .case-list {
+  font-size: inherit;
+  color: inherit;
+  gap: 0.5em;
+}
+.case-section-text .case-list li {
+  padding-left: 1.1em;
+  text-indent: -1.1em;
+}
+.case-section-text .case-list li::before {
+  content: "\2013";
+  display: inline-block;
+  width: 1.1em;
+  text-indent: 0;
+  color: var(--ink-2);
+}
+
+/* Design notes beside the section title, two to a row. */
+.case-section > .case-notes {
+  grid-column: 5 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(32px, 3.4vw, 52px) var(--gap);
+}
+.case-notes > div {
+  max-width: 40ch;
+}
+.case-notes h3 {
+  font-size: inherit;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.case-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+}
+
+/* Media -------------------------------------------------------------------- */
+
+.case-figure {
+  margin: 0;
+}
+.case-figure img {
+  width: 100%;
+  height: auto;
+  background: var(--ground-2);
+}
+.case-section > .case-figure--measure,
+.case-section > .case-figure--natural {
+  grid-column: 5 / -1;
+}
+.case-figure--natural img {
+  width: auto;
+  max-width: 100%;
+}
+
+.case-gallery {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gap);
+}
+.case-gallery figure {
+  grid-column: span var(--span, 6);
+  aspect-ratio: var(--ratio, 16 / 9);
+  overflow: hidden;
+  background: var(--ground-2);
+}
+.case-gallery figure img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* As on the home page: the image under the pointer keeps its colour and the
+   others turn grey. */
+@media (hover: hover) {
+  .case .case-gallery figure.revealed {
+    transition:
+      filter 0.35s var(--ease),
+      opacity 0.8s var(--ease) var(--delay, 0ms);
+  }
+  .case-gallery:has(figure:hover) figure:not(:hover) {
+    filter: grayscale(1) brightness(0.62);
+  }
+}
+
+/* Two players side by side. */
+.case-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+/* Footage: the site's glyph and scrubber, on the frame, hidden until hovered. */
+.case-video,
+.case-embed {
+  --control-inset: clamp(14px, 1.6vw, 24px);
+  --control-size: clamp(42px, 3.4vw, 54px);
+  position: relative;
+  aspect-ratio: var(--ratio, 16 / 9);
+  overflow: hidden;
+  background: #000;
+}
+.case-video > img,
+.case-video > video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.case-video > video {
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.5s var(--ease);
+}
+.case-video[data-started] > video {
+  opacity: 1;
+}
+.case-video-controls {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1vw, 16px);
+  padding: var(--control-inset);
+  padding-top: calc(var(--control-inset) + 18px);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+}
+.case-video-controls:hover,
+.case-video-controls:focus-within,
+.case-video-controls:has([data-scrubbing]),
+.case-video:not([data-started]) .case-video-controls {
+  opacity: 1;
+}
+/* Before the first play there is nothing to scrub: only the glyph shows. */
+.case-video:not([data-started]) .video-seek-bar {
+  visibility: hidden;
+}
+.case-video-controls .video-seek-bar {
+  flex: 1;
+  min-width: 0;
+  height: var(--control-size);
+}
+.case-video-toggle,
+.case-embed-still {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.case-video-toggle {
+  flex: none;
+  border-radius: 50%;
+}
+.case-video-toggle:hover .video-glyph,
+.case-embed-still:hover .video-glyph {
+  background: rgb(0 0 0 / 0.62);
+}
+/* Focus on footage is white, never the accent. */
+.case-video-toggle:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+.case-embed-still:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -6px;
+}
+@media (hover: none) {
+  .case-video-controls {
+    opacity: 0.72;
+  }
+}
+
+.case-embed-still {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.case-embed-still img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.case-embed-still .video-glyph {
+  position: absolute;
+  left: var(--control-inset);
+  bottom: var(--control-inset);
+}
+.case-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  opacity: 0;
+  transition: opacity 0.5s var(--ease);
+}
+.case-embed iframe[data-loaded] {
+  opacity: 1;
+}
+.case-pair figcaption,
+.case-pair .case-caption {
+  margin-top: 12px;
+}
+
+/* Pager -------------------------------------------------------------------- */
+
+.case-pager {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 28px var(--gap);
+  margin-top: var(--section);
+}
+.case-pager-link {
+  grid-column: 1 / span 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  text-decoration: none;
+}
+.case-pager-link--next {
+  grid-column: 7 / -1;
+  align-items: flex-end;
+  text-align: right;
+}
+.case-pager-title {
+  font-size: var(--size-title);
+  font-weight: 600;
+  font-stretch: 86%;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+  text-wrap: balance;
+  transition: opacity 0.35s var(--ease);
+}
+/* Pointing at one quiets the other. */
+@media (hover: hover) {
+  .case-pager:has(.case-pager-link:hover) .case-pager-link:not(:hover) .case-pager-title {
+    opacity: 0.32;
+  }
+}
+.case-pager-all {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
+/* Tablet ------------------------------------------------------------------- */
+
+@media (max-width: 1080px) {
+  .case .case-head .case-title,
+  .case .case-head .meta {
+    grid-column: 1 / span 10;
+  }
+  .case .case-head .statement {
+    grid-column: 1 / span 10;
+    grid-row: 3;
+  }
+  .case-section > .case-section-side {
+    grid-column: 1 / -1;
+  }
+  .case-section > .case-section-text {
+    grid-column: 1 / span 10;
+  }
+  .case-section > .case-notes,
+  .case-section > .case-figure--measure,
+  .case-section > .case-figure--natural {
+    grid-column: 1 / -1;
+  }
+  .case-split > .case-split-text {
+    grid-column: 1 / span 6;
+  }
+  .case-split > figure {
+    grid-column: 7 / -1;
+  }
+}
+
+/* Phone -------------------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  .case-body {
+    row-gap: 72px;
+  }
+  .case-section > *,
+  .case-split > * {
+    grid-column: 1 / -1 !important;
+  }
+  .case-section > .case-notes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .case-split {
+    row-gap: 32px;
+  }
+  .case-gallery {
+    gap: 10px;
+  }
+  .case-gallery figure {
+    grid-column: span var(--span-sm, 12);
+  }
+  .case-pair {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+  .case-hero-media {
+    max-height: none;
+  }
+  /* Wide heroes would shrink to a sliver once their edges fade; crop to 3:2. */
+  .case-hero--bleed .case-hero-media {
+    aspect-ratio: 3 / 2;
+  }
+  .case-pager-link,
+  .case-pager-link--next {
+    grid-column: 1 / -1;
+  }
+}

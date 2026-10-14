@@ -15,7 +15,9 @@ const RANGE = 0.07;
  * A picture split into aligned layers that drift apart a little as it
  * scrolls past, nearer layers further, so it reads with depth. Every layer
  * is a full-frame image on the same canvas, so with no scroll they stack
- * back into the original picture. Reduced motion shows the still stack.
+ * back into the original picture. Layers drift vertically by default; a
+ * figure cut off by the frame's bottom edge drifts sideways instead (axis
+ * "x"), so no gap opens under it. Reduced motion shows the still stack.
  */
 export default function LayeredArt({
   layers,
@@ -23,12 +25,14 @@ export default function LayeredArt({
   height,
   alt,
   className,
+  axis = "y",
 }: {
   layers: ArtLayer[];
   width: number;
   height: number;
   alt: string;
   className?: string;
+  axis?: "x" | "y";
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -49,7 +53,8 @@ export default function LayeredArt({
       const travel = rect.height * RANGE;
       items.forEach((item) => {
         const depth = Number(item.dataset.depth);
-        item.style.transform = `translate3d(0, ${(-progress * depth * travel).toFixed(2)}px, 0)`;
+        const shift = (-progress * depth * travel).toFixed(2);
+        item.style.transform = axis === "x" ? `translate3d(${shift}px, 0, 0)` : `translate3d(0, ${shift}px, 0)`;
       });
     };
     const schedule = () => {
@@ -64,7 +69,7 @@ export default function LayeredArt({
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
-  }, [layers]);
+  }, [layers, axis]);
 
   return (
     <div

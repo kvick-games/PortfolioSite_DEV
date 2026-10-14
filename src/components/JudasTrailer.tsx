@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import "./JudasTrailer.css";
 import VideoGlyph from "./VideoGlyph";
 import LayeredArt, { type ArtLayer } from "./LayeredArt";
+import { markLoaded } from "./PaintingRows";
 
 /*
  * The Judas reveal trailer as a lite YouTube facade. Until the visitor presses
@@ -180,9 +181,18 @@ export default function JudasTrailer({
         hidden={playing}
       >
         {layers ? (
-          <LayeredArt layers={layers} width={1800} height={1013} alt={alt} />
+          <LayeredArt layers={layers} axis="x" width={1800} height={1013} alt={alt} />
         ) : (
-          <img src={poster} alt={alt} loading="lazy" />
+          <img
+            ref={markLoaded}
+            src={poster}
+            alt={alt}
+            loading="lazy"
+            data-fade
+            onLoad={(event) => {
+              event.currentTarget.dataset.loaded = "";
+            }}
+          />
         )}
         <VideoGlyph className="judas-trailer-play" />
       </button>
