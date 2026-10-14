@@ -6,6 +6,7 @@ import MenuViewer, { type MenuView } from "../components/MenuViewer";
 import PaintingLoupe from "../components/PaintingLoupe";
 import PaintingRows from "../components/PaintingRows";
 import ProjectSplash from "../components/ProjectSplash";
+import RecipeSketch from "../components/RecipeSketch";
 import ScrollWordmark from "../components/ScrollWordmark";
 import { artPieces } from "../data/artPieces";
 import { contact, resumes } from "../data/site";
@@ -179,6 +180,7 @@ function Tanuki() {
           <img src={img("tanuki-screenshot-cooking-01")} alt="Cooking station with ingredients" loading="lazy" />
         </figure>
       </div>
+      <div className="tanuki-kitchen">
       <div className="tanuki-notes">
         <p data-reveal>
           <strong>Recipes ask for qualities, not items.</strong> A dish can
@@ -194,6 +196,10 @@ function Tanuki() {
           <strong>NPCs weigh their choices.</strong> A general utility scoring
           system decides how visitors behave, and it carries across projects.
         </p>
+      </div>
+      <div className="tanuki-sketch" data-reveal>
+        <RecipeSketch />
+      </div>
       </div>
       <div className="chapter-foot">
         <Link className="text-link" to="/portfolio?project=tanuki">
