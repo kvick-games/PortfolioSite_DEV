@@ -1,0 +1,12 @@
+[
+  {
+    "name": "plate",
+    "src": "/Resources/Site/img/layers/judas/plate.webp",
+    "depth": 0
+  },
+  {
+    "name": "judas",
+    "src": "/Resources/Site/img/layers/judas/judas.webp",
+    "depth": 0.75
+  }
+]
