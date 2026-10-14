@@ -2,7 +2,6 @@ import Brand from "../components/Brand";
 import EwaCameras, { type CameraShot } from "../components/EwaCameras";
 import JudasTrailer from "../components/JudasTrailer";
 import LayeredArt, { type ArtLayer } from "../components/LayeredArt";
-import { Link } from "react-router-dom";
 import LoopVideo from "../components/LoopVideo";
 import LevelGenSketch from "../components/LevelGenSketch";
 import MenuViewer, { type MenuView } from "../components/MenuViewer";
@@ -139,11 +138,6 @@ function GodOfWar() {
           technical design and implementation of the primary game menu.
         </p>
       </MenuViewer>
-      <div className="chapter-foot">
-        <Link className="text-link" to="/portfolio?project=god-of-war">
-          More on God of War
-        </Link>
-      </div>
     </section>
   );
 }
@@ -229,11 +223,6 @@ function Tanuki() {
           system decides how visitors behave, and it carries across projects.
         </p>
       </div>
-      <div className="chapter-foot">
-        <Link className="text-link" to="/portfolio?project=tanuki">
-          More on Tanuki
-        </Link>
-      </div>
     </section>
   );
 }
@@ -262,9 +251,6 @@ function Ewa() {
           <p className="statement" data-reveal>
             Deep in a frozen winter, people have started to vanish. Survive what waits in the dark and uncover the truth.
           </p>
-          <Link className="text-link" to="/portfolio?project=ewa" data-reveal>
-            Watch the teaser and see more
-          </Link>
         </header>
         <figure className="ewa-portrait" data-reveal>
           <img src={img("ewa-ewa-redacted")} alt="Red key art of a figure with redacted eyes" loading="lazy" />
@@ -311,9 +297,6 @@ function Tools() {
             It works with gameplay rather than beside it: when the quest system
             asks for an objective, the generator makes a room to hold it.
           </p>
-          <Link className="text-link" to="/portfolio?project=level-generator" data-reveal>
-            More on the Level Generator
-          </Link>
         </div>
         <ul className="levelgen-rooms" aria-label="Generated levels">
           {[
@@ -359,14 +342,6 @@ function DreamatronTools() {
       aria-labelledby="ai-timeline-title"
     >
       <TimelineMini />
-      <div className="dreamatron-private">
-        <div className="dreamatron-door" data-reveal>
-          <a className="button button--ink" href="/studio/">
-            Open the client preview
-          </a>
-          <p>Password protected. Ask me for access.</p>
-        </div>
-      </div>
     </section>
   );
 }

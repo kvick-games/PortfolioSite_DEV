@@ -74,7 +74,6 @@ export default function App() {
             </a>
           ))}
           <Link to="/projects">Experiments</Link>
-          <a href="/studio/">Client preview</a>
         </nav>
         <Link className="footer-name" to="/portfolio">
           Michael Nevins

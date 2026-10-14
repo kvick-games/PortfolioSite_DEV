@@ -8,7 +8,6 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
-import { Link } from "react-router-dom";
 import snapshot from "../data/aiTimeline.json";
 import SmokeField from "./SmokeField";
 import "../timeline-mini.css";
@@ -510,8 +509,7 @@ export default function TimelineMini() {
         <p>
           A map of AI progress, from model releases and generative media to voice, world models,
           coding tools and robotics. The board pans like a canvas with a zoom rail, and every gap
-          is measured against its line’s average. It grew out of my earlier{" "}
-          <Link to="/portfolio?project=ai-model-timeline">model timeline</Link>.
+          is measured against its line’s average. It grew out of my earlier model timeline.
         </p>
         <a
           className="text-link"

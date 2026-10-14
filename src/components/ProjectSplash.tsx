@@ -277,7 +277,7 @@ export default function ProjectSplash() {
 
   return (
     <section className="splash" ref={rootRef} aria-labelledby="splash-title">
-      <h1 id="splash-title" className="splash-title">
+      <h1 id="splash-title" className="splash-title sr-only">
         Interfaces for games and creative tools
       </h1>
       <div className="splash-stage" ref={stageRef}>
