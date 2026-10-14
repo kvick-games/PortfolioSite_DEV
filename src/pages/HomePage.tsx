@@ -1,4 +1,5 @@
 import Brand from "../components/Brand";
+import EwaCameras, { type CameraShot } from "../components/EwaCameras";
 import { Link } from "react-router-dom";
 import MenuViewer, { type MenuView } from "../components/MenuViewer";
 import PaintingLoupe from "../components/PaintingLoupe";
@@ -204,6 +205,14 @@ function Tanuki() {
   );
 }
 
+const ewaCameraShots: CameraShot[] = [
+  { src: img("ewa-1"), alt: "In-engine screenshot of a dim, lamp-lit room, the player by the door" },
+  { src: img("ewa-4"), alt: "In-engine screenshot of a desk lamp in a dark hall" },
+  { src: img("ewa-3"), alt: "In-engine screenshot looking down a narrow wooden corridor" },
+  { src: img("ewa-5"), alt: "In-engine screenshot of a dark hall below a broken balcony" },
+  { src: img("ewa-2"), alt: "In-engine screenshot of a television glowing with static in the dark" },
+];
+
 function Ewa() {
   return (
     <section className="chapter chapter--ewa field-night" id="ewa" aria-labelledby="ewa-title">
@@ -232,12 +241,16 @@ function Ewa() {
           <img src={img("ewa-ewa-concept-01")} alt="Concept painting of a burning furnace room" loading="lazy" />
           <figcaption>Concept painting, the furnace room</figcaption>
         </figure>
-        <figure className="ewa-shot ewa-shot--a" data-reveal>
-          <img src={img("ewa-1")} alt="In-engine screenshot of a dim, lamp-lit room" loading="lazy" />
-        </figure>
-        <figure className="ewa-shot ewa-shot--b" data-reveal>
-          <img src={img("ewa-4")} alt="In-engine screenshot of a desk lamp in a dark hall" loading="lazy" />
-        </figure>
+        <EwaCameras
+          shots={ewaCameraShots}
+          caption={
+            <>
+              In engine.{" "}
+              <span className="ewa-cams-hint-pointer">Move across the frame to cut between cameras.</span>
+              <span className="ewa-cams-hint-touch">Tap to cut between cameras.</span>
+            </>
+          }
+        />
       </div>
     </section>
   );
