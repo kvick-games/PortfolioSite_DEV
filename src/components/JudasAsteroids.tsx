@@ -2,6 +2,9 @@ import { useEffect, useRef, useState, type JSX } from "react";
 
 /** All positions are in the plate's frame, measured in frame heights. */
 const ASPECT = 1800 / 1013;
+/** The canvas runs this far past each side of the frame (share of its width), so
+ *  rocks near an edge aren't clipped when the parallax shifts the layer sideways. */
+const BLEED = 0.04;
 const TAU = Math.PI * 2;
 const ORBIT = 90;
 /** The fourteen main rocks, largest first (radius in frame heights), spread round the belt. */
@@ -297,15 +300,20 @@ export default function JudasAsteroids({ playing = true, focus = 0.5, className 
     const resize = () => {
       if (lost) return;
       width = canvas.clientWidth; height = canvas.clientHeight;
+      // Frame the scene to the panel, not to the wider canvas.
+      const frameWidth = width / (1 + 2 * BLEED);
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const w = Math.max(1, Math.round(width * dpr)), h = Math.max(1, Math.round(height * dpr));
       if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
-      const scale = Math.max(width / 1800, height / 1013);
+      const scale = Math.max(frameWidth / 1800, height / 1013);
       const focus = Number.isFinite(focusRef.current) ? Math.max(0, Math.min(1, focusRef.current)) : 0.5;
-      cover[0] = 1800 * scale / Math.max(width, 1);
+      cover[0] = 1800 * scale / Math.max(frameWidth, 1);
       cover[1] = 1013 * scale / Math.max(height, 1);
       cover[2] = (cover[0] - 1) * (1 - 2 * focus);
       belt = Math.max(0.35, Math.min(1, 0.95 / cover[0]));
+      // The frame fills the middle of clip space; the bleed lies outside it.
+      cover[0] *= frameWidth / Math.max(width, 1);
+      cover[2] *= frameWidth / Math.max(width, 1);
       dirty = true;
       kick.current();
     };
@@ -394,7 +402,8 @@ export default function JudasAsteroids({ playing = true, focus = 0.5, className 
       ref={ref}
       className={["judas-asteroids", className, ready && "is-ready"].filter(Boolean).join(" ")}
       aria-hidden="true"
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block",
+      style={{ position: "absolute", top: 0, left: `${-BLEED * 100}%`, width: `${(1 + 2 * BLEED) * 100}%`,
+        height: "100%", display: "block",
         pointerEvents: "none", opacity: ready ? 1 : 0, transition: "opacity 1.2s" }}
     />
   );
