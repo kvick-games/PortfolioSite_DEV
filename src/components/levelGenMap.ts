@@ -262,6 +262,8 @@ export function generateLevel(
   cols: number,
   rows: number,
   objectives: number,
+  /** Overrides for larger canvases: how many seed points, how many loops. */
+  options: { points?: number; loops?: number } = {},
 ): LevelMap {
   const rng = mulberry32(seed);
   const int = (lo: number, hi: number) => intRng(rng, lo, hi);
@@ -270,7 +272,7 @@ export function generateLevel(
 
   // 1. Integer seed cells, spread out by rejection sampling.
   const points: Point[] = [];
-  const target = compact ? 8 : 13;
+  const target = options.points ?? (compact ? 8 : 13);
   const separation = compact ? 5 : 6;
   for (let attempt = 0; attempt < 3000 && points.length < target; attempt++) {
     if (cols < 5 || rows < 5) break;
@@ -344,7 +346,7 @@ export function generateLevel(
   let loops = 0;
   for (const edge of ordered) {
     if (edge.mst) continue;
-    if (loops >= (compact ? 1 : 2) || edge.length > longest * 1.35) break;
+    if (loops >= (options.loops ?? (compact ? 1 : 2)) || edge.length > longest * 1.35) break;
     if (hash(seed, edge.a, edge.b) / 4294967296 < 0.45) {
       edge.kept = true;
       loops++;

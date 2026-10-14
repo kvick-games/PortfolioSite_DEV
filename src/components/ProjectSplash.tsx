@@ -8,6 +8,7 @@ import {
 import Brand from "./Brand";
 import SplashAtmosphere from "./SplashAtmosphere";
 import SplashLayers, { type SplashLayer } from "./SplashLayers";
+import SplashLevelGen from "./SplashLevelGen";
 import SplashPaintings from "./SplashPaintings";
 import "../splash.css";
 
@@ -32,6 +33,8 @@ type Panel = {
   weather?: boolean;
   /** Open, a muted loop plays over `image`, which is its first frame. */
   video?: { mp4: string; webm: string; poster: string };
+  /** Open, levels build one after another over `image`, the first one finished. */
+  levelgen?: boolean;
 };
 
 const img = (name: string) => `/Resources/Site/img/${name}.webp`;
@@ -100,15 +103,11 @@ const panels: Panel[] = [
     title: "Level Generator",
     meta: "Solo technical demo",
     when: "2023",
-    image: "/Resources/Site/loops/levelgen-orbit.webp",
+    image: "/Resources/Site/loops/levelgen-plan.webp",
     width: 1200,
-    height: 900,
+    height: 1000,
     focus: "50%",
-    video: {
-      mp4: "/Resources/Site/loops/levelgen-orbit.mp4",
-      webm: "/Resources/Site/loops/levelgen-orbit.webm",
-      poster: "/Resources/Site/loops/levelgen-orbit.webp",
-    },
+    levelgen: true,
   },
   {
     href: "#paintings",
@@ -319,6 +318,9 @@ export default function ProjectSplash() {
                       />
                     )}
                     {panel.weather ? <SplashAtmosphere playing={index === active} /> : null}
+                    {panel.levelgen ? (
+                      <SplashLevelGen playing={index === active} load={gridReady} />
+                    ) : null}
                     {panel.video ? (
                       <SplashVideo video={panel.video} playing={index === active} load={gridReady} />
                     ) : null}
