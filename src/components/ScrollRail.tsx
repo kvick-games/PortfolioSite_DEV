@@ -103,6 +103,8 @@ export default function ScrollRail() {
     const target = document.getElementById(id);
     if (!target) return;
     event.preventDefault();
+    // A mouse click shouldn't leave the link focused (detail is 0 for Enter).
+    if (event.detail > 0) event.currentTarget.blur();
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     target.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
   };

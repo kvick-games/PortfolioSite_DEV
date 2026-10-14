@@ -47,8 +47,10 @@
   opacity: 1;
   pointer-events: auto;
 }
-/* Keyboard users can reach it from the splash too; focus brings it in. */
-.scroll-rail:focus-within {
+/* Keyboard users can reach it from the splash too; focus brings it in.
+   Only keyboard focus: a clicked link keeps focus, and the rail should still
+   settle as soon as the pointer leaves. */
+.scroll-rail:has(a:focus-visible) {
   opacity: 1;
 }
 
@@ -209,11 +211,11 @@
 }
 
 .scroll-rail:hover::before,
-.scroll-rail:focus-within::before {
+.scroll-rail:has(a:focus-visible)::before {
   opacity: 1;
 }
 .scroll-rail:hover .scroll-rail-label,
-.scroll-rail:focus-within .scroll-rail-label {
+.scroll-rail:has(a:focus-visible) .scroll-rail-label {
   opacity: 1;
   pointer-events: auto;
 }

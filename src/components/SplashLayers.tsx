@@ -1,25 +1,29 @@
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef, type ReactNode } from "react";
 
 export type SplashLayer = { src: string; depth: number };
 
 /** How far the nearest layer travels with the pointer, as a share of the panel's width. */
 const TRAVEL = 0.03;
+/** Depth of anything drawn between the plate and the layers above it. */
+const BETWEEN_DEPTH = 0.35;
 
 /**
  * A layered picture for an open splash panel. The far plate holds still and
  * the layers above it shift sideways against the pointer, nearer layers
  * further, then settle back when it leaves. Sideways only, so a figure cut
  * off by the bottom edge never lifts off it. Reduced motion keeps the stack
- * still.
+ * still. `between` is drawn over the plate, under the other layers.
  */
 export default function SplashLayers({
   layers,
   width,
   height,
+  between,
 }: {
   layers: SplashLayer[];
   width: number;
   height: number;
+  between?: ReactNode;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
 
@@ -72,17 +76,23 @@ export default function SplashLayers({
 
   return (
     <span ref={ref} className="splash-layers">
-      {layers.map((layer) => (
-        <img
-          key={layer.src}
-          className="splash-img"
-          src={layer.src}
-          alt=""
-          width={width}
-          height={height}
-          decoding="async"
-          data-depth={layer.depth || undefined}
-        />
+      {layers.map((layer, index) => (
+        <Fragment key={layer.src}>
+          <img
+            className="splash-img"
+            src={layer.src}
+            alt=""
+            width={width}
+            height={height}
+            decoding="async"
+            data-depth={layer.depth || undefined}
+          />
+          {index === 0 && between ? (
+            <span className="splash-layers-between" data-depth={BETWEEN_DEPTH}>
+              {between}
+            </span>
+          ) : null}
+        </Fragment>
       ))}
     </span>
   );

@@ -140,10 +140,69 @@
   font-size: var(--size-small);
   line-height: 1.45;
 }
+.lg-hint {
+  color: var(--lg-line);
+}
 .lg-caption strong {
   margin-right: 0.3em;
   color: var(--lg-line);
   font-weight: 600;
+}
+
+/* Play, centred over the plan: faded in before the first run and after
+   each one finishes. */
+.lg-canvas {
+  position: relative;
+}
+.lg-replay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 0 -36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--lg-line);
+  color: var(--lg-surface);
+  box-shadow:
+    0 0 0 12px color-mix(in srgb, var(--lg-surface) 72%, transparent),
+    0 14px 32px -12px rgb(0 0 0 / 0.45);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.5s var(--ease),
+    background-color 0.2s var(--ease);
+}
+.lg-replay[data-shown] {
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 0.6s, 0s;
+}
+.lg-replay svg {
+  width: 30px;
+  margin-left: 3px;
+  fill: currentColor;
+}
+.lg-replay:hover {
+  background: var(--accent);
+}
+.lg-replay:focus-visible {
+  outline-offset: 4px;
+}
+@container lg-stage (max-width: 520px) {
+  .lg-replay {
+    width: 58px;
+    height: 58px;
+    margin: -29px 0 0 -29px;
+  }
+  .lg-replay svg {
+    width: 24px;
+  }
 }
 
 /* The floor plan. Inside the scaled group one unit is one cell. Pieces
@@ -285,6 +344,59 @@
   stroke-width: 0.07;
 }
 
+/* Editing: drag handles over the points, wide hit lines over the edges. */
+.lg-map[data-adding] {
+  cursor: crosshair;
+}
+.lg-handles circle {
+  fill: var(--accent);
+  fill-opacity: 0;
+  cursor: grab;
+  pointer-events: all;
+  touch-action: none;
+  transition: fill-opacity 0.2s var(--ease);
+}
+.lg-handles circle:hover {
+  fill-opacity: 0.14;
+}
+.lg-handles circle[data-active] {
+  fill-opacity: 0.24;
+}
+.lg-map[data-dragging],
+.lg-map[data-dragging] .lg-handles circle {
+  cursor: grabbing;
+}
+.lg-edge-hits line {
+  stroke: var(--accent);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  stroke-opacity: 0;
+  cursor: pointer;
+  pointer-events: stroke;
+  transition: stroke-opacity 0.2s var(--ease);
+}
+.lg-edge-hits line:hover {
+  stroke-opacity: 0.16;
+}
+/* Edits redraw the plan in place: no fades while you work. */
+.lg-map[data-mode="edit"] [data-in] {
+  animation: none;
+}
+.lg-map[data-mode="edit"] [data-out] {
+  animation: none;
+  opacity: 0;
+}
+.lg-map[data-mode="edit"] .lg-grow {
+  display: none;
+}
+/* Cut edges stay faintly at step 3, so they can be brought back. */
+.lg-tri line[data-pruned][data-out] {
+  animation-name: lg-cut;
+}
+.lg-map[data-mode="edit"] .lg-tri line[data-pruned] {
+  opacity: 0.3;
+}
+
 /* Objectives. */
 .lg-diamond {
   fill: var(--accent);
@@ -325,6 +437,14 @@
   }
   to {
     opacity: 0;
+  }
+}
+@keyframes lg-cut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.3;
   }
 }
 @keyframes lg-glimpse {
@@ -409,7 +529,7 @@
     padding: 12px 12px 14px;
   }
   .lg-caption {
-    min-height: calc(3 * 1.45em);
+    min-height: calc(4 * 1.45em);
   }
   .lg-seed {
     flex-basis: 100%;

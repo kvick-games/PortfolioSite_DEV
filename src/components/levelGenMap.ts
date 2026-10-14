@@ -262,8 +262,17 @@ export function generateLevel(
   cols: number,
   rows: number,
   objectives: number,
-  /** Overrides for larger canvases: how many seed points, how many loops. */
-  options: { points?: number; loops?: number } = {},
+  options: {
+    /** Overrides for larger canvases: how many seed points, how many loops. */
+    points?: number;
+    loops?: number;
+    /** Hand-placed seed cells, used instead of the random ones. */
+    at?: ReadonlyArray<readonly [number, number]>;
+    /** Edges (`a-b`, a < b) to cut, or to keep, whatever pruning would do.
+        A cut edge still stays if a room can't be reached without it. */
+    cut?: ReadonlySet<string>;
+    keep?: ReadonlySet<string>;
+  } = {},
 ): LevelMap {
   const rng = mulberry32(seed);
   const int = (lo: number, hi: number) => intRng(rng, lo, hi);
@@ -274,7 +283,14 @@ export function generateLevel(
   const points: Point[] = [];
   const target = options.points ?? (compact ? 8 : 13);
   const separation = compact ? 5 : 6;
-  for (let attempt = 0; attempt < 3000 && points.length < target; attempt++) {
+  if (options.at) {
+    const clamp = (v: number, hi: number) => Math.min(Math.max(Math.round(v), 2), hi - 3);
+    for (const [x, y] of options.at) {
+      const p = { id: points.length, x: clamp(x, cols), y: clamp(y, rows), objective: false };
+      if (!points.some((q) => q.x === p.x && q.y === p.y)) points.push(p);
+    }
+  }
+  for (let attempt = 0; attempt < 3000 && !options.at && points.length < target; attempt++) {
     if (cols < 5 || rows < 5) break;
     const x = int(2, cols - 3);
     const y = int(2, rows - 3);
@@ -333,7 +349,10 @@ export function generateLevel(
     }
     return id;
   };
-  const ordered = [...edges].sort(byLength);
+  // Kept edges join the tree first; cut ones only if nothing else reaches a room.
+  const pick = (e: Edge) => `${e.a}-${e.b}`;
+  const rank = (e: Edge) => (options.keep?.has(pick(e)) ? 0 : options.cut?.has(pick(e)) ? 2 : 1);
+  const ordered = [...edges].sort((p, q) => rank(p) - rank(q) || byLength(p, q));
   let longest = 0;
   for (const edge of ordered) {
     const a = root(edge.a);
@@ -341,14 +360,16 @@ export function generateLevel(
     if (a === b) continue;
     parent[b] = a;
     edge.mst = edge.kept = true;
-    longest = Math.max(longest, edge.length);
+    if (rank(edge) === 1) longest = Math.max(longest, edge.length);
   }
+  for (const edge of edges) if (rank(edge) === 0) edge.kept = true;
   let loops = 0;
-  for (const edge of ordered) {
-    if (edge.mst) continue;
+  for (const edge of [...edges].sort(byLength)) {
+    if (edge.kept) continue;
     if (loops >= (options.loops ?? (compact ? 1 : 2)) || edge.length > longest * 1.35) break;
     if (hash(seed, edge.a, edge.b) / 4294967296 < 0.45) {
-      edge.kept = true;
+      // A loop that was cut by hand is not replaced by another.
+      if (rank(edge) !== 2) edge.kept = true;
       loops++;
     }
   }

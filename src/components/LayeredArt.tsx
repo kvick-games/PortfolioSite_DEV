@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, type CSSProperties } from "react";
+import { Fragment, useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import "./layered-art.css";
 
 export interface ArtLayer {
@@ -12,6 +12,8 @@ export interface ArtLayer {
 
 /** How far the nearest layer travels across a full pass, as a share of the height. */
 const RANGE = 0.07;
+/** Depth of anything drawn between the plate and the layers above it. */
+const BETWEEN_DEPTH = 0.4;
 
 /**
  * A picture split into aligned layers that drift apart a little as it
@@ -29,6 +31,7 @@ export default function LayeredArt({
   className,
   axis = "y",
   range = RANGE,
+  between,
 }: {
   layers: ArtLayer[];
   width: number;
@@ -38,6 +41,8 @@ export default function LayeredArt({
   axis?: "x" | "y";
   /** Overrides RANGE; sideways drift reads larger, so it wants less. */
   range?: number;
+  /** Drawn over the plate and under the other layers, drifting between them. */
+  between?: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -96,6 +101,11 @@ export default function LayeredArt({
             decoding="async"
             fetchPriority={index === 0 ? "high" : undefined}
           />
+          {index === 0 && between ? (
+            <span className="layered-art-layer layered-art-between" data-depth={BETWEEN_DEPTH}>
+              {between}
+            </span>
+          ) : null}
           {layer.rim ? (
             <span
               className="layered-art-layer layered-art-rim"

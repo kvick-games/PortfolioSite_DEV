@@ -8,6 +8,7 @@ import {
 import Brand from "./Brand";
 import SplashAtmosphere from "./SplashAtmosphere";
 import SplashLayers, { type SplashLayer } from "./SplashLayers";
+import JudasAsteroids from "./JudasAsteroids";
 import SplashLevelGen from "./SplashLevelGen";
 import SplashPaintings from "./SplashPaintings";
 import "../splash.css";
@@ -29,6 +30,8 @@ type Panel = {
   grid?: boolean;
   /** Open, the picture is these aligned layers, which follow the pointer. */
   layers?: SplashLayer[];
+  /** Asteroids drifting between the plate and the figure (Judas). */
+  asteroids?: boolean;
   /** Open, snow and a low fog drift over the picture. */
   weather?: boolean;
   /** Open, a muted loop plays over `image`, which is its first frame. */
@@ -64,6 +67,7 @@ const panels: Panel[] = [
       { src: "/Resources/Site/img/layers/judas/plate.webp", depth: 0 },
       { src: "/Resources/Site/img/layers/judas/judas.webp", depth: 1 },
     ],
+    asteroids: true,
   },
   {
     href: "#dreamatron",
@@ -307,7 +311,12 @@ export default function ProjectSplash() {
                     {panel.grid ? (
                       <SplashPaintings load={gridReady} />
                     ) : panel.layers ? (
-                      <SplashLayers layers={panel.layers} width={panel.width} height={panel.height} />
+                      <SplashLayers
+                        layers={panel.layers}
+                        width={panel.width}
+                        height={panel.height}
+                        between={panel.asteroids ? <JudasAsteroids playing={index === active} /> : undefined}
+                      />
                     ) : (
                       <img
                         className="splash-img"

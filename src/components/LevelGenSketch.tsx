@@ -6,13 +6,16 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type MouseEvent,
+  type PointerEvent,
 } from "react";
-import { generateLevel, type LevelMap, type Slot } from "./levelGenMap";
+import { generateLevel, type Edge, type LevelMap, type Slot } from "./levelGenMap";
 import LevelGenStepRail, { type Rerun } from "./LevelGenStepRail";
 import { DONE, LAST_STEP, PHASE_MS, STEPS, type Step } from "./levelGenSteps";
 import "./LevelGenSketch.css";
 
-const FIRST_SEED = 2023;
+/** A new map on every visit. */
+const randomSeed = () => 1000 + Math.floor(Math.random() * 99000);
 /** One grid cell, in SVG units. */
 const U = 10;
 /** Each step of a quest-request re-run, in ms. */
@@ -38,7 +41,19 @@ const useCompact = () => {
   return compact;
 };
 
-type Mode = "play" | "step" | "objective";
+type Mode = "play" | "step" | "objective" | "edit";
+
+/** Hand edits to a map: moved or added points, and edges cut or kept. */
+interface Edits {
+  cols: number;
+  at: Array<[number, number]> | null;
+  cut: Set<string>;
+  keep: Set<string>;
+}
+const touch = () =>
+  typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+/** Points closer than this (in cells) would leave no room to grow. */
+const MIN_GAP = 2;
 type Anim = { "data-in"?: true; "data-out"?: true; style?: CSSProperties };
 const at = (ms: number) => ({ "--d": Math.round(ms) }) as CSSProperties;
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
@@ -102,7 +117,10 @@ function diffMaps(prev: LevelMap, next: LevelMap): ObjectiveRun {
 export default function LevelGenSketch() {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const compact = useCompact();
-  const [seed, setSeed] = useState(FIRST_SEED);
+  const [seed, setSeed] = useState(randomSeed);
+  const [edits, setEdits] = useState<Edits | null>(null);
+  const [drag, setDrag] = useState<number | null>(null);
+  const [note, setNote] = useState("");
   const [objectives, setObjectives] = useState(0);
   const [phase, setPhase] = useState(0);
   const [mode, setMode] = useState<Mode>("play");
@@ -112,14 +130,21 @@ export default function LevelGenSketch() {
   const [hover, setHover] = useState<Step | null>(null);
   const [announce, setAnnounce] = useState("");
   const root = useRef<HTMLDivElement>(null);
+  const planRef = useRef<SVGGElement>(null);
   const timers = useRef<number[]>([]);
   const started = useRef(false);
 
   const cols = compact ? 22 : 50;
   const rows = compact ? 19 : 17;
+  // Edits made at one grid size don't carry over to the other.
+  const own = edits?.cols === cols ? edits : null;
+  const options = useMemo(
+    () => (own ? { at: own.at ?? undefined, cut: own.cut, keep: own.keep } : {}),
+    [own],
+  );
   const map = useMemo(
-    () => generateLevel(seed, cols, rows, objectives),
-    [seed, cols, rows, objectives],
+    () => generateLevel(seed, cols, rows, objectives, options),
+    [seed, cols, rows, objectives, options],
   );
 
   const stop = () => {
@@ -182,6 +207,8 @@ export default function LevelGenSketch() {
     let next = seed;
     while (next === seed) next = 1000 + Math.floor(Math.random() * 99000);
     setSeed(next);
+    setEdits(null);
+    setNote("");
     setObjectives(0);
     setAnnounce(`New map, seed ${next}.`);
     play();
@@ -190,7 +217,7 @@ export default function LevelGenSketch() {
   const placeObjective = () => {
     stop();
     started.current = true;
-    const next = generateLevel(seed, cols, rows, objectives + 1);
+    const next = generateLevel(seed, cols, rows, objectives + 1, options);
     const diff = diffMaps(map, next);
     setMode("objective");
     setRun((n) => n + 1);
@@ -209,6 +236,92 @@ export default function LevelGenSketch() {
         ? `Objective room added. ${plural(diff.steps.length, "step")} ran again.`
         : "No space for a new room, so the objective went to a dead-end room.",
     );
+  };
+
+  // Editing: points can be dragged while they show (steps 1 to 5), added at
+  // step 1, and edges cut or kept at step 3. The plan then updates in place,
+  // without replaying the step.
+  const editing = phase >= 1 && phase <= 5 && mode !== "objective";
+  const maxPoints = compact ? 12 : 22;
+  const beginEdit = () => {
+    if (mode === "edit") return;
+    stop();
+    started.current = true;
+    setMode("edit");
+    setRerun(null);
+    setObjectiveRun(null);
+  };
+  const ownPoints = () =>
+    map.points.filter((p) => !p.objective).map((p) => [p.x, p.y] as [number, number]);
+  const cellAt = (event: { clientX: number; clientY: number }): [number, number] | null => {
+    const ctm = planRef.current?.getScreenCTM();
+    if (!ctm) return null;
+    const p = new DOMPoint(event.clientX, event.clientY).matrixTransform(ctm.inverse());
+    const clamp = (v: number, hi: number) => Math.min(Math.max(Math.floor(v), 2), hi - 3);
+    return [clamp(p.x, cols), clamp(p.y, rows)];
+  };
+  const fits = (list: Array<[number, number]>, [x, y]: [number, number], skip = -1) =>
+    list.every(([px, py], i) => i === skip || Math.hypot(px - x, py - y) >= MIN_GAP);
+  // Moving a point changes the triangulation, so edge edits start over.
+  const placePoints = (at: Array<[number, number]>) =>
+    setEdits({ cols, at, cut: new Set(), keep: new Set() });
+
+  const grab = (event: PointerEvent<SVGCircleElement>, id: number) => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    beginEdit();
+    setNote("");
+    setDrag(id);
+  };
+  const move = (event: PointerEvent<SVGCircleElement>, id: number) => {
+    if (drag !== id) return;
+    const cell = cellAt(event);
+    const list = ownPoints();
+    if (!cell || (list[id][0] === cell[0] && list[id][1] === cell[1]) || !fits(list, cell, id)) return;
+    list[id] = cell;
+    placePoints(list);
+  };
+  const drop = () => {
+    if (drag === null) return;
+    setDrag(null);
+    setAnnounce(`Point moved. ${plural(map.rooms.length, "room")}, ${plural(map.doors.length, "door")}.`);
+  };
+  const addPoint = (event: MouseEvent<SVGSVGElement>) => {
+    if (phase !== 1 || mode === "objective") return;
+    if ((event.target as Element).closest(".lg-handles")) return;
+    const cell = cellAt(event);
+    const list = ownPoints();
+    if (!cell) return;
+    beginEdit();
+    if (list.length >= maxPoints) {
+      setNote(`That's as many points as the grid holds (${maxPoints}).`);
+      return;
+    }
+    if (!fits(list, cell)) return;
+    placePoints([...list, cell]);
+    setNote("");
+    setAnnounce(`Point added. ${plural(list.length + 1, "point")}.`);
+  };
+  const toggleEdge = (edge: Edge) => {
+    beginEdit();
+    const id = `${edge.a}-${edge.b}`;
+    const cut = new Set(own?.cut);
+    const keep = new Set(own?.keep);
+    if (edge.kept) {
+      keep.delete(id);
+      cut.add(id);
+    } else {
+      cut.delete(id);
+      keep.add(id);
+    }
+    const at = own?.at ?? null;
+    const after = generateLevel(seed, cols, rows, objectives, { at: at ?? undefined, cut, keep });
+    const stays = edge.kept && after.edges.find((e) => e.key === edge.key)?.kept;
+    const message = stays ? "That edge is the only way into a room, so it stays." : "";
+    setEdits({ cols, at, cut, keep });
+    setNote(message);
+    setAnnounce(message || (edge.kept ? "Edge cut." : "Edge kept."));
   };
 
   // Hovering a step highlights what it makes on the plan.
@@ -316,7 +429,9 @@ export default function LevelGenSketch() {
     if (label) lead = `${label}.`;
     switch (shown) {
       case 1:
-        rest = `${plural(map.points.length, "point")} scattered across the grid, each kept clear of the others. Every point will become a room.`;
+        rest = own?.at
+          ? `${plural(map.points.length, "point")}, placed by hand. Every point will become a room.`
+          : `${plural(map.points.length, "point")} scattered across the grid, each kept clear of the others. Every point will become a room.`;
         break;
       case 2:
         rest = `Every point is joined to its natural neighbours: ${plural(map.edges.length, "candidate connection")}, none crossing.`;
@@ -344,10 +459,24 @@ export default function LevelGenSketch() {
         break;
       case DONE:
         lead = `Seed ${seed}.`;
-        rest = `${plural(map.rooms.length, "room")}, ${plural(map.doors.length, "door")}, ${plural(map.props.length, "prop")}. Select a step to replay it.`;
+        rest = `${plural(map.rooms.length, "room")}, ${plural(map.doors.length, "door")}, ${plural(map.props.length, "prop")}. Select a step to replay it, or step 1 to move the points.`;
         break;
     }
   }
+  // What can be changed at this step.
+  const hint =
+    hover || !editing
+      ? ""
+      : note ||
+        (phase === 1
+          ? `Drag a point to move it, or ${touch() ? "tap" : "click"} the grid to add one.`
+          : phase === 3
+            ? `${touch() ? "Tap" : "Click"} an edge to cut it or bring it back.`
+            : "Drag a point to move it.");
+  const replayable =
+    (phase === 0 && mode === "play") ||
+    (phase === DONE &&
+      (mode === "play" || (mode === "objective" && !!rerun && rerun.index >= rerun.steps.length)));
 
   const label = `Generated floor plan, seed ${seed}: ${map.rooms.length} rooms${
     counts.objective ? `, ${counts.objective} holding an objective` : ""
@@ -357,6 +486,9 @@ export default function LevelGenSketch() {
     <svg
       className="lg-map"
       data-mode={mode}
+      data-dragging={drag !== null || undefined}
+      data-adding={(phase === 1 && mode !== "objective") || undefined}
+      onClick={addPoint}
       viewBox={`${-U * 0.6} ${-U * 0.6} ${width + U * 1.2} ${height + U * 1.2}`}
       style={{ aspectRatio: `${width + U * 1.2} / ${height + U * 1.2}` }}
       preserveAspectRatio="xMidYMid meet"
@@ -387,7 +519,7 @@ export default function LevelGenSketch() {
         height={height + U * 1.2}
         fill={`url(#${uid}-dots)`}
       />
-      <g key={`${seed}-${cols}-${run}`} className="lg-plan" transform={`scale(${U})`}>
+      <g key={`${seed}-${cols}-${run}`} ref={planRef} className="lg-plan" transform={`scale(${U})`}>
         {/* 5 + 6: hall floors, then room floors with their themes. */}
         {phase >= 5 ? (
           <g className="lg-halls" data-layer="doors">
@@ -620,6 +752,41 @@ export default function LevelGenSketch() {
           </g>
         ) : null}
 
+        {/* Editing: wide, invisible targets over the edges and points. */}
+        {phase === 3 && mode !== "objective" ? (
+          <g className="lg-edge-hits">
+            {map.edges.map((e) => (
+              <line
+                key={e.key}
+                x1={map.points[e.a].x + 0.5}
+                y1={map.points[e.a].y + 0.5}
+                x2={map.points[e.b].x + 0.5}
+                y2={map.points[e.b].y + 0.5}
+                onClick={() => toggleEdge(e)}
+              />
+            ))}
+          </g>
+        ) : null}
+        {editing ? (
+          <g className="lg-handles">
+            {map.points
+              .filter((p) => !p.objective)
+              .map((p) => (
+                <circle
+                  key={p.id}
+                  cx={p.x + 0.5}
+                  cy={p.y + 0.5}
+                  r={1.1}
+                  data-active={drag === p.id || undefined}
+                  onPointerDown={(event) => grab(event, p.id)}
+                  onPointerMove={(event) => move(event, p.id)}
+                  onPointerUp={drop}
+                  onPointerCancel={drop}
+                />
+              ))}
+          </g>
+        ) : null}
+
         {/* Objective markers, once the rooms are built. */}
         {phase >= 6 ? (
           <g className="lg-markers" data-layer="objective">
@@ -646,8 +813,23 @@ export default function LevelGenSketch() {
         <LevelGenStepRail phase={phase} rerun={rerun} onJump={jump} onReplay={play} onHover={onHover} />
         <p className="lg-caption" aria-hidden="true">
           {lead ? <strong>{lead}</strong> : null} {rest}
+          {hint ? <span className="lg-hint"> {hint}</span> : null}
         </p>
-        {floorPlan}
+        <div className="lg-canvas">
+          {floorPlan}
+          <button
+            type="button"
+            className="lg-replay"
+            data-shown={replayable || undefined}
+            inert={!replayable}
+            onClick={play}
+            aria-label={phase === 0 ? "Play the steps" : "Play the steps again"}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5.5v13l10.5-6.5z" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="lg-bar">

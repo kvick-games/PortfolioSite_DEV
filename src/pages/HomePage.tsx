@@ -1,4 +1,5 @@
 import Brand from "../components/Brand";
+import JudasAsteroids from "../components/JudasAsteroids";
 import JudasTrailer from "../components/JudasTrailer";
 import LayeredArt, { type ArtLayer } from "../components/LayeredArt";
 import LoopVideo from "../components/LoopVideo";
@@ -148,6 +149,7 @@ function Judas() {
         className="judas-image"
         poster={img("projects-judas-img2")}
         layers={judasLayers}
+        between={<JudasAsteroids />}
         alt="Still from the Judas reveal trailer"
       />
       <div className="judas-copy">

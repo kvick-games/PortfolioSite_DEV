@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import "./JudasTrailer.css";
 import VideoGlyph from "./VideoGlyph";
 import LayeredArt, { type ArtLayer } from "./LayeredArt";
@@ -33,12 +33,15 @@ const reducedMotion = () =>
 export default function JudasTrailer({
   poster,
   layers,
+  between,
   alt,
   className = "",
 }: {
   poster: string;
   /** The poster split for scroll parallax; `poster` is used without it. */
   layers?: ArtLayer[];
+  /** Drawn between the poster's plate and its figure. */
+  between?: ReactNode;
   alt: string;
   className?: string;
 }) {
@@ -181,7 +184,7 @@ export default function JudasTrailer({
         hidden={playing}
       >
         {layers ? (
-          <LayeredArt layers={layers} axis="x" range={0.025} width={1800} height={1013} alt={alt} />
+          <LayeredArt layers={layers} between={between} axis="x" range={0.025} width={1800} height={1013} alt={alt} />
         ) : (
           <img
             ref={markLoaded}
