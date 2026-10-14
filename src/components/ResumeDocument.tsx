@@ -1,3 +1,4 @@
+import { withBrand } from "./Brand";
 const experience = [
   {
     role: "Co-Founder / Developer",
@@ -171,7 +172,7 @@ export default function ResumeDocument() {
                     className="resume-entry"
                   >
                     <div>
-                      <h4>{item.company}</h4>
+                      <h4>{withBrand(item.company)}</h4>
                       <p>{item.role}</p>
                     </div>
                     <span>{item.years}</span>

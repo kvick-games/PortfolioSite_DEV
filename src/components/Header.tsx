@@ -1,27 +1,30 @@
-import { NavLink, Link } from "react-router-dom";
+import Brand from "./Brand";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { contact } from "../data/site";
+
 export default function Header() {
+  const { pathname, search } = useLocation();
+  const onHome = pathname === "/portfolio" && !search;
   return (
     <header className="site-header">
-      <Link
-        className="wordmark"
-        to="/portfolio"
-        aria-label="Michael Nevins home"
-      >
+      <Link className="wordmark" to="/portfolio">
         Michael Nevins
       </Link>
-      <nav className="site-nav" aria-label="Primary navigation">
-        <NavLink to="/portfolio">Work</NavLink>
-        <NavLink to="/projects">Experiments</NavLink>
-        <NavLink to="/art">Art</NavLink>
+      <nav className="site-nav" aria-label="Primary">
+        <NavLink
+          to="/portfolio"
+          className={() => (pathname === "/portfolio" ? "active" : undefined)}
+        >
+          Work
+        </NavLink>
+        <a href={onHome ? "#dreamatron" : "/portfolio#dreamatron"}>
+          <Brand />
+        </a>
+        <NavLink to="/art">Paintings</NavLink>
         <NavLink to="/about">About</NavLink>
       </nav>
-      <a
-        className="header-contact"
-        href="https://www.linkedin.com/in/michael-nevins-690b3140/"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Get in touch <span aria-hidden="true">↗</span>
+      <a className="header-contact" href={contact.href} target="_blank" rel="noreferrer">
+        {contact.label}
       </a>
     </header>
   );

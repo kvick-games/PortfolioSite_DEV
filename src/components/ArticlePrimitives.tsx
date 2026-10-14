@@ -1,4 +1,10 @@
-import type { ReactNode } from "react";
+import { createContext, useContext, type ReactNode } from "react";
+import { withBrand } from "./Brand";
+
+/** The cover image a page wants shown under the article header. */
+export const ArticleCover = createContext<{ src: string; alt: string } | null>(
+  null,
+);
 
 interface ArticleShellProps {
   title: string;
@@ -25,6 +31,7 @@ export function ArticleShell({
   details,
   children,
 }: ArticleShellProps) {
+  const cover = useContext(ArticleCover);
   return (
     <article className="project-article">
       <header className="project-article-header">
@@ -34,11 +41,16 @@ export function ArticleShell({
           {details.map((detail) => (
             <div key={detail}>
               <dt className="sr-only">Project detail</dt>
-              <dd>{detail}</dd>
+              <dd>{withBrand(detail)}</dd>
             </div>
           ))}
         </dl>
       </header>
+      {cover ? (
+        <figure className="project-cover">
+          <img src={cover.src} alt={cover.alt} />
+        </figure>
+      ) : null}
       <div className="project-article-body">{children}</div>
     </article>
   );

@@ -1,43 +1,52 @@
 import { useEffect } from "react";
 import { Navigate, Route, Routes, useLocation, Link } from "react-router-dom";
 import Header from "./components/Header";
+import { profiles } from "./data/site";
 import AboutPage from "./pages/AboutPage";
 import ArtPage from "./pages/ArtPage";
 import PortfolioPage from "./pages/PortfolioPage";
 import ProjectsPage from "./pages/ProjectsPage";
+
 export default function App() {
   const location = useLocation();
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
+    const target = location.hash
+      ? document.getElementById(location.hash.slice(1))
+      : null;
+    if (target) target.scrollIntoView();
+    else window.scrollTo({ top: 0, behavior: "instant" });
     const titles: Record<string, string> = {
-      "/portfolio": "Work",
+      "/portfolio": "Interfaces for games and creative tools",
       "/projects": "Experiments",
-      "/art": "Art",
+      "/art": "Paintings",
       "/about": "About",
     };
-    document.title = `${titles[location.pathname] ?? "Portfolio"} | Michael Nevins`;
-    if (location.key !== "default")
+    document.title = `Michael Nevins | ${titles[location.pathname] ?? "Portfolio"}`;
+    if (location.key !== "default" && !target)
       document
         .querySelector<HTMLElement>("main")
         ?.focus({ preventScroll: true });
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.documentElement.classList.add("motion");
+    // Staggers siblings that enter together, so a section arrives heading first.
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("revealed");
-          observer.unobserve(entry.target);
-        });
+        entries
+          .filter((entry) => entry.isIntersecting)
+          .forEach((entry, index) => {
+            const element = entry.target as HTMLElement;
+            element.style.setProperty("--delay", `${Math.min(index, 6) * 70}ms`);
+            element.classList.add("revealed");
+            observer.unobserve(element);
+          });
       },
-      { threshold: 0.08 },
+      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" },
     );
     document
-      .querySelectorAll(
-        "[data-reveal], .article-section > *, .art-gallery-item",
-      )
+      .querySelectorAll("[data-reveal]:not(.revealed), .article-section > *")
       .forEach((element) => observer.observe(element));
     return () => observer.disconnect();
-  }, [location.pathname, location.search, location.key]);
+  }, [location.pathname, location.search, location.hash, location.key]);
   return (
     <>
       <a className="skip-link" href="#main">
@@ -53,22 +62,18 @@ export default function App() {
         <Route path="*" element={<Navigate to="/portfolio" replace />} />
       </Routes>
       <footer className="site-footer">
-        <Link to="/portfolio">Michael Nevins</Link>
-        <p>Games, systems, and pictures.</p>
-        <a
-          href="https://www.artstation.com/kvick"
-          target="_blank"
-          rel="noreferrer"
-        >
-          ArtStation
-        </a>
-        <a
-          href="https://github.com/kvick-games"
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub
-        </a>
+        <nav className="footer-links" aria-label="Elsewhere">
+          {profiles.map((profile) => (
+            <a key={profile.href} href={profile.href} target="_blank" rel="noreferrer">
+              {profile.label}
+            </a>
+          ))}
+          <Link to="/projects">Experiments</Link>
+          <a href="/studio/">Client preview</a>
+        </nav>
+        <Link className="footer-name" to="/portfolio">
+          Michael Nevins
+        </Link>
       </footer>
     </>
   );

@@ -135,7 +135,7 @@ function JudasArticle() {
 function LevelGeneratorArticle() {
   return (
     <ArticleShell
-      eyebrow="Procedural"
+
       title="Level Generator"
       details={["Solo", "Technical Demo", "2023", "Unreal Engine 5"]}
     >
@@ -164,8 +164,7 @@ function LevelGeneratorArticle() {
           ]}
         />
       </ArticleSection>
-      <div className="media-grid media-grid--three">
-        <MediaImage src="/Resources/Projects/LevelGenerator/1.png" alt="Generated level interior" />
+      <div className="media-grid">
         <MediaImage src="/Resources/Projects/LevelGenerator/2.png" alt="Generated level room layout" />
         <MediaImage src="/Resources/Projects/LevelGenerator/5.png" alt="Generated level kitchen theme" />
       </div>
@@ -223,7 +222,6 @@ function TanukiArticle() {
       title="Project Tanuki (Unreleased)"
       details={["DREAMATRON", "Co-Founder", "2020 - Current", "Unreal Engine"]}
     >
-      <MediaImage src="/Resources/Projects/Tanuki/2.png" alt="Tanuki world screenshot" size="medium" />
       <p>
         This is a game I have been working on for the past few years. There is a lot of work
         done on the game, but still much left to go. I plan on creating a public development
@@ -363,8 +361,12 @@ function AiTimelineArticle() {
       <LinkButtons
         links={[
           {
+            href: "https://www.dreamatron.ai/timeline",
+            label: "Open the current version",
+          },
+          {
             href: "https://kvick-games.github.io/AI_Model_Timeline_Website/",
-            label: "View Live Site",
+            label: "First version",
           },
           {
             href: "https://github.com/kvick-games/AI_Model_Timeline_Website",
@@ -372,7 +374,22 @@ function AiTimelineArticle() {
           },
         ]}
       />
-      <MediaImage src="/Resources/Projects/Misc/ai-model-timeline.png" alt="AI Model Timeline screenshot" />
+      <ArticleSection title="The current version">
+        <p>
+          The timeline now lives at dreamatron.ai. It maps AI history, LLMs, generative
+          media, audio, voice models, world models, coding tools, events, robotics and
+          vehicle autonomy. The board pans like a canvas, with a zoom rail, company and
+          category filters, an optional token-pricing overlay, and gap labels that compare
+          each release with its line&rsquo;s average.
+        </p>
+        <MediaImage
+          src="/Resources/Site/img/dreamatron-timeline-detail.webp"
+          alt="Detail of the current AI Timeline: release markers and gap labels along company lines"
+        />
+      </ArticleSection>
+      <ArticleSection title="The first version">
+        <MediaImage src="/Resources/Projects/Misc/ai-model-timeline.png" alt="First version of the AI Model Timeline" />
+      </ArticleSection>
       <ArticleSection title="Overview">
         <p>
           The timeline lays out model launches horizontally so release cadence can be compared
@@ -409,7 +426,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "games",
     featured: true,
     cardImage: "/Resources/Projects/GoW2018Cover.webp",
-    backgroundImage: "/Resources/Projects/GoW/GoW_Banner_03.webp",
+    backgroundImage: "/Resources/Site/img/gow-banner.webp",
     details: ["Sony Santa Monica Studio", "Associate Technical UI Designer", "2016 - 2018"],
     Article: GodOfWarArticle,
   },
@@ -420,7 +437,7 @@ export const portfolioProjects: PortfolioProject[] = [
     subtitle: "UI scripting / gameplay systems",
     category: "games",
     cardImage: "/Resources/Projects/judas-img.jpg",
-    backgroundImage: "/Resources/Projects/judas-img2.jpg",
+    backgroundImage: "/Resources/Site/img/projects-judas-img2.webp",
     details: ["Ghost Story Games", "User Interface Design Scripter", "2018 - 2020"],
     Article: JudasArticle,
   },
@@ -431,7 +448,7 @@ export const portfolioProjects: PortfolioProject[] = [
     subtitle: "Unreal Engine tool pipeline",
     category: "games",
     cardImage: "/Resources/Projects/levelGen_img.png",
-    backgroundImage: "/Resources/Projects/LevelGenerator/1.png",
+    backgroundImage: "/Resources/Site/img/levelgenerator-1.webp",
     details: ["Solo", "Technical Demo", "2023"],
     Article: LevelGeneratorArticle,
   },
@@ -442,7 +459,7 @@ export const portfolioProjects: PortfolioProject[] = [
     subtitle: "Simulation-driven world",
     category: "games",
     cardImage: "/Resources/Projects/Tanuki/MistyMorning.png",
-    backgroundImage: "/Resources/Projects/Tanuki/MistyMorning.png",
+    backgroundImage: "/Resources/Site/img/tanuki-2.webp",
     details: ["DREAMATRON", "Co-Founder", "2020 - Current"],
     Article: TanukiArticle,
   },
@@ -453,7 +470,7 @@ export const portfolioProjects: PortfolioProject[] = [
     subtitle: "Solo adventure horror project",
     category: "games",
     cardImage: "/Resources/Projects/EWA/EWA_Redacted.png",
-    backgroundImage: "/Resources/Projects/EWA/5.png",
+    backgroundImage: "/Resources/Site/img/ewa-ewa-concept-01.webp",
     details: ["Solo", "2020 - Current", "Unreal Engine"],
     Article: EwaArticle,
   },
@@ -463,8 +480,8 @@ export const portfolioProjects: PortfolioProject[] = [
     cardTitle: "AI Model Timeline",
     subtitle: "React timeline web app",
     category: "web-tools",
-    cardImage: "/Resources/Projects/Misc/ai-model-timeline.png",
-    backgroundImage: "/Resources/Projects/Misc/ai-model-timeline.png",
+    cardImage: "/Resources/Site/img/dreamatron-timeline.webp",
+    backgroundImage: "/Resources/Site/img/dreamatron-timeline.webp",
     details: ["Solo", "Web App", "2026"],
     Article: AiTimelineArticle,
   },

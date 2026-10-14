@@ -18,8 +18,8 @@ export default function ProjectsPage() {
   return (
     <main id="main" tabIndex={-1} className="page-shell">
       <section className="page-intro">
-        <h1 data-reveal>Small experiments</h1>
-        <p data-reveal>
+        <h1 className="page-title" data-reveal>Small experiments</h1>
+        <p className="statement" data-reveal>
           Audio-reactive sketches, generative art, and tools for making sense of
           things.
         </p>
@@ -44,7 +44,7 @@ export default function ProjectsPage() {
               </h2>
               <p>{project.subtitle}</p>
               <p>{project.details.join(", ")}</p>
-              <Link className="button" to={`/projects?project=${project.slug}`}>
+              <Link className="text-link" to={`/projects?project=${project.slug}`}>
                 View experiment
               </Link>
             </div>

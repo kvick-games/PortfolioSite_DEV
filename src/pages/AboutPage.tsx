@@ -4,7 +4,9 @@ export default function AboutPage() {
   return (
     <main id="main" tabIndex={-1} className="page-shell about-page">
       <section className="page-intro about-intro" aria-labelledby="about-title">
-        <h1 id="about-title">Art, code, curiosity.</h1>
+        <h1 id="about-title" className="page-title" data-reveal>
+          Art, code, curiosity
+        </h1>
       </section>
 
       <section className="about-layout" aria-label="Biography and resume">
@@ -50,6 +52,9 @@ export default function AboutPage() {
             >
               ArtStation
             </a>
+            <a href="https://github.com/kvick-games" target="_blank" rel="noreferrer">
+              GitHub
+            </a>
             <a href="https://x.com/kvickart" target="_blank" rel="noreferrer">
               X
             </a>
@@ -57,8 +62,7 @@ export default function AboutPage() {
         </div>
 
         <aside className="resume-panel" aria-label="Resume">
-          <h2>Resume</h2>
-          <p>Gameplay programmer and technical designer resume.</p>
+          <h2>Résumé</h2>
           <ResumeDocument />
         </aside>
       </section>
