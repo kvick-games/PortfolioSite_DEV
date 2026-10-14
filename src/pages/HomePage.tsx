@@ -1,6 +1,7 @@
 import Brand from "../components/Brand";
 import EwaCameras, { type CameraShot } from "../components/EwaCameras";
 import JudasTrailer from "../components/JudasTrailer";
+import LayeredArt, { type ArtLayer } from "../components/LayeredArt";
 import { Link } from "react-router-dom";
 import LevelGenSketch from "../components/LevelGenSketch";
 import MenuViewer, { type MenuView } from "../components/MenuViewer";
@@ -89,15 +90,31 @@ function Hero() {
   return <ProjectSplash />;
 }
 
+const layer = (art: string, name: string, depth: number): ArtLayer => ({
+  name,
+  src: `/Resources/Site/img/layers/${art}/${name}.webp`,
+  depth,
+});
+
+/** The key art split into a plate and the figures over it, for scroll parallax. */
+const gowLayers = [
+  layer("gow", "plate", 0),
+  layer("gow", "troll", 0.6),
+  layer("gow", "kratos", 0.55),
+  layer("gow", "atreus", 0.6),
+  layer("gow", "logo", 0.6),
+];
+const judasLayers = [layer("judas", "plate", 0), layer("judas", "judas", 0.75)];
+
 function GodOfWar() {
   return (
     <section className="chapter chapter--gow" id="work" aria-labelledby="gow-title">
       <figure className="gow-cover" data-reveal>
-        <img
-          src={img("gow-banner-clean")}
-          alt="God of War (2018) key art: Kratos and Atreus fighting a troll in a burning forest"
+        <LayeredArt
+          layers={gowLayers}
           width={2000}
           height={1125}
+          alt="God of War (2018) key art: Kratos and Atreus fighting a troll in a burning forest"
         />
       </figure>
       <MenuViewer
@@ -133,6 +150,7 @@ function Judas() {
       <JudasTrailer
         className="judas-image"
         poster={img("projects-judas-img2")}
+        layers={judasLayers}
         alt="Still from the Judas reveal trailer"
       />
       <div className="judas-copy">
@@ -171,7 +189,7 @@ function Tanuki() {
           Tanuki
         </h2>
         <p className="meta" data-reveal>
-          <span className="meta-lead">By</span><Brand />
+          <Brand />
           <br />
           <span className="meta-lead">Made with</span><Brand name="Dream Engine" />
         </p>
@@ -191,7 +209,6 @@ function Tanuki() {
           <img src={img("tanuki-concept-hut")} alt="Concept painting of a hut in the forest" loading="lazy" />
         </figure>
       </div>
-      <div className="tanuki-kitchen">
       <div className="tanuki-notes">
         <p data-reveal>
           <strong>Recipes ask for qualities, not items.</strong> A dish can
@@ -207,18 +224,6 @@ function Tanuki() {
           <strong>NPCs weigh their choices.</strong> A general utility scoring
           system decides how visitors behave, and it carries across projects.
         </p>
-      </div>
-      <div className="tanuki-shots">
-        <figure className="tanuki-shot--wide" data-reveal>
-          <img src={img("tanuki-2")} alt="In-game screenshot: a tanuki looks out over a misty village" loading="lazy" />
-        </figure>
-        <figure data-reveal>
-          <img src={img("tanuki-questcomplete")} alt="In-game screenshot: quest complete banner over a dialogue box" loading="lazy" />
-        </figure>
-        <figure data-reveal>
-          <img src={img("tanuki-screenshot-cooking-01")} alt="In-game screenshot: cooking station with ingredients" loading="lazy" />
-        </figure>
-      </div>
       </div>
       <div className="chapter-foot">
         <Link className="text-link" to="/portfolio?project=tanuki">
@@ -246,7 +251,7 @@ function Ewa() {
             EWA
           </h2>
           <p className="meta" data-reveal>
-            <span className="meta-lead">By</span><Brand />
+            <Brand />
             <br />
             <span className="meta-lead">Made with</span><Brand name="Dream Engine" />
           </p>

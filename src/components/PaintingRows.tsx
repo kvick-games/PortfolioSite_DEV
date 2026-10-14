@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { artDimensions } from "../data/artDimensions";
 import type { ArtPiece } from "../data/types";
 import LoopVideo from "./LoopVideo";
-import { shareWithNextPage } from "./TransitionRouter";
+import PaintingFocus from "./PaintingFocus";
 
 /** Marks an image loaded so it fades in (styles.css, `img[data-fade]`); cached images show at once. */
 export function markLoaded(image: HTMLImageElement | null) {
@@ -41,6 +41,8 @@ function justify(ratios: number[], width: number, gap: number, target: number) {
  * Paintings in justified rows: every work keeps its own proportions, uncropped,
  * and each row fills the measure. Row height aims at the --row custom property.
  * Until the list has been measured, plain flex wrapping gives a close layout.
+ * Clicking a painting lifts it out to the centre of the screen (PaintingFocus);
+ * the link still points at its page, for new tabs and shared URLs.
  */
 export default function PaintingRows({
   pieces,
@@ -50,6 +52,7 @@ export default function PaintingRows({
   eager?: number;
 }) {
   const listRef = useRef<HTMLUListElement>(null);
+  const [focus, setFocus] = useState<{ index: number; slot: HTMLElement } | null>(null);
   const [layout, setLayout] = useState<{ counts: number[]; gap: number } | null>(null);
   const sizes = pieces.map((piece) => artDimensions[piece.slug] ?? [4, 3]);
   const ratios = sizes.map(([width, height]) => width / height);
@@ -115,8 +118,14 @@ export default function PaintingRows({
                   event.ctrlKey ||
                   event.shiftKey ||
                   event.altKey;
-                const image = event.currentTarget.querySelector("img");
-                if (image && !opensElsewhere) shareWithNextPage(image);
+                if (opensElsewhere) return;
+                event.preventDefault();
+                setFocus({ index, slot: event.currentTarget });
+              }}
+              onKeyDown={(event) => {
+                if (event.key !== " ") return;
+                event.preventDefault();
+                setFocus({ index, slot: event.currentTarget });
               }}
             >
               <img
@@ -137,6 +146,16 @@ export default function PaintingRows({
           </li>
         );
       })}
+      {focus ? (
+        <PaintingFocus
+          key={pieces[focus.index].slug}
+          piece={pieces[focus.index]}
+          width={sizes[focus.index][0]}
+          height={sizes[focus.index][1]}
+          slot={focus.slot}
+          onClosed={() => setFocus(null)}
+        />
+      ) : null}
     </ul>
   );
 }

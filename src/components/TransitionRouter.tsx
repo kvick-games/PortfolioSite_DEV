@@ -5,43 +5,11 @@ import {
   UNSAFE_createBrowserHistory as createBrowserHistory,
 } from "react-router-dom";
 
-/** The name a clicked thumbnail and the painting page's main image share. */
-const SHARED_NAME = "painting";
-
 let running = 0;
-let lent: HTMLElement[] = [];
-
-const reducedMotion = () =>
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /** True while a route change is cross-fading, so new content can arrive already revealed. */
 export function viewTransitionRunning() {
   return running > 0;
-}
-
-/**
- * Lets the next route change grow this element into the painting page's main
- * image (marked `data-shared-painting`). Call it from the click that navigates.
- * The name lives on the element only for that one transition.
- */
-export function shareWithNextPage(element: HTMLElement) {
-  returnNames();
-  if (!document.startViewTransition || reducedMotion()) return;
-  // Two elements with the same name would cancel the whole transition.
-  document
-    .querySelectorAll<HTMLElement>("[data-shared-painting]")
-    .forEach((other) => lend(other, "none"));
-  lend(element, SHARED_NAME);
-}
-
-function lend(element: HTMLElement, name: string) {
-  element.style.viewTransitionName = name;
-  lent.push(element);
-}
-
-function returnNames() {
-  lent.forEach((element) => element.style.removeProperty("view-transition-name"));
-  lent = [];
 }
 
 /** Waits briefly for the destination image to decode, so the morph never lands on a blank frame. */
@@ -75,22 +43,19 @@ export default function TransitionRouter({ children }: { children: ReactNode }) 
       current = location;
       const update = () => setState({ action, location });
       if (samePage || !document.startViewTransition || document.hidden) {
-        returnNames();
         update();
         return;
       }
       running += 1;
       const transition = document.startViewTransition(async () => {
         flushSync(update);
-        // The old page has been captured; only the new page's image keeps the name.
-        returnNames();
+        // Previous/Next on a painting page morphs one painting into the next.
         const target = document.querySelector<HTMLImageElement>("img[data-shared-painting]");
         if (target) await settle(target);
       });
       transition.ready.catch(() => undefined);
       const done = () => {
         running -= 1;
-        if (!running) returnNames();
       };
       transition.finished.then(done, done);
     });

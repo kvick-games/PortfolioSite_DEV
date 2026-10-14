@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./JudasTrailer.css";
 import VideoGlyph from "./VideoGlyph";
+import LayeredArt, { type ArtLayer } from "./LayeredArt";
 
 /*
  * The Judas reveal trailer as a lite YouTube facade. Until the visitor presses
@@ -30,10 +31,13 @@ const reducedMotion = () =>
 
 export default function JudasTrailer({
   poster,
+  layers,
   alt,
   className = "",
 }: {
   poster: string;
+  /** The poster split for scroll parallax; `poster` is used without it. */
+  layers?: ArtLayer[];
   alt: string;
   className?: string;
 }) {
@@ -175,7 +179,11 @@ export default function JudasTrailer({
         aria-label="Play the Judas reveal trailer"
         hidden={playing}
       >
-        <img src={poster} alt={alt} loading="lazy" />
+        {layers ? (
+          <LayeredArt layers={layers} width={1800} height={1013} alt={alt} />
+        ) : (
+          <img src={poster} alt={alt} loading="lazy" />
+        )}
         <VideoGlyph className="judas-trailer-play" />
       </button>
       {mounted && (

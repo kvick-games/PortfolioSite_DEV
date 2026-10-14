@@ -27,8 +27,6 @@ const picks = [
 const COLUMNS = 3;
 /** How far each column travels with the pointer, in px at the panel's edge. */
 const DEPTH = [40, 72, 54];
-/** How far each painting drifts the other way inside its frame, in px. */
-const INNER = 16;
 
 type Tile = { slug: string; src: string; width: number; height: number };
 
@@ -50,9 +48,9 @@ const columns = (() => {
 
 /**
  * The Paintings panel's picture: a grid of paintings in staggered columns.
- * While the panel is open, the columns shift with the pointer, each by a
- * different amount, and each painting drifts the other way inside its frame,
- * so the grid has depth. The movement follows the visitor's hand and settles
+ * While the panel is open, the frames shift with the pointer, a column at a
+ * time and each column by a different amount, while the paintings inside
+ * them hold still: the frames slide over them like windows. The movement follows the visitor's hand and settles
  * softly; nothing moves on its own. The painting under the pointer keeps its
  * colour and the rest turn grey.
  */
@@ -76,10 +74,13 @@ export default function SplashPaintings({ load }: { load: boolean }) {
       const cols = grid.querySelectorAll<HTMLElement>(".splash-paintings-column");
       cols.forEach((col, i) => {
         const depth = DEPTH[i % DEPTH.length];
-        col.style.transform = `translate3d(${(now.x * depth * 0.4).toFixed(2)}px, ${(now.y * depth).toFixed(2)}px, 0)`;
+        const x = (now.x * depth * 0.4).toFixed(2);
+        const y = (now.y * depth).toFixed(2);
+        col.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        // The paintings move back by the same amount, so they stay put.
+        col.style.setProperty("--hold-x", `${-x}px`);
+        col.style.setProperty("--hold-y", `${-y}px`);
       });
-      grid.style.setProperty("--drift-x", `${(-now.x * INNER).toFixed(2)}px`);
-      grid.style.setProperty("--drift-y", `${(-now.y * INNER).toFixed(2)}px`);
       if (Math.abs(target.x - now.x) + Math.abs(target.y - now.y) > 0.001)
         frame = requestAnimationFrame(tick);
     };
@@ -135,7 +136,13 @@ export default function SplashPaintings({ load }: { load: boolean }) {
             <span
               key={i}
               className="splash-paintings-column"
-              style={{ "--col": i } as CSSProperties}
+              style={
+                {
+                  "--col": i,
+                  "--pad-x": `${Math.ceil(DEPTH[i % DEPTH.length] * 0.4) + 2}px`,
+                  "--pad-y": `${DEPTH[i % DEPTH.length] + 2}px`,
+                } as CSSProperties
+              }
             >
               {tiles.map((tile, n) => (
                 <span

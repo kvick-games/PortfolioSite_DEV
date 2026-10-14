@@ -243,19 +243,24 @@
   .splash-paintings-column:nth-child(3) {
     margin-top: -7%;
   }
-  /* Each painting sits a little larger than its frame and drifts against
-     its column (--drift-x/y from SplashPaintings.tsx). */
+  /* Each painting overhangs its frame by as far as its column can travel
+     (--pad-x/y) and is moved back by the column's offset (--hold-x/y, from
+     SplashPaintings.tsx), so it holds still while the frame slides. */
   .splash-paintings-tile {
+    position: relative;
     display: block;
     overflow: hidden;
     transition: filter 0.35s var(--splash-ease);
   }
   .splash-paintings-tile img {
-    display: block;
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    top: calc(var(--pad-y) * -1);
+    left: calc(var(--pad-x) * -1);
+    width: calc(100% + var(--pad-x) * 2);
+    height: calc(100% + var(--pad-y) * 2);
+    max-width: none;
     object-fit: cover;
-    transform: translate3d(var(--drift-x, 0px), var(--drift-y, 0px), 0) scale(1.12);
+    transform: translate3d(var(--hold-x, 0px), var(--hold-y, 0px), 0);
   }
   .splash-paintings.has-hover .splash-paintings-tile:not(.is-hovered) {
     filter: grayscale(1) brightness(0.62);

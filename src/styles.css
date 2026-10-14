@@ -507,8 +507,9 @@ figcaption {
 .menu-viewer-screen video {
   cursor: pointer;
 }
-/* Play/pause sits on the footage, as in any player: it fades in while the
-   pointer is over the screen or it has focus, and stays while paused. */
+/* Play/pause and the scrubber sit on the footage along its bottom edge,
+   faded out until the pointer is over them (or they have focus), so the
+   work itself stays clear, paused or not. */
 .menu-viewer-toggle {
   position: absolute;
   left: var(--control-inset);
@@ -522,8 +523,8 @@ figcaption {
   transition: opacity 0.3s var(--ease);
   animation: control-in 0.5s var(--ease);
 }
-.menu-viewer-screen:hover .menu-viewer-toggle,
-.menu-viewer-screen[data-paused] .menu-viewer-toggle,
+.menu-viewer-screen:has(.menu-viewer-toggle:hover, .menu-viewer-seek:hover) .menu-viewer-toggle,
+.menu-viewer-screen:has(.menu-viewer-seek[data-scrubbing]) .menu-viewer-toggle,
 .menu-viewer-toggle:focus-visible {
   opacity: 1;
 }
@@ -538,6 +539,7 @@ figcaption {
    It is revealed with the glyph and holds while dragged or focused. */
 .menu-viewer-seek {
   position: absolute;
+  isolation: isolate;
   left: calc(var(--control-inset) + var(--control-size) + clamp(10px, 1vw, 16px));
   right: calc(var(--control-inset) + 4px);
   bottom: var(--control-inset);
@@ -546,11 +548,17 @@ figcaption {
   transition: opacity 0.25s var(--ease);
   animation: control-in 0.5s var(--ease);
 }
-.menu-viewer-screen:hover .menu-viewer-seek,
-.menu-viewer-screen[data-paused] .menu-viewer-seek,
+.menu-viewer-screen:has(.menu-viewer-toggle:hover, .menu-viewer-seek:hover) .menu-viewer-seek,
 .menu-viewer-screen:has(:focus-visible) .menu-viewer-seek,
 .menu-viewer-seek[data-scrubbing] {
   opacity: 1;
+}
+/* A taller reach above the thin track, so finding it isn't fiddly. */
+.menu-viewer-seek::before {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  inset: -18px 0 0;
 }
 /* No hover on touch: keep it on screen, but quiet. */
 @media (hover: none) {
@@ -638,22 +646,50 @@ figcaption {
 
 /* Judas ----------------------------------------------------------------- */
 
+/* The trailer runs the full width, as the God of War art does; the copy
+   sits beneath it, the name on the left and the account on the right. */
 .chapter--judas {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--gap);
-  align-items: end;
+  gap: clamp(28px, 3vw, 48px) var(--gap);
 }
 .judas-image {
-  grid-column: 1 / span 7;
+  grid-column: 1 / -1;
   aspect-ratio: 16 / 9;
 }
 .judas-copy {
-  grid-column: 9 / -1;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  align-items: flex-start;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 18px var(--gap);
+  align-items: start;
+}
+.judas-copy .chapter-title,
+.judas-copy .meta {
+  grid-column: 1 / span 5;
+}
+.judas-copy .meta {
+  grid-row: 2;
+}
+.judas-copy > p:not(.meta),
+.judas-copy .text-link {
+  grid-column: 7 / span 5;
+  max-width: 52ch;
+}
+.judas-copy > p:not(.meta) {
+  grid-row: 1 / span 2;
+  align-self: end;
+}
+.judas-copy .text-link {
+  grid-row: 3;
+  justify-self: start;
+}
+@media (max-width: 720px) {
+  .judas-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 /* Tanuki ---------------------------------------------------------------- */
@@ -676,6 +712,9 @@ figcaption {
 .chapter-head .statement {
   grid-column: 7 / -1;
   grid-row: 1 / span 2;
+  justify-self: end;
+  max-width: 46ch;
+  text-align: right;
 }
 
 .tanuki-grid {
@@ -694,6 +733,16 @@ figcaption {
   grid-row: 1 / span 2;
   aspect-ratio: auto;
 }
+/* As in the paintings: the piece under the pointer keeps its colour and the
+   others turn grey. */
+@media (hover: hover) {
+  .tanuki-grid figure {
+    transition: filter 0.35s var(--ease);
+  }
+  .tanuki-grid:has(figure:hover) figure:not(:hover) {
+    filter: grayscale(1) brightness(0.62);
+  }
+}
 .tanuki-notes {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -708,57 +757,7 @@ figcaption {
   display: block;
 }
 
-/* The notes beside in-game screenshots. */
-.tanuki-kitchen {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--gap);
-  align-items: start;
-  margin-top: clamp(32px, 3.4vw, 56px);
-}
-.tanuki-kitchen .tanuki-notes {
-  grid-column: 1 / span 4;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(22px, 2vw, 32px);
-  margin: 0;
-}
-.tanuki-kitchen .tanuki-notes p {
-  max-width: 40ch;
-}
-.tanuki-shots {
-  grid-column: 5 / -1;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--gap);
-}
-.tanuki-shots figure {
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
-}
-.tanuki-shots .tanuki-shot--wide {
-  grid-column: 1 / -1;
-}
-@media (max-width: 1080px) {
-  .tanuki-kitchen .tanuki-notes {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--gap);
-  }
-  .tanuki-shots {
-    grid-column: 1 / -1;
-  }
-}
-@media (max-width: 720px) {
-  .tanuki-kitchen,
-  .tanuki-kitchen .tanuki-notes {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .tanuki-shots {
-    gap: 10px;
-  }
-}
+
 
 /* EWA ------------------------------------------------------------------- */
 
@@ -1024,6 +1023,35 @@ figcaption {
 }
 .loop-video.is-playing {
   opacity: 1;
+}
+
+/* A painting lifted out of the grid (PaintingFocus). The page behind melts into
+   a soft, slightly brighter blur, like out-of-focus light, then sinks into the ground. */
+.painting-focus {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  cursor: zoom-out;
+}
+.painting-focus-backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--ground) 58%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4) brightness(1.12);
+  backdrop-filter: blur(24px) saturate(1.4) brightness(1.12);
+}
+.painting-focus-frame {
+  position: absolute;
+  transform-origin: 0 0;
+  background: var(--ground-2);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.45);
+  outline: none;
+  will-change: transform;
+}
+.painting-focus-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 /* About close ----------------------------------------------------------- */
@@ -1576,18 +1604,15 @@ img[data-fade]:not([data-loaded]) {
     min-height: 0;
   }
 
-  .chapter--judas .judas-image {
-    grid-column: 1 / span 7;
-  }
-  .judas-copy {
-    grid-column: 8 / -1;
-  }
+
   .chapter-head .chapter-title {
     grid-column: 1 / span 6;
   }
   .chapter-head .statement {
     grid-column: 1 / span 10;
     grid-row: 3;
+    justify-self: start;
+    text-align: left;
   }
   .tanuki-notes p {
     grid-column: span 6;
