@@ -7,7 +7,7 @@ const experience = [
     company: "DREAMATRON",
     years: "2020 - Current",
     bullets: [
-      "Building Project Tanuki, an independent Unreal Engine game with simulation-driven world systems.",
+      "Building Project Tanuki, an independent game in Dream Engine with simulation-driven world systems.",
       "Implemented NPC AI, utility scoring, dynamic quests, dialogue, equipment, cooking, building, farming, and fishing systems.",
       "Own broad design and engineering tasks across gameplay, tools, UI, content workflows, and production planning.",
     ],
@@ -43,7 +43,7 @@ const selectedProjects = [
   },
   {
     title: "Project EWA",
-    meta: "Solo game project / Unreal Engine",
+    meta: "Solo game project / Dream Engine",
     description:
       "Developing a third-person adventure horror game with exploration, puzzle solving, combat, grid inventory, dialogue, and static camera systems.",
   },
@@ -169,7 +169,7 @@ export default function ResumeDocument() {
                 <p className="resume-entry-role">{item.role}</p>
                 <ul className="resume-lines">
                   {item.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
+                    <li key={bullet}>{withBrand(bullet)}</li>
                   ))}
                 </ul>
               </div>
@@ -183,7 +183,7 @@ export default function ResumeDocument() {
             {selectedProjects.map((project) => (
               <div key={project.title} className="resume-entry">
                 <h4>{project.title}</h4>
-                <p className="resume-entry-role">{project.meta}</p>
+                <p className="resume-entry-role">{withBrand(project.meta)}</p>
                 <p className="resume-lines">{project.description}</p>
               </div>
             ))}

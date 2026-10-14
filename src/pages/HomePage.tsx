@@ -164,7 +164,7 @@ function Tanuki() {
         <p className="meta" data-reveal>
           <Brand />, founder
           <br />
-          2020 to now, Unreal Engine
+          2020 to now, <Brand name="Dream Engine" />
         </p>
         <p className="statement" data-reveal>
           An unreleased game about running a restaurant in a world that
@@ -231,7 +231,7 @@ function Ewa() {
           <p className="meta" data-reveal>
             Solo project
             <br />
-            2020 to now, Unreal Engine
+            2020 to now, <Brand name="Dream Engine" />
           </p>
           <p className="statement" data-reveal>
             Every room was painted before it was built. Keep your light on.

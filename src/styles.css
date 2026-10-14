@@ -177,6 +177,9 @@ main:focus {
   font-size: 0.84em;
   font-weight: 500;
   letter-spacing: 0.3em;
+  /* Two-word names such as Dream Engine: a clear gap, never split across lines. */
+  word-spacing: 0.2em;
+  white-space: nowrap;
   margin-right: -0.3em;
 }
 /* Small text keeps the name at full size so it stays legible. */

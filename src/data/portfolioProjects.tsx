@@ -220,7 +220,7 @@ function TanukiArticle() {
   return (
     <ArticleShell
       title="Project Tanuki (Unreleased)"
-      details={["DREAMATRON", "Founder", "2020 - Current", "Unreal Engine"]}
+      details={["DREAMATRON", "Founder", "2020 - Current", "Dream Engine"]}
     >
       <p>
         This is a game I have been working on for the past few years. There is a lot of work
@@ -320,7 +320,7 @@ function TanukiArticle() {
 
 function EwaArticle() {
   return (
-    <ArticleShell title="Project EWA (Unreleased)" details={["Solo", "2020 - Current", "Unreal Engine"]}>
+    <ArticleShell title="Project EWA (Unreleased)" details={["Solo", "2020 - Current", "Dream Engine"]}>
       <p>Third-person adventure horror game in development.</p>
       <VideoFrame src="/Resources/Projects/EWA/TEASER_02_01.mp4" title="Project EWA teaser video" />
       <ArticleSection title="Main Features">
@@ -471,7 +471,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "games",
     cardImage: "/Resources/Projects/EWA/EWA_Redacted.png",
     backgroundImage: "/Resources/Site/img/ewa-ewa-concept-01.webp",
-    details: ["Solo", "2020 - Current", "Unreal Engine"],
+    details: ["Solo", "2020 - Current", "Dream Engine"],
     Article: EwaArticle,
   },
   {
