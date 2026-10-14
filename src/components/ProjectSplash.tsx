@@ -3,7 +3,6 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type PointerEvent,
   type ReactNode,
 } from "react";
 import Brand from "./Brand";
@@ -18,8 +17,6 @@ type Panel = {
   height: number;
   /** Horizontal focal point of the open panel. */
   focus: string;
-  /** Focal point of the closed slice, when it should differ (say, to avoid UI text). */
-  slice?: string;
 };
 
 const img = (name: string) => `/Resources/Site/img/${name}.webp`;
@@ -55,7 +52,6 @@ const panels: Panel[] = [
     width: 1800,
     height: 1125,
     focus: "50%",
-    slice: "9%",
   },
   {
     href: "#tanuki",
@@ -69,16 +65,15 @@ const panels: Panel[] = [
     width: 1800,
     height: 1081,
     focus: "50%",
-    slice: "30%",
   },
   {
     href: "#ewa",
     title: "EWA",
     meta: "Solo project, 2020 to now",
-    image: img("ewa-ewa-concept-01"),
+    image: img("ewa-ewa-redacted"),
     width: 1800,
-    height: 766,
-    focus: "47%",
+    height: 2044,
+    focus: "50%",
   },
   {
     href: "#level-generator",
@@ -100,16 +95,26 @@ const panels: Panel[] = [
   },
 ];
 
+/** Open panel width relative to a closed one; matches flex-grow in splash.css. */
+const OPEN_GROW = 5;
+/** How long the pointer rests on a panel before it opens, so sweeping across doesn't. */
+const HOVER_INTENT_MS = 110;
+
 /**
  * The home page's opening: the projects side by side as a horizontal
- * accordion. The pointer's position across the whole strip, split into equal
- * bands, picks the open panel. Bands, rather than hover on each panel, keep
- * the choice steady while panels resize under the cursor: with every closed
- * panel the same width, the open panel always covers its band.
+ * accordion. Resting the pointer on a panel brings it into focus.
+ *
+ * Nothing the visitor is looking at moves. Each picture is pinned to the
+ * place its panel occupies when open, and every panel is a window onto its
+ * pinned picture (a clip that animates with the panel's width). Opening a
+ * panel reveals more of a still picture while its colour fades in over a
+ * dim greyscale copy; closing does the reverse.
  */
 export default function ProjectSplash() {
   const [active, setActive] = useState(0);
   const rootRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const intentRef = useRef(0);
 
   // The strip fills the screen below the header, whose height changes with
   // the viewport (it wraps to two rows on phones).
@@ -125,52 +130,98 @@ export default function ProjectSplash() {
     return () => observer.disconnect();
   }, []);
 
-  const onPointerMove = (event: PointerEvent<HTMLUListElement>) => {
-    if (event.pointerType === "touch") return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const band = Math.floor(((event.clientX - rect.left) / rect.width) * panels.length);
-    setActive(Math.min(panels.length - 1, Math.max(0, band)));
+  // Panel widths in pixels, for pinning the pictures and sizing their clips.
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const sync = () => {
+      const gap = parseFloat(getComputedStyle(stage).getPropertyValue("--splash-gap")) || 0;
+      const free = stage.clientWidth - gap * (panels.length - 1);
+      const closed = free / (OPEN_GROW + panels.length - 1);
+      stage.style.setProperty("--closed-w", `${closed}px`);
+      stage.style.setProperty("--open-w", `${closed * OPEN_GROW}px`);
+    };
+    sync();
+    const observer = new ResizeObserver(sync);
+    observer.observe(stage);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => () => window.clearTimeout(intentRef.current), []);
+
+  const intend = (index: number) => {
+    window.clearTimeout(intentRef.current);
+    intentRef.current = window.setTimeout(() => setActive(index), HOVER_INTENT_MS);
   };
+  const cancel = () => window.clearTimeout(intentRef.current);
+  const place = (index: number) =>
+    index === active ? "is-active" : index < active ? "is-before" : "is-after";
 
   return (
     <section className="splash" ref={rootRef} aria-labelledby="splash-title">
       <h1 id="splash-title" className="splash-title">
         Interfaces for games and creative tools
       </h1>
-      <ul className="splash-strip" aria-label="Projects" onPointerMove={onPointerMove}>
-        {panels.map((panel, index) => (
-          <li
-            key={panel.href}
-            className={index === active ? "splash-item is-active" : "splash-item"}
-            style={{ "--i": index } as CSSProperties}
-          >
-            <a className="splash-panel" href={panel.href} onFocus={() => setActive(index)}>
-              <span className="splash-media">
-                <img
-                  src={panel.image}
-                  alt=""
-                  width={panel.width}
-                  height={panel.height}
-                  style={
-                    {
-                      "--focus": panel.focus,
-                      "--slice": panel.slice ?? panel.focus,
-                    } as CSSProperties
-                  }
-                  fetchPriority={index === 0 ? "high" : undefined}
-                />
-                <span className="splash-tab" aria-hidden="true">
-                  {panel.title}
+      <div className="splash-stage" ref={stageRef}>
+        {/* Pinned pictures for the accordion; the list below carries the links. */}
+        <div className="splash-pictures" aria-hidden="true">
+          {panels.map((panel, index) => (
+            <span
+              key={panel.href}
+              className={`splash-picture ${place(index)}`}
+              style={{ "--i": index, "--focus": panel.focus } as CSSProperties}
+            >
+              <img
+                className="splash-img splash-img--dim"
+                src={panel.image}
+                alt=""
+                width={panel.width}
+                height={panel.height}
+                fetchPriority={index === 0 ? "high" : undefined}
+              />
+              <img
+                className="splash-img splash-img--lit"
+                src={panel.image}
+                alt=""
+                width={panel.width}
+                height={panel.height}
+              />
+            </span>
+          ))}
+        </div>
+        <ul className="splash-strip" aria-label="Projects" onPointerLeave={cancel}>
+          {panels.map((panel, index) => (
+            <li
+              key={panel.href}
+              className={`splash-item ${place(index)}`}
+              style={{ "--i": index, "--focus": panel.focus } as CSSProperties}
+              onPointerEnter={(event) => {
+                if (event.pointerType !== "touch") intend(index);
+              }}
+            >
+              <a className="splash-panel" href={panel.href} onFocus={() => setActive(index)}>
+                <span className="splash-media">
+                  {/* Shown in the stacked layout; the accordion uses the pinned pictures. */}
+                  <img
+                    className="splash-img splash-img--stack"
+                    src={panel.image}
+                    alt=""
+                    width={panel.width}
+                    height={panel.height}
+                  />
+                  <span className="splash-tab" aria-hidden="true">
+                    {panel.title}
+                  </span>
                 </span>
-              </span>
-              <span className="splash-caption">
-                <span className="splash-name">{panel.title}</span>
-                <span className="splash-meta">{panel.meta}</span>
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
+                <span className="splash-caption">
+                  <span className="splash-name">{panel.title}</span>
+                  <span className="splash-meta">{panel.meta}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
