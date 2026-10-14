@@ -8,9 +8,10 @@ Show the work as working interfaces. The first screen states the job ("Interface
 
 ## System
 
-- Ground #ededea, tone step #e1e2dd, ink #121314 / #4d5054. Night field #0f1011 for EWA and the private preview. Vermilion #f2481b for actions, focus and the DREAMATRON field.
+- Ground #e8e7e2 (softened from #ededea so it isn't glaring), tone step #dcdbd5, ink #121314 / #4d5054. Night field #0f1011 for EWA and the private preview. Vermilion #f2481b for actions, focus and the DREAMATRON field.
 - One typeface, Instrument Sans (OFL, self-hosted, variable weight and width). Display text is 600 weight at 86% width, tracked -0.035em.
 - 12-column grid, pill buttons. No gradients, eyebrows, monospace, shadows or hairline rules.
+- **Dark theme:** follows the visitor's system setting. A header toggle overrides it and saves the choice (localStorage `theme`). A pre-paint script in index.html prevents a flash of the wrong theme. Dark tokens: ground #151618, step #1f2023, ink #e6e5e0 / #9fa2a5. In dark mode the DREAMATRON field becomes a dark step with a vermilion wordmark, so no full-width orange slab glows at night.
 - **Brand rule:** DREAMATRON is always set in capitals with open letter spacing. This is done in CSS (`.brand`, `<Brand />`) so screen readers still read one word.
 
 ## Page

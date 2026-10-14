@@ -1,6 +1,7 @@
 import Brand from "./Brand";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { contact } from "../data/site";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Header() {
   const { pathname, search } = useLocation();
@@ -23,9 +24,12 @@ export default function Header() {
         <NavLink to="/art">Paintings</NavLink>
         <NavLink to="/about">About</NavLink>
       </nav>
-      <a className="header-contact" href={contact.href} target="_blank" rel="noreferrer">
-        {contact.label}
-      </a>
+      <div className="header-end">
+        <a className="header-contact" href={contact.href} target="_blank" rel="noreferrer">
+          {contact.label}
+        </a>
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

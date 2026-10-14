@@ -31,8 +31,10 @@
 }
 
 :root {
-  --ground: #ededea;
-  --ground-2: #e1e2dd;
+  --ground: #e8e7e2;
+  --ground-2: #dcdbd5;
+  --sheet: #f4f3ef;
+  --on-accent: #121314;
   --ink: #121314;
   --ink-2: #4d5054;
   --accent: #f2481b;
@@ -53,6 +55,19 @@
 
   --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
   color-scheme: light;
+}
+
+/* Dark theme: follows the system setting unless the visitor picks one
+   (index.html sets data-theme before first paint). */
+:root[data-theme="dark"] {
+  --ground: #151618;
+  --ground-2: #1f2023;
+  --sheet: #1f2023;
+  --ink: #e6e5e0;
+  --ink-2: #9fa2a5;
+  --night: #0b0c0d;
+  --night-2: #17181a;
+  color-scheme: dark;
 }
 
 *,
@@ -118,7 +133,7 @@ strong {
 
 ::selection {
   background: var(--accent);
-  color: var(--ink);
+  color: var(--on-accent);
 }
 
 main:focus {
@@ -210,7 +225,7 @@ main:focus {
   border: 0;
   border-radius: 999px;
   background: var(--accent);
-  color: var(--ink);
+  color: var(--on-accent);
   font-size: var(--size-body);
   font-weight: 600;
   text-decoration: none;
@@ -298,8 +313,38 @@ main:focus {
   transform: none;
 }
 .header-contact {
-  justify-self: end;
   font-weight: 600;
+}
+.header-end {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: -8px -8px -8px 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.theme-toggle:hover {
+  background: var(--ground-2);
+}
+.theme-toggle svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.4s var(--ease);
+}
+:root[data-theme="dark"] .theme-toggle svg {
+  transform: rotate(180deg);
 }
 
 .site-footer {
@@ -366,6 +411,21 @@ figcaption {
 }
 .field-accent .meta {
   color: var(--ink);
+}
+/* At night the full vermilion field is too bright: the colour moves to the type. */
+:root[data-theme="dark"] .field-accent {
+  background: var(--ground-2);
+}
+:root[data-theme="dark"] .field-accent .wordmark-giant {
+  color: var(--accent);
+}
+:root[data-theme="dark"] .field-accent .dreamatron-private::before,
+:root[data-theme="dark"] .field-accent .dreamatron-auteur li::before {
+  background: var(--accent);
+}
+:root[data-theme="dark"] .field-accent .button--ink {
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 /* Hero ------------------------------------------------------------------ */
@@ -1248,7 +1308,7 @@ figcaption {
   gap: 12px;
 }
 .resume-sheet {
-  background: #fbfbf9;
+  background: var(--sheet);
   padding: clamp(24px, 3vw, 48px);
   font-size: 16px;
 }
