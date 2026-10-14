@@ -11,8 +11,7 @@ function ArtOverview() {
           Paintings
         </h1>
         <p className="statement" data-reveal>
-          Characters, rooms and imagined places, from my ArtStation archive.
-          Some became concepts for my games.
+          Characters, rooms and imagined places.
         </p>
       </section>
       <PaintingRows pieces={artPieces} eager={6} />

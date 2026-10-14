@@ -395,8 +395,7 @@ function Paintings() {
           Paintings
         </h2>
         <p className="statement" data-reveal>
-          I trained in illustration and fine art before I learned to program.
-          I still paint characters, rooms, and the occasional sea monster.
+          Characters, rooms and imagined places.
         </p>
       </header>
       <PaintingRows pieces={paintings} />
