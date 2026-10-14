@@ -252,7 +252,6 @@ function Ewa() {
         </figure>
         <figure className="ewa-wide" data-reveal>
           <img src={img("ewa-ewa-concept-01")} alt="Concept painting of a burning furnace room" loading="lazy" />
-          <figcaption>Concept painting, the furnace room</figcaption>
         </figure>
         <figure className="ewa-night" data-reveal>
           <img
@@ -262,7 +261,6 @@ function Ewa() {
             height={1300}
             loading="lazy"
           />
-          <figcaption>Concept painting</figcaption>
         </figure>
       </div>
     </section>
