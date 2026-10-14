@@ -734,6 +734,11 @@ figcaption {
   letter-spacing: 0.22em;
   margin-right: -0.22em;
 }
+/* Scroll-driven wordmark: letters slide in from past the screen edges. */
+.scroll-wordmark-letter {
+  display: inline-block;
+  will-change: transform, opacity;
+}
 .dreamatron-intro {
   margin-top: clamp(32px, 4vw, 64px);
   max-width: 40ch;

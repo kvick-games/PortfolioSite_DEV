@@ -12,7 +12,7 @@ Show the work as working interfaces. The first screen states the job ("Interface
 - One typeface, Instrument Sans (OFL, self-hosted, variable weight and width). Display text is 600 weight at 86% width, tracked -0.035em.
 - 12-column grid, pill buttons. No gradients, eyebrows, monospace, shadows or hairline rules.
 - **Dark theme is the default:** a pure black ground (#000), with ink #e6e5e0 / #9fa2a5. The EWA and DREAMATRON fields are black too, and the grey step (#161617) is only for small surfaces such as tabs, chips and the résumé sheet. In dark mode the DREAMATRON field keeps a vermilion wordmark instead of a full orange slab. The header toggle switches to the light theme and saves the choice (localStorage `theme`). A pre-paint script in index.html applies it, so there is no flash.
-- **Brand rule:** DREAMATRON is always set in capitals with open letter spacing. This is done in CSS (`.brand`, `<Brand />`) so screen readers still read one word.
+- **Brand rule:** DREAMATRON and its apps (AUTEUR) are always set in capitals with open letter spacing. This is done in CSS (`.brand`, `<Brand />`) so screen readers still read one word.
 
 ## Page
 
@@ -24,7 +24,7 @@ Show the work as working interfaces. The first screen states the job ("Interface
 | Tanuki | Header row, mosaic, three design notes |
 | EWA | Night field: key art, concept painting, letterbox-cropped captures |
 | Level Generator | Pipeline diagram and four rooms |
-| DREAMATRON | Vermilion field with a full-width wordmark. The live AI Timeline (dreamatron.ai/timeline) is the public example. DT_Auteur is described in text only, with a door to the client preview |
+| DREAMATRON | Vermilion field (black in dark mode) with a full-width wordmark whose letters slide in horizontally from past the screen edges as it scrolls into view, and spread apart as it leaves (ScrollWordmark, scroll-linked, no vertical movement, off under reduced motion). The live AI Timeline (dreamatron.ai/timeline) is the public example. AUTEUR is shown by name with "In development" only, with a door to the client preview |
 | Paintings | Justified rows that keep every painting's proportions |
 | About | Bio and links |
 
@@ -34,7 +34,7 @@ Inner pages:
 
 ## Private preview (/studio/)
 
-- Same system on the night ground, with DT_Auteur leading.
+- Same system on the night ground, with AUTEUR leading.
 - Four views of genuine captures sit in a tabbed viewer.
 - Three design notes: the timeline note, audio warp lanes and the compact inspector.
 - Two of those notes use crops derived from the captures; both crops are allowlisted on the server and recorded in sources.json.
@@ -44,7 +44,7 @@ Inner pages:
 ## Content rules kept
 
 - No invented clients, metrics, testimonials or mock interfaces.
-- All imagery comes from the existing portfolio, the ArtStation archive, the live DREAMATRON timeline, or the owner's private DT_Auteur captures.
+- All imagery comes from the existing portfolio, the ArtStation archive, the live DREAMATRON timeline, or the owner's private AUTEUR captures.
 
 ## Rounds
 

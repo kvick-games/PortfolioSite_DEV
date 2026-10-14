@@ -79,7 +79,7 @@ function page(title, body) {
 const login = (message = "") =>
   page(
     "Client preview",
-    `<p>Unreleased <span class="brand">Dreamatron</span> interface work, starting with DT_Auteur. Shared with invited clients, and still in progress.</p>${message ? `<p role="alert">${escape(message)}</p>` : ""}<form method="post" action="/studio/login"><label for="password">Shared password</label><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="256"><button type="submit">Open the preview</button></form><p class="note">No password yet? <a href="https://www.linkedin.com/in/michael-nevins-690b3140/">Ask me for access.</a></p>`,
+    `<p><span class="brand">Auteur</span> by <span class="brand">Dreamatron</span>. In development.</p>${message ? `<p role="alert">${escape(message)}</p>` : ""}<form method="post" action="/studio/login"><label for="password">Shared password</label><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="256"><button type="submit">Open the preview</button></form><p class="note">No password yet? <a href="https://www.linkedin.com/in/michael-nevins-690b3140/">Ask me for access.</a></p>`,
   );
 function send(res, status, body, headers = {}) {
   res.writeHead(status, {

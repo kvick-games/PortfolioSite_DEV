@@ -2,6 +2,7 @@ import Brand from "../components/Brand";
 import { Link } from "react-router-dom";
 import MenuViewer, { type MenuView } from "../components/MenuViewer";
 import PaintingRows from "../components/PaintingRows";
+import ScrollWordmark from "../components/ScrollWordmark";
 import { artPieces } from "../data/artPieces";
 import { contact, resumes } from "../data/site";
 
@@ -314,9 +315,7 @@ function Dreamatron() {
       id="dreamatron"
       aria-labelledby="dreamatron-title"
     >
-      <h2 id="dreamatron-title" className="wordmark-giant" data-reveal>
-        <Brand />
-      </h2>
+      <ScrollWordmark id="dreamatron-title" name="Dreamatron" />
       <p className="statement dreamatron-intro" data-reveal>
         <Brand /> is the studio I founded. Alongside our games, I’m
         designing and building creative applications for film, sound and
@@ -362,11 +361,10 @@ function Dreamatron() {
       </div>
       <div className="dreamatron-private">
         <div className="dreamatron-auteur">
-          <h3 data-reveal>DT_Auteur, in private preview</h3>
-          <p data-reveal>
-            One editor for video, audio and MIDI. Still in development, and not
-            public yet.
-          </p>
+          <h3 data-reveal>
+            <Brand name="Auteur" />
+          </h3>
+          <p data-reveal>In development.</p>
           <ul>
             <li data-reveal>Director’s notes pinned to a moment or a range of the timeline</li>
             <li data-reveal>Audio warping with separate lanes for timing, bounds and markers</li>
@@ -377,10 +375,7 @@ function Dreamatron() {
           <a className="button button--ink" href="/studio/">
             Open the client preview
           </a>
-          <p>
-            Unreleased interface work, shared with invited clients by password.
-            Ask me for access.
-          </p>
+          <p>Password protected. Ask me for access.</p>
         </div>
       </div>
     </section>
