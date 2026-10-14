@@ -233,8 +233,7 @@ function Ewa() {
             2020 to now, Unreal Engine
           </p>
           <p className="statement" data-reveal>
-            A third-person horror game with fixed cameras, puzzles and a grid
-            inventory. Its rooms began as my paintings.
+            Every room was painted before it was built. Keep your light on.
           </p>
           <Link className="text-link" to="/portfolio?project=ewa" data-reveal>
             Watch the teaser and see more
