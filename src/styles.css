@@ -43,6 +43,12 @@
   --night-ink: #ecece7;
   --night-ink-2: #a3a6a8;
 
+  /* Résumé sheet. It is paper in both themes, so these do not change in dark.
+     The navy is sampled from the original PDF résumé, nudged a little bluer. */
+  --resume-paper: #fff;
+  --resume-side: #1f2022;
+  --resume-accent: #2b4a6e;
+
   --margin: clamp(20px, 2.4vw, 36px);
   --gap: clamp(16px, 1.7vw, 28px);
   --section: clamp(112px, 13vw, 200px);
@@ -1281,7 +1287,7 @@ figcaption {
   gap: var(--gap);
 }
 .about-copy {
-  grid-column: 1 / span 5;
+  grid-column: 1 / span 6;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -1300,94 +1306,11 @@ figcaption {
   font-weight: 600;
   text-underline-offset: 6px;
 }
+/* The résumé runs at full measure below the biography; its own rules
+   (sheet, columns, print) live in src/resume.css. */
 .resume-panel {
-  grid-column: 7 / -1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.resume-panel > h2 {
-  font-size: clamp(28px, 2.6vw, 40px);
-  font-weight: 600;
-  font-stretch: 90%;
-  letter-spacing: -0.025em;
-  line-height: 1;
-}
-
-.resume-document {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.resume-document-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.resume-sheet {
-  background: var(--sheet);
-  padding: clamp(24px, 3vw, 48px);
-  font-size: 16px;
-}
-.resume-document-header {
-  margin-bottom: 28px;
-}
-.resume-title-block h3,
-.resume-document-header h3 {
-  font-size: 28px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-}
-.resume-body {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: 36px;
-}
-.resume-main,
-.resume-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-.resume-section h4,
-.resume-sidebar-section h4 {
-  margin: 0 0 12px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ink-2);
-}
-.resume-timeline,
-.resume-project-list,
-.resume-contact-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-.resume-entry h5 {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 600;
-}
-.resume-entry-meta {
-  color: var(--ink-2);
-  font-size: 15px;
-}
-.resume-entry ul {
-  margin-top: 8px;
-  padding-left: 18px;
-  list-style: disc;
-}
-.resume-entry li + li {
-  margin-top: 4px;
-}
-.resume-sidebar-section ul {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.resume-sheet p {
-  margin: 0;
+  grid-column: 1 / -1;
+  margin-top: clamp(64px, 8vw, 128px);
 }
 
 /* Experiments page */
@@ -1552,9 +1475,6 @@ figcaption {
   .resume-panel {
     grid-column: 1 / -1;
   }
-  .resume-panel {
-    margin-top: 48px;
-  }
 }
 
 /* Phone ----------------------------------------------------------------- */
@@ -1713,8 +1633,7 @@ figcaption {
   }
   .split-feature,
   .media-grid--three,
-  .external-video-card,
-  .resume-body {
+  .external-video-card {
     grid-template-columns: minmax(0, 1fr);
   }
   .split-feature--image-first .split-feature-copy {

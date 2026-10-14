@@ -1,4 +1,6 @@
 import { withBrand } from "./Brand";
+import "../resume.css";
+
 const experience = [
   {
     role: "Founder / Developer",
@@ -112,34 +114,104 @@ const educationItems = [
 
 const interests = ["AI / PCG / Math", "Art + Music Production", "Martial Arts"];
 
+/**
+ * The résumé as a document: a white main column and a charcoal sidebar topped
+ * by a navy block, after the layout of the original PDF résumés in /Resources.
+ * The sheet stays paper-coloured in both site themes, like a printed page.
+ * "Export PDF" prints the page; resume.css's print rules reduce it to this sheet.
+ */
 export default function ResumeDocument() {
   return (
-    <section className="resume-document" aria-label="Michael Nevins resume">
-      <div className="resume-document-actions">
-        <button
-          className="project-link-button"
-          type="button"
-          onClick={() => window.print()}
-        >
-          Export PDF
-        </button>
-        <a
-          className="project-link-button project-link-button--secondary"
-          href="/Resources/Michael_Nevins_Resume_GameplayProgrammer.pdf"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Open Original
-        </a>
+    <article className="resume" aria-labelledby="resume-name">
+      <header className="resume-head">
+        <h2 id="resume-name" className="resume-name">
+          Michael <span>Nevins</span>
+        </h2>
+        <p className="resume-role">Software Developer / Technical Designer</p>
+        <p className="resume-summary">
+          Multi-disciplinary game developer with production experience across
+          AAA, independent games, gameplay systems, interface systems,
+          procedural generation, and tools. Comfortable working between design
+          and engineering to turn unusual ideas into shippable systems.
+        </p>
+      </header>
+
+      <div className="resume-band">
+        <div className="resume-actions">
+          <button
+            className="resume-action"
+            type="button"
+            onClick={() => window.print()}
+          >
+            Export PDF
+          </button>
+          <a
+            className="resume-action resume-action--quiet"
+            href="/Resources/Michael_Nevins_Resume_GameplayProgrammer.pdf"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open original
+          </a>
+        </div>
       </div>
 
-      <div className="resume-sheet">
-        <header className="resume-document-header">
-          <div className="resume-title-block">
-            <h2>MICHAEL NEVINS</h2>
-            <p>Software Developer / Technical Designer</p>
+      <div className="resume-main">
+        <section className="resume-section" aria-labelledby="resume-experience">
+          <h3 id="resume-experience">Experience</h3>
+          <div className="resume-entries">
+            {experience.map((item) => (
+              <div key={`${item.company}-${item.role}`} className="resume-entry">
+                <div className="resume-entry-head">
+                  <h4>{withBrand(item.company)}</h4>
+                  <span className="resume-dates">{item.years}</span>
+                </div>
+                <p className="resume-entry-role">{item.role}</p>
+                <ul className="resume-lines">
+                  {item.bullets.map((bullet) => (
+                    <li key={bullet}>{bullet}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
-          <ul className="resume-contact-list" aria-label="Resume links">
+        </section>
+
+        <section className="resume-section" aria-labelledby="resume-projects">
+          <h3 id="resume-projects">Selected Projects</h3>
+          <div className="resume-entries">
+            {selectedProjects.map((project) => (
+              <div key={project.title} className="resume-entry">
+                <h4>{project.title}</h4>
+                <p className="resume-entry-role">{project.meta}</p>
+                <p className="resume-lines">{project.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="resume-skillset">
+          {skillGroups.map((group) => (
+            <section
+              key={group.title}
+              className={`resume-section resume-section--${group.title.toLowerCase()}`}
+              aria-label={group.title}
+            >
+              <h3>{group.title}</h3>
+              <ul className="resume-list">
+                {group.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </div>
+
+      <aside className="resume-side" aria-label="Contact, education and interests">
+        <section className="resume-side-section">
+          <h3>Contact</h3>
+          <ul>
             {contactLinks.map((link) => (
               <li key={link.href}>
                 <a href={link.href} target="_blank" rel="noreferrer">
@@ -148,89 +220,29 @@ export default function ResumeDocument() {
               </li>
             ))}
           </ul>
-        </header>
+        </section>
 
-        <div className="resume-body">
-          <div className="resume-main">
-            <section className="resume-section resume-section--profile">
-              <h3>Profile</h3>
-              <p>
-                Multi-disciplinary game developer with production experience
-                across AAA, independent games, gameplay systems, interface
-                systems, procedural generation, and tools. Comfortable working
-                between design and engineering to turn unusual ideas into
-                shippable systems.
-              </p>
-            </section>
-
-            <section className="resume-section">
-              <h3>Experience</h3>
-              <div className="resume-timeline">
-                {experience.map((item) => (
-                  <article
-                    key={`${item.company}-${item.role}`}
-                    className="resume-entry"
-                  >
-                    <div>
-                      <h4>{withBrand(item.company)}</h4>
-                      <p>{item.role}</p>
-                    </div>
-                    <span>{item.years}</span>
-                    <ul>
-                      {item.bullets.map((bullet) => (
-                        <li key={bullet}>{bullet}</li>
-                      ))}
-                    </ul>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            <section className="resume-section">
-              <h3>Selected Projects</h3>
-              <div className="resume-project-list">
-                {selectedProjects.map((project) => (
-                  <article key={project.title}>
-                    <h4>{project.title}</h4>
-                    <p className="resume-entry-meta">{project.meta}</p>
-                    <p>{project.description}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
-          </div>
-
-          <aside className="resume-sidebar" aria-label="Resume sidebar">
-            {skillGroups.map((group) => (
-              <section key={group.title} className="resume-sidebar-section">
-                <h3>{group.title}</h3>
-                <p>{group.items.join(" / ")}</p>
-              </section>
-            ))}
-
-            <section className="resume-sidebar-section">
-              <h3>Education</h3>
-              {educationItems.map((item) => (
-                <article key={item.title}>
-                  <h4>{item.title}</h4>
-                  {item.details.map((detail) => (
-                    <p key={detail}>{detail}</p>
-                  ))}
-                </article>
+        <section className="resume-side-section">
+          <h3>Education</h3>
+          {educationItems.map((item) => (
+            <div key={item.title} className="resume-school">
+              <h4>{item.title}</h4>
+              {item.details.map((detail) => (
+                <p key={detail}>{detail}</p>
               ))}
-            </section>
+            </div>
+          ))}
+        </section>
 
-            <section className="resume-sidebar-section">
-              <h3>Interests</h3>
-              <ul>
-                {interests.map((interest) => (
-                  <li key={interest}>{interest}</li>
-                ))}
-              </ul>
-            </section>
-          </aside>
-        </div>
-      </div>
-    </section>
+        <section className="resume-side-section">
+          <h3>Interests</h3>
+          <ul>
+            {interests.map((interest) => (
+              <li key={interest}>{interest}</li>
+            ))}
+          </ul>
+        </section>
+      </aside>
+    </article>
   );
 }

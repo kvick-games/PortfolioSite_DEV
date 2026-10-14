@@ -1,0 +1,426 @@
+/* Résumé sheet ------------------------------------------------------------
+   After the original PDF résumés (Resources/Michael_Nevins_Resume_*.pdf):
+   a white main column with a heavy stacked name and underlined section
+   heads, and a charcoal sidebar topped by a navy block, its sections marked
+   by navy bars. The sheet is paper in both site themes, like a printed page,
+   so its colours are fixed rather than themed. Tokens: --resume-paper,
+   --resume-side and --resume-accent in :root (styles.css). */
+
+.resume {
+  --resume-ink: #1c1d1f;
+  --resume-ink-2: #55595e;
+  --resume-side-ink: #f2f2ef;
+  --resume-side-ink-2: #a9adb2;
+  --resume-pad: clamp(24px, 4.4vw, 72px);
+  --resume-side-pad: clamp(20px, 2.4vw, 40px);
+
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-areas:
+    "head band"
+    "main side";
+  background: var(--resume-paper);
+  color: var(--resume-ink);
+  font-size: 16.5px;
+  line-height: 1.5;
+  color-scheme: light;
+}
+/* Zero-specificity resets, so the component rules below always win. */
+:where(.resume) :where(h2, h3, h4, p, ul) {
+  margin: 0;
+}
+:where(.resume) ul {
+  padding: 0;
+  list-style: none;
+}
+.resume .brand {
+  font-weight: inherit;
+}
+
+/* Name header and the navy block beside it share the first grid row,
+   so the block is always exactly as tall as the header. */
+.resume-head {
+  grid-area: head;
+  padding: clamp(36px, 4.8vw, 76px) var(--resume-pad) clamp(40px, 4.4vw, 68px);
+}
+.resume-name {
+  font-size: clamp(52px, 6.4vw, 104px);
+  font-weight: 700;
+  font-stretch: 100%;
+  line-height: 0.86;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+}
+.resume-name span {
+  display: block;
+}
+.resume-role {
+  margin-top: 0.75em;
+  font-size: clamp(14px, 1.2vw, 18px);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--resume-ink-2);
+}
+.resume-summary {
+  max-width: 40em;
+  margin-top: clamp(24px, 2.4vw, 36px);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.resume-band {
+  grid-area: band;
+  display: flex;
+  padding-top: clamp(16px, 1.8vw, 28px);
+  background: var(--resume-side);
+}
+.resume-actions {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-end;
+  gap: 14px 24px;
+  padding: var(--resume-side-pad);
+  background: var(--resume-accent);
+}
+.resume-action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 0;
+  background: var(--resume-paper);
+  color: var(--resume-accent);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.25s var(--ease);
+}
+.resume-action:hover {
+  transform: translateY(-2px);
+}
+.resume-action--quiet {
+  min-height: 0;
+  padding: 0;
+  background: none;
+  color: var(--resume-side-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+}
+.resume-action:focus-visible {
+  outline: 2px solid var(--resume-side-ink);
+  outline-offset: 4px;
+}
+
+/* Main column ---------------------------------------------------------- */
+
+.resume-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 4.4vw, 64px);
+  padding: 0 var(--resume-pad) clamp(48px, 5.6vw, 88px);
+}
+.resume-section h3 {
+  max-width: 34rem;
+  margin-bottom: 24px;
+  padding-bottom: 8px;
+  border-bottom: 3px solid var(--resume-ink);
+  font-size: clamp(20px, 1.6vw, 25px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.resume-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.resume-entry-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 24px;
+}
+.resume-entry h4 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.resume-dates {
+  font-size: 17px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--resume-accent);
+}
+.resume-entry-role {
+  margin-top: 1px;
+  font-size: 18px;
+  font-style: italic;
+  line-height: 1.3;
+}
+/* Duties sit indented under the role with no bullets, as in the PDF. */
+.resume-lines {
+  margin-top: 10px;
+  padding-left: 16px;
+  color: #34373b;
+}
+.resume-lines li + li {
+  margin-top: 6px;
+}
+
+.resume-skillset {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: clamp(32px, 4vw, 64px);
+}
+.resume-skillset h3 {
+  max-width: none;
+}
+.resume-list {
+  font-size: 18px;
+  line-height: 1.45;
+  color: #3a3d41;
+}
+.resume-section--software .resume-list {
+  columns: 2;
+  column-gap: 24px;
+}
+.resume-list li {
+  break-inside: avoid;
+}
+
+/* Sidebar -------------------------------------------------------------- */
+
+.resume-side {
+  grid-area: side;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(36px, 3.6vw, 52px);
+  padding: clamp(36px, 4vw, 60px) var(--resume-side-pad) clamp(48px, 5.6vw, 88px);
+  background: var(--resume-side);
+  color: var(--resume-side-ink);
+}
+.resume-side-section {
+  padding: 2px 0 4px clamp(16px, 1.4vw, 22px);
+  border-left: 6px solid var(--resume-accent);
+}
+.resume-side-section h3 {
+  margin-bottom: 14px;
+  font-size: clamp(20px, 1.6vw, 25px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-align: right;
+  text-transform: uppercase;
+}
+.resume-side-section li + li {
+  margin-top: 4px;
+}
+.resume-side-section a {
+  text-decoration-color: rgb(242 242 239 / 0.4);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.resume-side-section a:hover {
+  text-decoration-color: currentColor;
+}
+.resume-school + .resume-school {
+  margin-top: 18px;
+}
+.resume-school h4 {
+  font-size: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.resume-school p {
+  color: var(--resume-side-ink-2);
+}
+
+/* Narrow screens: one column. The navy block becomes a band under the name
+   that carries the controls; the sidebar follows the main column. */
+@media (max-width: 860px) {
+  .resume {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "head"
+      "band"
+      "main"
+      "side";
+  }
+  .resume-band {
+    padding-top: 0;
+  }
+  .resume-main {
+    padding-top: clamp(36px, 6vw, 56px);
+  }
+  .resume-side-section {
+    max-width: 30rem;
+  }
+}
+@media (max-width: 560px) {
+  .resume {
+    font-size: 16px;
+  }
+  .resume-name {
+    font-size: clamp(44px, 14vw, 60px);
+  }
+  .resume-role {
+    letter-spacing: 0.24em;
+  }
+  .resume-summary {
+    font-size: 16px;
+  }
+  .resume-actions {
+    gap: 14px 20px;
+  }
+  .resume-entry h4 {
+    font-size: 19px;
+  }
+  .resume-entry-role {
+    font-size: 17px;
+  }
+  .resume-lines {
+    padding-left: 12px;
+  }
+  .resume-lines li + li {
+    margin-top: 6px;
+  }
+  .resume-skillset {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .resume-list {
+    font-size: 17px;
+  }
+}
+
+/* Print / Export PDF ----------------------------------------------------
+   "Export PDF" calls window.print(). On the page that holds the résumé,
+   print only the sheet, edge to edge on one Letter page, colours kept. */
+@media print {
+  @page {
+    size: letter;
+    margin: 0;
+  }
+  html:has(.resume),
+  body:has(.resume) {
+    background: var(--resume-paper) !important;
+  }
+  body:has(.resume) #root > :not(main),
+  body:has(.resume) main > :not(.about-layout),
+  body:has(.resume) .about-layout > :not(.resume-panel),
+  .resume-actions > * {
+    display: none !important;
+  }
+  body:has(.resume) main,
+  body:has(.resume) .about-layout,
+  body:has(.resume) .resume-panel {
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+  .resume {
+    --resume-pad: 0.42in;
+    --resume-side-pad: 0.26in;
+    min-height: 11in;
+    /* A Letter page is narrower than the 860px breakpoint, so restate the
+       two-column sheet here. */
+    grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr);
+    grid-template-areas:
+      "head band"
+      "main side";
+    font-size: 8.6pt;
+    line-height: 1.4;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .resume-head {
+    padding: 0.38in var(--resume-pad) 0.2in;
+  }
+  .resume-name {
+    font-size: 34pt;
+  }
+  .resume-role {
+    font-size: 9.5pt;
+  }
+  .resume-summary {
+    margin-top: 0.1in;
+    font-size: 8.6pt;
+  }
+  .resume-band {
+    padding-top: 0.2in;
+  }
+  .resume-main {
+    gap: 0.16in;
+    padding: 0 0.34in 0.3in var(--resume-pad);
+  }
+  .resume-section h3,
+  .resume-side-section h3 {
+    font-size: 12.5pt;
+  }
+  .resume-section h3 {
+    margin-bottom: 0.1in;
+    padding-bottom: 3px;
+    border-bottom-width: 2px;
+  }
+  .resume-entries {
+    gap: 0.09in;
+  }
+  .resume-entry h4 {
+    font-size: 10.5pt;
+  }
+  .resume-dates {
+    font-size: 9.5pt;
+  }
+  .resume-entry-role {
+    font-size: 9.5pt;
+  }
+  .resume-lines {
+    margin-top: 2px;
+    padding-left: 10px;
+  }
+  .resume-lines li + li {
+    margin-top: 1px;
+  }
+  .resume-list {
+    font-size: 8.8pt;
+    line-height: 1.35;
+  }
+  .resume-section--skills .resume-list {
+    columns: 2;
+    column-gap: 12px;
+  }
+  .resume-skillset {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 0.26in;
+  }
+  .resume-side {
+    gap: 0.26in;
+    padding-top: 0.4in;
+  }
+  .resume-side-section {
+    padding-left: 10px;
+    border-left-width: 4px;
+  }
+  .resume-side-section h3 {
+    margin-bottom: 6px;
+  }
+  .resume-side-section a {
+    text-decoration: none;
+  }
+  .resume-school + .resume-school {
+    margin-top: 8px;
+  }
+}

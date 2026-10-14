@@ -61,10 +61,9 @@ export default function AboutPage() {
           </div>
         </div>
 
-        <aside className="resume-panel" aria-label="Resume">
-          <h2>Résumé</h2>
+        <div className="resume-panel">
           <ResumeDocument />
-        </aside>
+        </div>
       </section>
     </main>
   );
