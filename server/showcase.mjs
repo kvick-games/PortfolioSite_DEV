@@ -74,12 +74,12 @@ const escape = (value) =>
       ],
   );
 function page(title, body) {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>${title} | Michael Nevins</title><link rel="stylesheet" href="/studio-access.css"></head><body><header><a href="/portfolio">Michael Nevins</a><a href="/portfolio">Back to portfolio</a></header><main class="access"><h1>${title}</h1>${body}</main></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>${title} | Michael Nevins</title><link rel="stylesheet" href="/studio-access.css"></head><body><header><a class="wordmark" href="/portfolio">Michael Nevins</a><a href="/portfolio">Back to the portfolio</a></header><main class="access"><h1>${title}</h1>${body}</main></body></html>`;
 }
 const login = (message = "") =>
   page(
-    "Private UI showcase",
-    `<p>A closer look at Dreamatron. Unreleased interfaces and work in progress, shared for client conversations.</p>${message ? `<p role="alert">${escape(message)}</p>` : ""}<form method="post" action="/studio/login"><label for="password">Shared password</label><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="256"><button type="submit">View showcase</button></form><p class="note">Need access? <a href="https://www.linkedin.com/in/michael-nevins-690b3140/">Get in touch with Michael.</a></p>`,
+    "Client preview",
+    `<p>Unreleased <span class="brand">Dreamatron</span> interface work, starting with DT_Auteur. Shared with invited clients, and still in progress.</p>${message ? `<p role="alert">${escape(message)}</p>` : ""}<form method="post" action="/studio/login"><label for="password">Shared password</label><input id="password" name="password" type="password" autocomplete="current-password" required maxlength="256"><button type="submit">Open the preview</button></form><p class="note">No password yet? <a href="https://www.linkedin.com/in/michael-nevins-690b3140/">Ask me for access.</a></p>`,
   );
 function send(res, status, body, headers = {}) {
   res.writeHead(status, {
@@ -141,6 +141,7 @@ async function serveFile(req, res, base, rel, fallback = false) {
     ".webp": "image/webp",
     ".svg": "image/svg+xml",
     ".ttf": "font/ttf",
+    ".woff2": "font/woff2",
     ".pdf": "application/pdf",
     ".mp4": "video/mp4",
     ".mov": "video/quicktime",
@@ -312,6 +313,8 @@ const server = createServer(async (req, res) => {
           "assets/auteur-timeline.webp",
           "assets/auteur-audio.webp",
           "assets/auteur-inspector.webp",
+          "assets/auteur-inspector-crop.webp",
+          "assets/auteur-note.webp",
         ].includes(rel)
       )
         return send(res, 404, "Not found");

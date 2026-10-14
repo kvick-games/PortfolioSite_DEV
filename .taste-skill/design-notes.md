@@ -1,40 +1,76 @@
-# Taste v2 portfolio redesign
+# Portfolio redesign, second direction (October 13, 2026)
 
-Source: https://github.com/Leonxlnx/taste-skill, skills/taste-skill (design-taste-frontend), installed October 13, 2026. The direction library selected **The split stage**, seed **1140102882**.
+The first Taste v2 pass ("split stage": charcoal and yellow, Imbue serif, a sticky painting column) was rejected by the owner. This direction starts over and uses Taste v2 (`design-taste-frontend`) as a set of checks, not a recipe.
 
-Inventory: Michael Nevins; kvick; God of War primary menus; Sony Santa Monica 2016–2018; Judas UI work; illustration studies; Gold painting; independent Tanuki; EWA's fixed-camera horror; procedural level generator; AI Model Timeline; Dreamatron creative applications.
+## Idea
 
-Argument and copy deck:
+Show the work as working interfaces. The first screen states the job ("Interfaces for games and creative tools"). Right below it is real God of War menu footage, in a tabbed viewer that behaves like the menus it shows. Each project after that gets its own composition, sized to the material it actually has.
 
-- Michael Nevins: game developer, technical designer, artist. Proof: his painting occupies half the first screen; the introduction states the role. Action: Explore my work.
-- Selected work: explain the contribution, with existing project articles and real screenshots. God of War menu footage demonstrates interface motion.
-- Building Dreamatron: current work spans creative applications; the unreleased UI study is offered behind a server password.
-- Another side: painting is the starting point; four owned works can be selected and opened.
-- Art meets systems: existing biography connects illustration, engineering, and procedural design. Resume and profile links provide the next step.
+## System
 
-Idea: On this page, Michael's Gold painting and his game-interface work become the two sides of one working practice: image-making held beside systems-making. The fixed frame follows the selected or scrolled project. A touch-accessible artwork selector changes the displayed painting; each work remains independently reachable in the art gallery.
+- Ground #ededea, tone step #e1e2dd, ink #121314 / #4d5054. Night field #0f1011 for EWA and the private preview. Vermilion #f2481b for actions, focus and the DREAMATRON field.
+- One typeface, Instrument Sans (OFL, self-hosted, variable weight and width). Display text is 600 weight at 86% width, tracked -0.035em.
+- 12-column grid, pill buttons. No gradients, eyebrows, monospace, shadows or hairline rules.
+- **Brand rule:** DREAMATRON is always set in capitals with open letter spacing. This is done in CSS (`.brand`, `<Brand />`) so screen readers still read one word.
 
-Direction adaptations: no random redraws. Palette proportions were retained but hues mapped to Gold's charcoal-green shadows, pale lettering, and yellow pigment, rather than the dealt blush/aubergine. Imbue and Albert Sans retained and self-hosted with OFL licenses. Name kept beside the painting rather than crossing its figure, for legibility. The work index includes two inline images and real menu footage to provide visual proof without interaction. Gallery advances by explicit selection rather than autoplay. The biography uses existing text and a heading rather than inventing a founder portrait.
+## Page
 
-All image and video content comes from the existing portfolio, its ArtStation archive, or the user's private local Auteur development captures. No stock or generated images, sample clients, testimonials, or statistics were added. Private captures and source paths remain in the separate private repository.
+| Section | Composition |
+|---|---|
+| Hero | Statement and actions |
+| God of War | Tabbed menu viewer: muted loops plus stills, captions from the case study |
+| Judas | Image and copy, pushed to the end of the row |
+| Tanuki | Header row, mosaic, three design notes |
+| EWA | Night field: key art, concept painting, letterbox-cropped captures |
+| Level Generator | Pipeline diagram and four rooms |
+| DREAMATRON | Vermilion field with a full-width wordmark. The live AI Timeline (dreamatron.ai/timeline) is the public example. DT_Auteur is described in text only, with a door to the client preview |
+| Paintings | Justified rows that keep every painting's proportions |
+| About | Bio and links |
 
-ROUND 1
-Seen in one second: the Gold painting beside Michael's name.
-Idea: a painter and technical designer in one split composition.
-Live thing: project preview and artwork selection.
-Layout words by section: hero=split / work=index / gallery=frame / about=letter.
-Scores: design 7.5 · usability 8 · creativity 7 · content 8 → overall 7.6.
-Caps applied: initial inspector failures cap the initial result at 6.0.
-Top three problems:
-1. The desktop work index lacks visual proof without hovering (desktop-page-01); added featured project images, menu footage, and scroll-driven preview changes.
-2. Gold remains repeated through the work list (desktop-page-01); the fixed frame now follows the visible project.
-3. Mobile type uses too many small sizes (mobile-fold); consolidated navigation and captions onto the small size token.
+Inner pages:
+- Case studies get a full-bleed cover and end with a next-project block.
+- Paintings get a gallery and a detail view with previous/next and a "More paintings" row.
 
-ROUND 2
-Seen in one second: Gold and the name, with a legible role and action.
-Idea: the same creative practice carries from painting through game systems to Dreamatron.
-Live thing: scroll/focus project preview; click/touch painting selection.
-Layout words by section: hero=split / work=index-with-proof / Dreamatron=light-field / gallery=frame / about=letter.
-Scores: design 8 · usability 8 · creativity 7 · content 8 → overall 7.8.
-Caps applied: none after final gate passes.
-Remaining limits: the fixed column makes the long desktop page deliberately repetitive; no independent audience review or production deployment was performed. Existing project dates and status copy still need owner review before launch.
+## Private preview (/studio/)
+
+- Same system on the night ground, with DT_Auteur leading.
+- Four views of genuine captures sit in a tabbed viewer.
+- Three design notes: the timeline note, audio warp lanes and the compact inspector.
+- Two of those notes use crops derived from the captures; both crops are allowlisted on the server and recorded in sources.json.
+- It is labelled as in development, "real captures from the working app, October 2026".
+- No private pixels are in the public build.
+
+## Content rules kept
+
+- No invented clients, metrics, testimonials or mock interfaces.
+- All imagery comes from the existing portfolio, the ArtStation archive, the live DREAMATRON timeline, or the owner's private DT_Auteur captures.
+
+## Rounds
+
+- **Round 1**, home at 1440 / 768 / 390. Fixed:
+  - The hero actions were read as an eyebrow.
+  - The mobile tabs scrolled sideways.
+  - The EWA grid broke because of an nth-of-type miscount.
+  - The Tanuki header was scattered.
+- **Round 2**. Fixed:
+  - On phones, the God of War heading now sits above the footage.
+  - The EWA captures were letterboxed.
+  - Images in the Tanuki and AI Timeline case studies repeated the cover.
+  - The "Back to work" link above the case-study titles became a next-project block at the end.
+  - The phone nav overflowed with the spaced brand name.
+- **Final inspector results**:
+  - Home: 0 FAIL. Two WARNs come from the brand rule (the spaced name at 14px on phones, plus one extra optical size), and they are accepted.
+  - Case study: 0 FAIL.
+  - Painting detail: the meter wants motion and footage, which a single still painting doesn't need.
+
+Self-scores: design 8, usability 8, creativity 7.5, content 8.
+
+## Open items for the owner
+
+- Copy to confirm:
+  - "from the makers of BioShock" (Judas)
+  - "film, sound and games"
+  - "Teams of 350 and teams of one"
+  - the Tanuki description
+  - the legacy case-study dates
+- No public email exists, so contact goes through LinkedIn.
