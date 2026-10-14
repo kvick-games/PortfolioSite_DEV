@@ -10,6 +10,7 @@ import {
 } from "react";
 import { Link } from "react-router-dom";
 import snapshot from "../data/aiTimeline.json";
+import SmokeField from "./SmokeField";
 import "../timeline-mini.css";
 
 /*
@@ -536,6 +537,21 @@ export default function TimelineMini() {
         onPointerCancel={endDrag}
         onPointerLeave={() => setHover(null)}
       >
+        <SmokeField
+          lanes={
+            layout
+              ? visibleLanes.map((lane, i) => ({
+                  y: laneY(i),
+                  color: lane.accent,
+                  start: dayOf(lane.releases[0].date) * ppd,
+                }))
+              : []
+          }
+          offsetRef={offsetRef}
+          nowX={nowX}
+          shadeRef={cardRef}
+          axisHeight={axisHeight}
+        />
         <p id="tlm-help" className="tlm-sr">
           Drag or use the arrow keys to pan. Plus and minus zoom, zero resets. A snapshot of
           GPT, Claude, Gemini, Grok and Muse Spark releases as of {AS_OF_LABEL}.
