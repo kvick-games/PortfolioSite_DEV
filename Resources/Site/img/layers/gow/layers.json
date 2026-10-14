@@ -7,7 +7,7 @@
   {
     "name": "troll",
     "src": "/Resources/Site/img/layers/gow/troll.webp",
-    "depth": 0.35
+    "depth": 0.6
   },
   {
     "name": "kratos",
@@ -17,11 +17,11 @@
   {
     "name": "atreus",
     "src": "/Resources/Site/img/layers/gow/atreus.webp",
-    "depth": 0.8
+    "depth": 0.6
   },
   {
     "name": "logo",
     "src": "/Resources/Site/img/layers/gow/logo.webp",
-    "depth": 1
+    "depth": 0.6
   }
 ]

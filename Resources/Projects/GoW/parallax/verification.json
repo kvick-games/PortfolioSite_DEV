@@ -1,0 +1,46 @@
+{
+  "source_sha256": "516729e0b67d26811f677dd7142c3af8232e745002c07119403177c84fae3784",
+  "composite_mae_0_255": 4.530407703703704,
+  "composite_mae_percent": 1.7766304720406683,
+  "web_bytes": {
+    "plate": 376652,
+    "troll": 100908,
+    "kratos": 42140,
+    "atreus": 67536,
+    "logo": 59700
+  },
+  "plate_unchanged_percent": 60.40160831404321,
+  "figure_rgb_original": true,
+  "hidden_logo_repairs": false,
+  "jpeg_composite_mae_0_255": 4.719647851851851,
+  "web_total_bytes": 646936,
+  "master_bytes": {
+    "plate": 11008209,
+    "troll": 2141911,
+    "kratos": 690739,
+    "atreus": 978729,
+    "logo": 606359
+  },
+  "verification_images_bytes": {
+    "composite": 991697,
+    "exploded": 998846,
+    "plate": 973809,
+    "sheet": 524459
+  },
+  "depths": {
+    "plate": 0,
+    "troll": 0.6,
+    "kratos": 0.55,
+    "atreus": 0.6,
+    "logo": 0.6
+  },
+  "checks": {
+    "master_dimensions": true,
+    "web_dimensions": true,
+    "metadata_stripped": true,
+    "visible_cutout_rgb_equals_source": true,
+    "plate_outside_mask_equals_source": true,
+    "input_unchanged": true
+  },
+  "limitation": "Troll, Atreus and logo must share depth. Logo-occluded pixels are unavailable in the source; no generated figure RGB was applied. Independent depths expose glyph-shaped holes. Thin hair, bowstring and mist edges are approximate."
+}

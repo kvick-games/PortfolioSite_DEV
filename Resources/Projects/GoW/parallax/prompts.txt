@@ -1,0 +1,12 @@
+Built-in GPT image edit: background plate
+Input 1: original source. Input 2: plate-guide-mask.png, white editable / black preserved.
+Remove all three characters, weapons, belt skulls, GOD OF WAR lettering, omega and TM. Reconstruct continuous misty forest, trunks, fog, embers and mossy ground. Preserve original framing, cool teal grading, light shafts, right foreground stone and all outside-mask pixels. No figure silhouettes or text. The actual returned image was 1672x941; the deterministic build resamples to 3840x2160 and applies a local mask.
+
+Built-in GPT image edit: silhouette-reference pass ONLY
+Input: original source.
+Remove only the complete GOD OF WAR logo, red omega, OF and TM. Reconstruct Atreus's dark back behind GOD, troll knee/shin behind omega, ragged loincloth and forest behind WAR. Preserve all three figures, their pose/scale/placement, equipment, lighting and framing. This generated RGB was NOT used in delivered figure layers. SAM3 masks from the result were used only near the occlusion to restore original source pixels that whole-frame segmentation incorrectly omitted.
+
+Local SAM3 text prompts
+Original full frame: giant monster; bald muscular man; boy; bow; axe; text; carved stone; skull; quiver with arrows; leather strap; giant troll with skulls hanging from belt.
+Original regional crops: bow; quiver with arrows. Text and leather-skirt regional queries returned no masks.
+Generated logo-free mask reference: giant monster; boy.
