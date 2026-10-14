@@ -24,7 +24,7 @@ Show the work as working interfaces. The first screen states the job ("Interface
 | Tanuki | Header row, mosaic, three design notes |
 | EWA | Night field: key art, concept painting, letterbox-cropped captures |
 | Level Generator | Pipeline diagram and four rooms |
-| DREAMATRON | Vermilion field (black in dark mode) with a full-width wordmark whose letters slide in horizontally from past the screen edges as it scrolls into view, and spread apart as it leaves (ScrollWordmark, scroll-linked, no vertical movement, off under reduced motion). The live AI Timeline (dreamatron.ai/timeline) is the public example. AUTEUR is shown by name with "In development" only, with a door to the client preview |
+| DREAMATRON | Vermilion field (black in dark mode) with a full-width wordmark whose letters are revealed one at a time, each sliding in from the left, as it scrolls into view, and carry on to the right as it leaves (ScrollWordmark, scroll-linked, no vertical movement, off under reduced motion). The live AI Timeline (dreamatron.ai/timeline) is the public example. AUTEUR is shown by name with "In development" only, with a door to the client preview |
 | Paintings | Justified rows that keep every painting's proportions |
 | About | Bio and links |
 
