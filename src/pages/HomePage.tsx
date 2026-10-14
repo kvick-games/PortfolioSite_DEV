@@ -4,10 +4,9 @@ import JudasTrailer from "../components/JudasTrailer";
 import { Link } from "react-router-dom";
 import LevelGenSketch from "../components/LevelGenSketch";
 import MenuViewer, { type MenuView } from "../components/MenuViewer";
-import PaintingLoupe from "../components/PaintingLoupe";
 import PaintingRows from "../components/PaintingRows";
 import ProjectSplash from "../components/ProjectSplash";
-import RecipeSketch from "../components/RecipeSketch";
+import ScrollRail from "../components/ScrollRail";
 import ScrollWordmark from "../components/ScrollWordmark";
 import SectionShaders from "../components/SectionShaders";
 import TimelineMini from "../components/TimelineMini";
@@ -69,9 +68,18 @@ const paintingSlugs = [
   "blue-noise",
   "redblue",
   "the-tower",
+  "red-hall",
   "memory",
   "fallen",
+  "always-something-left-unsaid",
   "super",
+  "white",
+  "guardian",
+  "furnace-room",
+  "fear",
+  "bloom",
+  "genesis-prime",
+  "midnight",
 ];
 const paintings = paintingSlugs.map(
   (slug) => artPieces.find((piece) => piece.slug === slug)!,
@@ -86,7 +94,7 @@ function GodOfWar() {
     <section className="chapter chapter--gow" id="work" aria-labelledby="gow-title">
       <figure className="gow-cover" data-reveal>
         <img
-          src={img("gow-banner")}
+          src={img("gow-banner-clean")}
           alt="God of War (2018) key art: Kratos and Atreus fighting a troll in a burning forest"
           width={2000}
           height={1125}
@@ -163,24 +171,24 @@ function Tanuki() {
           Tanuki
         </h2>
         <p className="meta" data-reveal>
-          <Brand />, founder
+          <span className="meta-lead">By</span><Brand />
           <br />
-          2020 to now, <Brand name="Dream Engine" />
+          <span className="meta-lead">Made with</span><Brand name="Dream Engine" />
         </p>
         <p className="statement" data-reveal>
-          An unreleased game about running a restaurant in a world that
-          simulates itself. I build its systems and the interface over them.
+          Become a master chef. Explore an island full of possibilities, make
+          friends with the locals and cook them something unforgettable.
         </p>
       </header>
       <div className="tanuki-grid">
         <figure className="tanuki-world" data-reveal>
-          <img src={img("tanuki-2")} alt="A tanuki looks out over a misty village" loading="lazy" />
+          <img src={img("tanuki-concept-island")} alt="Concept painting of the island from the air, a village on its shore" loading="lazy" />
         </figure>
         <figure data-reveal>
-          <img src={img("tanuki-questcomplete")} alt="Quest complete banner over a dialogue box" loading="lazy" />
+          <img src={img("tanuki-concept-shack")} alt="Concept painting of a mushroom-roofed shack" loading="lazy" />
         </figure>
         <figure data-reveal>
-          <img src={img("tanuki-screenshot-cooking-01")} alt="Cooking station with ingredients" loading="lazy" />
+          <img src={img("tanuki-concept-hut")} alt="Concept painting of a hut in the forest" loading="lazy" />
         </figure>
       </div>
       <div className="tanuki-kitchen">
@@ -200,8 +208,16 @@ function Tanuki() {
           system decides how visitors behave, and it carries across projects.
         </p>
       </div>
-      <div className="tanuki-sketch" data-reveal>
-        <RecipeSketch />
+      <div className="tanuki-shots">
+        <figure className="tanuki-shot--wide" data-reveal>
+          <img src={img("tanuki-2")} alt="In-game screenshot: a tanuki looks out over a misty village" loading="lazy" />
+        </figure>
+        <figure data-reveal>
+          <img src={img("tanuki-questcomplete")} alt="In-game screenshot: quest complete banner over a dialogue box" loading="lazy" />
+        </figure>
+        <figure data-reveal>
+          <img src={img("tanuki-screenshot-cooking-01")} alt="In-game screenshot: cooking station with ingredients" loading="lazy" />
+        </figure>
       </div>
       </div>
       <div className="chapter-foot">
@@ -230,9 +246,9 @@ function Ewa() {
             EWA
           </h2>
           <p className="meta" data-reveal>
-            Solo project
+            <span className="meta-lead">By</span><Brand />
             <br />
-            2020 to now, <Brand name="Dream Engine" />
+            <span className="meta-lead">Made with</span><Brand name="Dream Engine" />
           </p>
           <p className="statement" data-reveal>
             Deep in a frozen winter, people have started to vanish. Survive what waits in the dark and uncover the truth.
@@ -320,6 +336,18 @@ function Dreamatron() {
         designing and building creative applications for film, sound and
         games, and the interfaces that hold them together.
       </p>
+    </section>
+  );
+}
+
+/** After the studio's games: its tools, starting with the AI Timeline. */
+function DreamatronTools() {
+  return (
+    <section
+      className="chapter chapter--dreamatron chapter--dreamatron-tools field-accent"
+      id="ai-timeline"
+      aria-labelledby="ai-timeline-title"
+    >
       <TimelineMini />
       <div className="dreamatron-private">
         <div className="dreamatron-auteur">
@@ -355,9 +383,7 @@ function Paintings() {
           Characters, rooms and imagined places.
         </p>
       </header>
-      <PaintingLoupe>
-        <PaintingRows pieces={paintings} />
-      </PaintingLoupe>
+      <PaintingRows pieces={paintings} />
       <div className="chapter-foot">
         <Link className="text-link" to="/art">
           See all {artPieces.length} paintings
@@ -369,7 +395,7 @@ function Paintings() {
 
 function About() {
   return (
-    <section className="chapter chapter--about" aria-labelledby="about-title">
+    <section className="chapter chapter--about" id="about" aria-labelledby="about-title">
       <h2 id="about-title" className="chapter-title" data-reveal>
         Teams of 350 and teams of one
       </h2>
@@ -420,11 +446,13 @@ export default function HomePage() {
     <main id="main" tabIndex={-1} className="home">
       <SectionShaders />
       <Hero />
+      <ScrollRail />
       <GodOfWar />
       <Judas />
       <Dreamatron />
       <Tanuki />
       <Ewa />
+      <DreamatronTools />
       <Tools />
       <Paintings />
       <About />

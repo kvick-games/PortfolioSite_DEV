@@ -26,7 +26,9 @@ const picks = [
 
 const COLUMNS = 3;
 /** How far each column travels with the pointer, in px at the panel's edge. */
-const DEPTH = [26, 44, 34];
+const DEPTH = [40, 72, 54];
+/** How far each painting drifts the other way inside its frame, in px. */
+const INNER = 16;
 
 type Tile = { slug: string; src: string; width: number; height: number };
 
@@ -48,9 +50,11 @@ const columns = (() => {
 
 /**
  * The Paintings panel's picture: a grid of paintings in staggered columns.
- * While the panel is open, the columns shift a little with the pointer, each
- * by a different amount, so the grid has depth. The movement follows the
- * visitor's hand and settles softly; nothing moves on its own.
+ * While the panel is open, the columns shift with the pointer, each by a
+ * different amount, and each painting drifts the other way inside its frame,
+ * so the grid has depth. The movement follows the visitor's hand and settles
+ * softly; nothing moves on its own. The painting under the pointer keeps its
+ * colour and the rest turn grey.
  */
 export default function SplashPaintings({ load }: { load: boolean }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -60,33 +64,58 @@ export default function SplashPaintings({ load }: { load: boolean }) {
     const stage = grid?.closest<HTMLElement>(".splash-stage");
     if (!grid || !stage) return;
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const cols = [...grid.querySelectorAll<HTMLElement>(".splash-paintings-column")];
     const target = { x: 0, y: 0 };
     const now = { x: 0, y: 0 };
     let frame = 0;
+    let hovered: HTMLElement | null = null;
 
     const tick = () => {
       frame = 0;
       now.x += (target.x - now.x) * 0.08;
       now.y += (target.y - now.y) * 0.08;
+      const cols = grid.querySelectorAll<HTMLElement>(".splash-paintings-column");
       cols.forEach((col, i) => {
         const depth = DEPTH[i % DEPTH.length];
-        col.style.transform = `translate3d(${(now.x * depth * 0.35).toFixed(2)}px, ${(now.y * depth).toFixed(2)}px, 0)`;
+        col.style.transform = `translate3d(${(now.x * depth * 0.4).toFixed(2)}px, ${(now.y * depth).toFixed(2)}px, 0)`;
       });
+      grid.style.setProperty("--drift-x", `${(-now.x * INNER).toFixed(2)}px`);
+      grid.style.setProperty("--drift-y", `${(-now.y * INNER).toFixed(2)}px`);
       if (Math.abs(target.x - now.x) + Math.abs(target.y - now.y) > 0.001)
         frame = requestAnimationFrame(tick);
     };
+    // The pictures layer doesn't take the pointer (the links above it do),
+    // so find the painting under it by position.
+    const hover = (tile: HTMLElement | null) => {
+      if (tile === hovered) return;
+      hovered?.classList.remove("is-hovered");
+      tile?.classList.add("is-hovered");
+      grid.classList.toggle("has-hover", !!tile);
+      hovered = tile;
+    };
     const move = (event: PointerEvent) => {
-      if (!grid.closest(".is-active")) return;
+      if (!grid.closest(".is-active")) return hover(null);
       const rect = grid.getBoundingClientRect();
       // -1..1 across the open panel; the opposite way to the pointer.
       target.x = -((event.clientX - rect.left) / rect.width - 0.5) * 2;
       target.y = -((event.clientY - rect.top) / rect.height - 0.5) * 2;
       if (!frame) frame = requestAnimationFrame(tick);
+      const tiles = grid.querySelectorAll<HTMLElement>(".splash-paintings-tile");
+      hover(
+        [...tiles].find((tile) => {
+          const box = tile.getBoundingClientRect();
+          return (
+            event.clientX >= box.left &&
+            event.clientX <= box.right &&
+            event.clientY >= box.top &&
+            event.clientY <= box.bottom
+          );
+        }) ?? null,
+      );
     };
     const leave = () => {
       target.x = 0;
       target.y = 0;
+      hover(null);
       if (!frame) frame = requestAnimationFrame(tick);
     };
 
@@ -109,15 +138,19 @@ export default function SplashPaintings({ load }: { load: boolean }) {
               style={{ "--col": i } as CSSProperties}
             >
               {tiles.map((tile, n) => (
-                <img
+                <span
                   key={tile.slug}
-                  src={tile.src}
-                  alt=""
-                  width={tile.width}
-                  height={tile.height}
-                  decoding="async"
-                  style={{ "--n": n } as CSSProperties}
-                />
+                  className="splash-paintings-tile"
+                  style={{ "--n": n, aspectRatio: `${tile.width} / ${tile.height}` } as CSSProperties}
+                >
+                  <img
+                    src={tile.src}
+                    alt=""
+                    width={tile.width}
+                    height={tile.height}
+                    decoding="async"
+                  />
+                </span>
               ))}
             </span>
           ))

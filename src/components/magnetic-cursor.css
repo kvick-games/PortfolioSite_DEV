@@ -12,10 +12,6 @@
   inset: -16px -18px; /* stays inside the page margin */
   z-index: -1;
 }
-.menu-viewer-tabs[data-magnet],
-.menu-viewer-tabs[data-magnet] [role="tab"] {
-  cursor: none;
-}
 
 @media (min-width: 721px) {
   /* The frame takes over from hover: the tab it holds is the one that moves. */
@@ -46,8 +42,8 @@
   left: 0;
   width: 14px;
   height: 14px;
-  background: color-mix(in srgb, var(--accent) 9%, transparent);
-  outline: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
   outline-offset: -1px;
   will-change: transform, width, height;
   transition: opacity 0.16s;
@@ -55,10 +51,23 @@
 .magnet[data-state="free"] .magnet-frame {
   opacity: 0;
 }
-/* On the selected tab the fill would tint it; the corners are enough. */
+/* On the selected tab the fill would tint it; the corners are enough, and
+   they step just outside the ink-filled tab so they still read. */
 .magnet[data-on-selected] .magnet-frame {
   background: none;
   outline-color: transparent;
+}
+.magnet[data-on-selected] .magnet-frame i:nth-child(1) {
+  transform: translate(-5px, -5px);
+}
+.magnet[data-on-selected] .magnet-frame i:nth-child(2) {
+  transform: translate(5px, -5px);
+}
+.magnet[data-on-selected] .magnet-frame i:nth-child(3) {
+  transform: translate(5px, 5px);
+}
+.magnet[data-on-selected] .magnet-frame i:nth-child(4) {
+  transform: translate(-5px, 5px);
 }
 
 /* Selection corners, after the game's menu frame. */
@@ -66,7 +75,8 @@
   position: absolute;
   width: 10px;
   height: 10px;
-  border: 0 solid var(--accent);
+  border: 0 solid var(--ink);
+  transition: transform 0.2s var(--ease);
 }
 .magnet-frame i:nth-child(1) {
   top: 0;
@@ -87,31 +97,4 @@
   bottom: 0;
   left: 0;
   border-width: 0 0 2px 2px;
-}
-
-/* The reticle: a ring while it roams, folded into the frame once it snaps. */
-.magnet-dot {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  will-change: transform;
-}
-.magnet-dot::before {
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  margin: -7px 0 0 -7px;
-  border: 2px solid var(--accent);
-  border-radius: 50%;
-  box-sizing: border-box;
-  transition:
-    transform 0.18s var(--ease),
-    opacity 0.18s;
-}
-.magnet[data-state="snapped"] .magnet-dot::before {
-  transform: scale(0.3);
-  opacity: 0;
 }

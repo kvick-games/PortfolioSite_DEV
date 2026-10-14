@@ -32,55 +32,19 @@
   .judas-trailer-still:hover img {
     transform: scale(1.025);
   }
-  .judas-trailer-still:hover .judas-trailer-reticle {
-    opacity: 1;
-    transform: none;
-  }
 }
 
-/* The play control: an accent disc, and a reticle that locks on to it. */
-.judas-trailer-play {
+/* The play control: the site's shared video glyph (video-control.css). */
+.judas-trailer-still .judas-trailer-play {
   position: absolute;
-  left: clamp(18px, 2.2vw, 32px);
-  bottom: clamp(18px, 2.2vw, 32px);
-  display: grid;
-  place-items: center;
-  width: clamp(48px, 4.6vw, 72px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--on-accent);
-  transition: transform 0.35s var(--ease);
+  left: clamp(14px, 1.6vw, 24px);
+  bottom: clamp(14px, 1.6vw, 24px);
 }
-.judas-trailer-icon {
-  width: 40%;
-  margin-left: 7%;
-  fill: currentColor;
+.judas-trailer-still:hover .judas-trailer-play {
+  background: rgb(0 0 0 / 0.62);
 }
-.judas-trailer-reticle {
-  position: absolute;
-  inset: -13px;
-  width: calc(100% + 26px);
-  height: calc(100% + 26px);
-  overflow: visible;
-  fill: none;
-  stroke: #fff;
-  stroke-width: 1.5px;
-  stroke-dasharray: 19 6;
-  stroke-dashoffset: -3;
-  vector-effect: non-scaling-stroke;
-  opacity: 0;
-  transform: scale(1.4) rotate(-45deg);
-  transition:
-    transform 0.5s var(--ease),
-    opacity 0.3s var(--ease);
-}
-.judas-trailer-still:focus-visible .judas-trailer-reticle {
-  opacity: 1;
-  transform: none;
-}
-.judas-trailer-still:active .judas-trailer-play {
-  transform: scale(0.94);
+.judas-trailer-still:focus-visible {
+  outline-color: var(--ink);
 }
 
 /* The player. */

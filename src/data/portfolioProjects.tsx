@@ -426,7 +426,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "games",
     featured: true,
     cardImage: "/Resources/Projects/GoW2018Cover.webp",
-    backgroundImage: "/Resources/Site/img/gow-banner.webp",
+    backgroundImage: "/Resources/Site/img/gow-banner-clean.webp",
     details: ["Sony Santa Monica Studio", "Associate Technical UI Designer", "2016 - 2018"],
     Article: GodOfWarArticle,
   },

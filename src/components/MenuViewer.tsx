@@ -6,6 +6,7 @@ import {
   type ReactNode,
 } from "react";
 import MagneticCursor from "./MagneticCursor";
+import VideoGlyph, { VideoSeek } from "./VideoGlyph";
 
 export interface MenuView {
   id: string;
@@ -82,19 +83,39 @@ export default function MenuViewer({
           role="tabpanel"
           id={`${label}-panel`}
           aria-labelledby={`${label}-tab-${view.id}`}
+          data-paused={view.video && paused ? "" : undefined}
         >
           {view.video ? (
-            <video
-              key={view.id}
-              ref={video}
-              src={view.video}
-              poster={view.poster}
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              aria-label={view.alt}
-            />
+            <>
+              {/* A click on the footage toggles it too; the button is the
+                  keyboard and screen reader route. */}
+              <video
+                key={view.id}
+                ref={video}
+                src={view.video}
+                poster={view.poster}
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label={view.alt}
+                onClick={() => setPaused((value) => !value)}
+              />
+              <button
+                type="button"
+                className="menu-viewer-toggle"
+                aria-label={paused ? "Play footage" : "Pause footage"}
+                onClick={() => setPaused((value) => !value)}
+              >
+                <VideoGlyph playing={!paused} />
+              </button>
+              <VideoSeek
+                key={`${view.id}-seek`}
+                video={video}
+                label={`${view.label} footage position`}
+                className="menu-viewer-seek"
+              />
+            </>
           ) : (
             <img key={view.id} src={view.poster} alt={view.alt} />
           )}
@@ -147,15 +168,6 @@ export default function MenuViewer({
         <p className="menu-viewer-caption" aria-live="polite">
           {view.caption}
         </p>
-        {view.video ? (
-          <button
-            type="button"
-            className="text-button"
-            onClick={() => setPaused((value) => !value)}
-          >
-            {paused ? "Play footage" : "Pause footage"}
-          </button>
-        ) : null}
       </div>
     </div>
   );

@@ -1,0 +1,132 @@
+/* Video controls: one black-and-white mark for every player on the site. -- */
+
+/* It sits on footage, so it stays white on black in both themes. */
+.video-glyph {
+  position: relative;
+  display: block;
+  width: clamp(42px, 3.4vw, 54px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.42);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+  color: #fff;
+  transition: background-color 0.25s;
+}
+.video-glyph svg {
+  position: absolute;
+  inset: 30%;
+  width: 40%;
+  height: 40%;
+  fill: currentColor;
+  filter: drop-shadow(0 0 3px rgb(0 0 0 / 0.35));
+  transition: opacity 0.2s;
+}
+.video-glyph[data-state="playing"] .video-glyph-play,
+.video-glyph[data-state="paused"] .video-glyph-pause {
+  opacity: 0;
+}
+
+/* The scrubber: a thin white line on the footage, the played part solid, a
+   small handle that fades in on hover, focus or drag. Black and white only,
+   and nothing moves into place: it only ever fades. */
+.video-seek-bar {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1vw, 16px);
+  color: #fff;
+}
+.video-seek {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  /* Sideways drags scrub; a vertical swipe still scrolls the page. */
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.video-seek[aria-disabled="true"] {
+  cursor: default;
+}
+/* Focus is shown on the handle, in white; never the site's accent ring. */
+.video-seek:focus,
+.video-seek:focus-visible {
+  outline: none;
+}
+.video-seek-track {
+  position: relative;
+  flex: 1;
+  height: 2px;
+  border-radius: 1px;
+  background: rgb(255 255 255 / 0.3);
+  filter: drop-shadow(0 0 2px rgb(0 0 0 / 0.5));
+}
+.video-seek-fill,
+.video-seek-rail {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  will-change: transform;
+}
+.video-seek-fill {
+  border-radius: inherit;
+  background: #fff;
+  transform: scaleX(0);
+}
+.video-seek-rail {
+  pointer-events: none;
+}
+.video-seek-thumb {
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.video-seek:hover .video-seek-thumb,
+.video-seek:focus-visible .video-seek-thumb,
+.video-seek-bar[data-scrubbing] .video-seek-thumb {
+  opacity: 1;
+}
+.video-seek:focus-visible .video-seek-thumb {
+  box-shadow:
+    0 0 0 2px rgb(0 0 0 / 0.55),
+    0 0 0 3.5px #fff;
+}
+.video-seek-time {
+  flex: none;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: rgb(255 255 255 / 0.78);
+  text-shadow: 0 0 3px rgb(0 0 0 / 0.5);
+  white-space: nowrap;
+  user-select: none;
+}
+/* No hover on touch: the handle stays, and the target grows to a thumb. */
+@media (hover: none) {
+  .video-seek {
+    min-height: 44px;
+  }
+  .video-seek-thumb {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .video-glyph,
+  .video-glyph svg,
+  .video-seek-thumb {
+    transition: none;
+  }
+}

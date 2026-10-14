@@ -2,8 +2,9 @@ import { useEffect, useRef, type RefObject } from "react";
 import "./magnetic-cursor.css";
 
 /**
- * A cursor for a tab list that is pulled toward the nearest tab and snaps onto
- * it, after the free-moving skill tree cursor Michael prototyped for God of War.
+ * A selection frame for a tab list that follows the pointer, is pulled toward
+ * the nearest tab and snaps onto it, after the free-moving skill tree cursor
+ * Michael prototyped for God of War. The system cursor stays visible.
  * It is a homage written for this page, not the game's code.
  *
  * Mouse: only for fine pointers that can hover. A gamepad works too, when one
@@ -42,7 +43,6 @@ export default function MagneticCursor({
 }) {
   const rootRef = useRef<HTMLSpanElement>(null);
   const frameRef = useRef<HTMLSpanElement>(null);
-  const dotRef = useRef<HTMLSpanElement>(null);
   const selectRef = useRef(onSelect);
   useEffect(() => {
     selectRef.current = onSelect;
@@ -52,8 +52,7 @@ export default function MagneticCursor({
     const list = listRef.current;
     const root = rootRef.current;
     const frame = frameRef.current;
-    const dot = dotRef.current;
-    if (!list || !root || !frame || !dot) return;
+    if (!list || !root || !frame) return;
 
     const fineQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -213,7 +212,6 @@ export default function MagneticCursor({
       frame.style.transform = `translate(${f.x - grow}px, ${f.y - grow}px)`;
       frame.style.width = `${Math.max(0, f.w + grow * 2)}px`;
       frame.style.height = `${Math.max(0, f.h + grow * 2)}px`;
-      dot.style.transform = `translate(${reticle.x}px, ${reticle.y}px)`;
 
       // Rest when nothing is in flight; the next move or click wakes it.
       if (moving) raf = requestAnimationFrame(step);
@@ -414,7 +412,6 @@ export default function MagneticCursor({
         <i />
         <i />
       </span>
-      <span ref={dotRef} className="magnet-dot" />
     </span>
   );
 }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import "./JudasTrailer.css";
+import VideoGlyph from "./VideoGlyph";
 
 /*
  * The Judas reveal trailer as a lite YouTube facade. Until the visitor presses
@@ -175,14 +176,7 @@ export default function JudasTrailer({
         hidden={playing}
       >
         <img src={poster} alt={alt} loading="lazy" />
-        <span className="judas-trailer-play" aria-hidden="true">
-          <svg className="judas-trailer-reticle" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="47" pathLength="100" />
-          </svg>
-          <svg className="judas-trailer-icon" viewBox="0 0 24 24">
-            <path d="M8 5.5v13l10.5-6.5z" />
-          </svg>
-        </span>
+        <VideoGlyph className="judas-trailer-play" />
       </button>
       {mounted && (
         <div className="judas-trailer-screen">

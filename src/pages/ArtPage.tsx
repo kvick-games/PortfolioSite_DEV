@@ -1,5 +1,8 @@
+import type { CSSProperties } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import PaintingRows from "../components/PaintingRows";
+import LoopVideo from "../components/LoopVideo";
+import PaintingRows, { markLoaded } from "../components/PaintingRows";
+import { artDimensions } from "../data/artDimensions";
 import { artPieces, getArtPiece } from "../data/artPieces";
 import type { ArtPiece } from "../data/types";
 
@@ -30,11 +33,29 @@ function ArtDetail({ piece }: { piece: ArtPiece }) {
   );
   const description = piece.description?.replace(/https?:\/\/\S+/g, "").trim();
   const videoLink = piece.description?.match(/https?:\/\/\S+/)?.[0];
+  const [width, height] = artDimensions[piece.slug] ?? [4, 3];
   return (
     <>
       <article className="art-detail">
-        <figure className="art-detail-image">
-          <img src={piece.coverImage} alt={piece.title} />
+        {/* A painting clicked elsewhere grows into this image (TransitionRouter). */}
+        <figure
+          className="art-detail-image"
+          style={{ "--ratio": width / height } as CSSProperties}
+        >
+          <img
+            key={piece.slug}
+            ref={markLoaded}
+            src={piece.coverImage}
+            alt={piece.title}
+            width={width}
+            height={height}
+            data-fade
+            data-shared-painting
+            onLoad={(event) => {
+              event.currentTarget.dataset.loaded = "";
+            }}
+          />
+          {piece.loop ? <LoopVideo key={piece.loop} src={piece.loop} /> : null}
         </figure>
         <div className="art-detail-side">
           <h1 className="chapter-title">{piece.title}</h1>
@@ -82,9 +103,14 @@ function ArtDetail({ piece }: { piece: ArtPiece }) {
             {extraImages.map((image, imageIndex) => (
               <figure className="media-frame" key={image}>
                 <img
+                  ref={markLoaded}
                   src={image}
                   alt={`${piece.title}, image ${imageIndex + 2}`}
                   loading="lazy"
+                  data-fade
+                  onLoad={(event) => {
+                    event.currentTarget.dataset.loaded = "";
+                  }}
                 />
               </figure>
             ))}

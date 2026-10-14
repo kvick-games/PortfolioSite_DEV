@@ -18,9 +18,16 @@ export default function Header() {
         >
           Work
         </NavLink>
-        <a href={onHome ? "#dreamatron" : "/portfolio#dreamatron"}>
-          <Brand />
-        </a>
+        {/* From another page, a router Link so the page cross-fades instead of reloading. */}
+        {onHome ? (
+          <a href="#dreamatron">
+            <Brand />
+          </a>
+        ) : (
+          <Link to="/portfolio#dreamatron">
+            <Brand />
+          </Link>
+        )}
         <NavLink to="/art">Paintings</NavLink>
         <NavLink to="/about">About</NavLink>
       </nav>

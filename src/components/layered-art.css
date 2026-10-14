@@ -1,0 +1,24 @@
+/* Layered parallax art (LayeredArt.tsx) ----------------------------------- */
+
+.layered-art {
+  position: relative;
+  aspect-ratio: var(--ratio);
+  overflow: hidden;
+  background: var(--ground-2);
+}
+
+/* The plate stays put and sizes the frame; the layers above it drift over
+   it. Where they uncover it, the plate was painted in. */
+.layered-art-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+}
+.layered-art-layer:first-child {
+  position: static;
+  display: block;
+  height: auto;
+}

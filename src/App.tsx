@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { Navigate, Route, Routes, useLocation, Link } from "react-router-dom";
 import Header from "./components/Header";
+import { viewTransitionRunning } from "./components/TransitionRouter";
 import { profiles } from "./data/site";
 import AboutPage from "./pages/AboutPage";
 import ArtPage from "./pages/ArtPage";
@@ -9,11 +10,13 @@ import ProjectsPage from "./pages/ProjectsPage";
 
 export default function App() {
   const location = useLocation();
-  useEffect(() => {
+  // A layout effect, so the scroll reset lands inside the page cross-fade
+  // (TransitionRouter) rather than visibly before or after it.
+  useLayoutEffect(() => {
     const target = location.hash
       ? document.getElementById(location.hash.slice(1))
       : null;
-    if (target) target.scrollIntoView();
+    if (target) target.scrollIntoView({ behavior: viewTransitionRunning() ? "instant" : "auto" });
     else window.scrollTo({ top: 0, behavior: "instant" });
     const titles: Record<string, string> = {
       "/portfolio": "Interfaces for games and creative tools",
@@ -36,6 +39,8 @@ export default function App() {
           .forEach((entry, index) => {
             const element = entry.target as HTMLElement;
             element.style.setProperty("--delay", `${Math.min(index, 6) * 70}ms`);
+            // Arriving from another page, the cross-fade is the reveal.
+            if (viewTransitionRunning()) element.classList.add("reveal-now");
             element.classList.add("revealed");
             observer.unobserve(element);
           });

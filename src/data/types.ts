@@ -40,4 +40,6 @@ export interface ArtPiece {
   coverImage: string;
   images: string[];
   embedUrl?: string;
+  /** A short muted loop shown over the cover (which doubles as its poster). */
+  loop?: string;
 }

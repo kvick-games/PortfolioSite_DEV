@@ -24,6 +24,8 @@ type Panel = {
   wordmark?: boolean;
   /** Open, the panel shows a grid of paintings instead of `image`. */
   grid?: boolean;
+  /** Open, a muted loop plays over `image`, which is its first frame. */
+  video?: { mp4: string; webm: string; poster: string };
 };
 
 const img = (name: string) => `/Resources/Site/img/${name}.webp`;
@@ -34,10 +36,10 @@ const panels: Panel[] = [
     title: "God of War",
     meta: "Sony Santa Monica Studio",
     when: "2016–2018",
-    image: img("gow-kratos-atreus"),
+    image: img("gow-boat"),
     width: 1600,
-    height: 720,
-    focus: "44%",
+    height: 900,
+    focus: "47%",
   },
   {
     href: "#judas",
@@ -63,17 +65,20 @@ const panels: Panel[] = [
     href: "#tanuki",
     title: "Tanuki",
     meta: <Brand />,
-    when: "2020 to now",
     image: img("tanuki-concept-island"),
     width: 1690,
     height: 931,
     focus: "50%",
+    video: {
+      mp4: "/Resources/Site/loops/tanuki-island.mp4",
+      webm: "/Resources/Site/loops/tanuki-island.webm",
+      poster: "/Resources/Site/loops/tanuki-island.webp",
+    },
   },
   {
     href: "#ewa",
     title: "EWA",
-    meta: "Solo project",
-    when: "2020 to now",
+    meta: <Brand />,
     image: img("ewa-ewa-redacted"),
     width: 1800,
     height: 2044,
@@ -121,6 +126,29 @@ const FRAMES: Array<[number, number]> = [
   [1, 10],
   [6, 10],
 ];
+
+/**
+ * A panel's loop. It loads with the page's other deferred pictures, plays
+ * while its panel is open and rests on its current frame otherwise. Reduced
+ * motion keeps the still.
+ */
+function SplashVideo({ video, playing, load }: { video: NonNullable<Panel["video"]>; playing: boolean; load: boolean }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [still] = useState(() => matchMedia("(prefers-reduced-motion: reduce)").matches);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (playing) el.play().catch(() => undefined);
+    else el.pause();
+  }, [playing, load]);
+  if (still || !load) return null;
+  return (
+    <video ref={ref} className="splash-video" poster={video.poster} muted loop playsInline preload="auto" aria-hidden="true">
+      <source src={video.webm} type="video/webm" />
+      <source src={video.mp4} type="video/mp4" />
+    </video>
+  );
+}
 
 /** The stacked wordmark. Letters keep their columns, so rows read as frames. */
 function WordmarkStack({ className }: { className: string }) {
@@ -260,6 +288,9 @@ export default function ProjectSplash() {
                         height={panel.height}
                       />
                     )}
+                    {panel.video ? (
+                      <SplashVideo video={panel.video} playing={index === active} load={gridReady} />
+                    ) : null}
                   </span>
                 </>
               )}

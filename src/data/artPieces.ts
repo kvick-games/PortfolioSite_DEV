@@ -59,6 +59,7 @@ export const artPieces: ArtPiece[] = [
       "/Resources/ArtStation/fallen-animated/01-mike-nevins-process-01.jpg"
     ],
     embedUrl: "https://www.youtube-nocookie.com/embed/ccFQ-1J6kEw?feature=oembed&rel=0",
+    loop: "/Resources/ArtStation/fallen-animated/loop.mp4",
   },
   {
     slug: "fallen",
@@ -175,9 +176,9 @@ export const artPieces: ArtPiece[] = [
     title: "Bloom",
     description: "Another really old painting that I still enjoy",
     sourceUrl: "https://kvick.artstation.com/projects/RYeenX",
-    coverImage: "/Resources/ArtStation/bloom/01-mike-nevins-bloom-zpse63900b3.jpg",
+    coverImage: "/Resources/ArtStation/bloom/01-mike-nevins-bloom.jpg",
     images: [
-      "/Resources/ArtStation/bloom/01-mike-nevins-bloom-zpse63900b3.jpg"
+      "/Resources/ArtStation/bloom/01-mike-nevins-bloom.jpg"
     ],
   },
   {

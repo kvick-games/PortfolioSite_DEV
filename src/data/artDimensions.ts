@@ -18,7 +18,7 @@ export const artDimensions: Record<string, [number, number]> = {
   "heads": [1920, 3874],
   "midnight": [1920, 817],
   "alone": [1920, 817],
-  "bloom": [1230, 545],
+  "bloom": [1112, 359],
   "10000": [463, 740],
   "bird": [959, 1538],
   "guardian": [673, 1000],

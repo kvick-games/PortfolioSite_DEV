@@ -172,6 +172,11 @@ main:focus {
 /* Type roles ------------------------------------------------------------ */
 
 /* Brand rule: DREAMATRON is always set in spaced capitals. */
+/* "By" and "Made with" before a brand name: a gap that holds up against its open spacing. */
+.meta-lead {
+  margin-right: 0.55em;
+}
+
 .brand {
   text-transform: uppercase;
   font-size: 0.84em;
@@ -471,11 +476,15 @@ figcaption {
 .gow-cover {
   margin: 0 0 clamp(28px, 3vw, 48px);
 }
+/* Shown whole, never cropped, its top and bottom edges dissolving into the
+   page rather than ending on a hard line. */
+.gow-cover {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 84%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 84%, transparent);
+}
 .gow-cover img {
   width: 100%;
-  aspect-ratio: 2.4 / 1;
-  object-fit: cover;
-  object-position: 50% 52%;
+  height: auto;
 }
 
 .menu-viewer {
@@ -488,9 +497,70 @@ figcaption {
   grid-column: 1 / span 9;
 }
 .menu-viewer-screen {
+  --control-inset: clamp(14px, 1.6vw, 24px);
+  --control-size: clamp(42px, 3.4vw, 54px); /* the glyph's disc */
+  position: relative;
   aspect-ratio: 16 / 9;
   background: var(--night);
   overflow: hidden;
+}
+.menu-viewer-screen video {
+  cursor: pointer;
+}
+/* Play/pause sits on the footage, as in any player: it fades in while the
+   pointer is over the screen or it has focus, and stays while paused. */
+.menu-viewer-toggle {
+  position: absolute;
+  left: var(--control-inset);
+  bottom: var(--control-inset);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+  animation: control-in 0.5s var(--ease);
+}
+.menu-viewer-screen:hover .menu-viewer-toggle,
+.menu-viewer-screen[data-paused] .menu-viewer-toggle,
+.menu-viewer-toggle:focus-visible {
+  opacity: 1;
+}
+.menu-viewer-toggle:hover .video-glyph {
+  background: rgb(0 0 0 / 0.62);
+}
+.menu-viewer-toggle:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+/* The scrubber runs from the glyph to the right edge, on the glyph's line.
+   It is revealed with the glyph and holds while dragged or focused. */
+.menu-viewer-seek {
+  position: absolute;
+  left: calc(var(--control-inset) + var(--control-size) + clamp(10px, 1vw, 16px));
+  right: calc(var(--control-inset) + 4px);
+  bottom: var(--control-inset);
+  height: var(--control-size);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+  animation: control-in 0.5s var(--ease);
+}
+.menu-viewer-screen:hover .menu-viewer-seek,
+.menu-viewer-screen[data-paused] .menu-viewer-seek,
+.menu-viewer-screen:has(:focus-visible) .menu-viewer-seek,
+.menu-viewer-seek[data-scrubbing] {
+  opacity: 1;
+}
+/* No hover on touch: keep it on screen, but quiet. */
+@media (hover: none) {
+  .menu-viewer-toggle,
+  .menu-viewer-seek {
+    opacity: 0.72;
+  }
+  .menu-viewer-seek[data-scrubbing] {
+    opacity: 1;
+  }
 }
 .menu-viewer-screen video,
 .menu-viewer-screen img {
@@ -542,6 +612,14 @@ figcaption {
   color: var(--ground);
   padding-left: 22px;
 }
+/* Tabs stay black and white: an ink ring for the keyboard, none for a click. */
+.menu-viewer-tabs [role="tab"]:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.menu-viewer-tabs [role="tab"]:focus:not(:focus-visible) {
+  outline: none;
+}
 .menu-viewer-caption {
   min-height: 7.75em;
 }
@@ -550,6 +628,11 @@ figcaption {
   from {
     opacity: 0;
     transform: scale(1.015);
+  }
+}
+@keyframes control-in {
+  from {
+    opacity: 0;
   }
 }
 
@@ -603,7 +686,7 @@ figcaption {
 }
 .tanuki-grid figure {
   grid-column: 9 / -1;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
 .tanuki-grid .tanuki-world {
@@ -623,6 +706,58 @@ figcaption {
 }
 .tanuki-notes strong {
   display: block;
+}
+
+/* The notes beside in-game screenshots. */
+.tanuki-kitchen {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gap);
+  align-items: start;
+  margin-top: clamp(32px, 3.4vw, 56px);
+}
+.tanuki-kitchen .tanuki-notes {
+  grid-column: 1 / span 4;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(22px, 2vw, 32px);
+  margin: 0;
+}
+.tanuki-kitchen .tanuki-notes p {
+  max-width: 40ch;
+}
+.tanuki-shots {
+  grid-column: 5 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+}
+.tanuki-shots figure {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+.tanuki-shots .tanuki-shot--wide {
+  grid-column: 1 / -1;
+}
+@media (max-width: 1080px) {
+  .tanuki-kitchen .tanuki-notes {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--gap);
+  }
+  .tanuki-shots {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 720px) {
+  .tanuki-kitchen,
+  .tanuki-kitchen .tanuki-notes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tanuki-shots {
+    gap: 10px;
+  }
 }
 
 /* EWA ------------------------------------------------------------------- */
@@ -813,6 +948,13 @@ figcaption {
 
 /* Paintings ------------------------------------------------------------- */
 
+/* Registered so PaintingRows can read the target row height back in pixels. */
+@property --row {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 240px;
+}
+
 .paint-head {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -828,20 +970,25 @@ figcaption {
 }
 
 .painting-rows {
-  --row: clamp(150px, 21vw, 340px);
+  --row: clamp(150px, 18vw, 290px);
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: 10px;
 }
 .painting-rows::after {
   content: "";
   flex-grow: 999;
 }
+.painting-rows.is-justified::after {
+  display: none;
+}
 .painting-rows li {
   position: relative;
   min-width: 0;
 }
 .painting-link {
+  position: relative;
   display: block;
   height: 100%;
   overflow: hidden;
@@ -850,31 +997,33 @@ figcaption {
 .painting-link img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s var(--ease);
 }
-.painting-link:hover img,
-.painting-link:focus-visible img {
-  transform: scale(1.03);
-}
-.painting-title {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  padding: 8px 12px;
-  background: var(--ink);
-  color: var(--ground);
-  font-size: var(--size-small);
-  opacity: 0;
-  transform: translateY(6px);
+/* Hovering or focusing one painting turns the others grey, so it stands alone in colour. */
+.painting-rows .painting-link :is(img, .loop-video) {
   transition:
-    opacity 0.25s,
-    transform 0.25s var(--ease);
+    opacity 0.5s var(--ease),
+    filter 0.35s var(--ease);
 }
-.painting-link:hover .painting-title,
-.painting-link:focus-visible .painting-title {
+@media (hover: hover) {
+  .painting-rows:has(.painting-link:is(:hover, :focus-visible))
+    .painting-link:not(:hover, :focus-visible)
+    :is(img, .loop-video) {
+    filter: grayscale(1) brightness(0.8);
+  }
+}
+/* Muted loops (LoopVideo) sit over the cover image and fade in once playing. */
+.loop-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s var(--ease);
+}
+.loop-video.is-playing {
   opacity: 1;
-  transform: none;
 }
 
 /* About close ----------------------------------------------------------- */
@@ -1202,15 +1351,19 @@ figcaption {
   gap: var(--gap);
   align-items: start;
 }
+/* Sized to the painting itself (no letterbox), so a thumbnail can grow into it. */
 .art-detail-image {
+  position: relative;
   grid-column: 1 / span 8;
+  width: min(100%, calc(86vh * var(--ratio, 1.333)));
   background: var(--ground-2);
+}
+.art-detail-image:has(img[data-loaded]) {
+  background: none;
 }
 .art-detail-image img {
   width: 100%;
   height: auto;
-  max-height: 86vh;
-  object-fit: contain;
 }
 .art-detail-side {
   grid-column: 10 / -1;
@@ -1321,16 +1474,63 @@ figcaption {
 
 /* Motion ---------------------------------------------------------------- */
 
+/* Content fades up from a soft blur as it scrolls in; nothing travels. */
 .motion [data-reveal]:not(.revealed),
 .motion .article-section > *:not(.revealed) {
   opacity: 0;
-  transform: translateY(24px);
+  filter: blur(6px);
 }
 .motion [data-reveal],
 .motion .article-section > * {
   transition:
     opacity 0.8s var(--ease) var(--delay, 0ms),
-    transform 0.8s var(--ease) var(--delay, 0ms);
+    filter 0.8s var(--ease) var(--delay, 0ms);
+}
+/* Already on screen when a new page cross-fades in: the page fade is the reveal. */
+.motion .reveal-now {
+  transition: none;
+}
+
+/* Images fade in as they load rather than appearing at once. */
+img[data-fade] {
+  transition: opacity 0.5s var(--ease);
+}
+img[data-fade]:not([data-loaded]) {
+  opacity: 0;
+}
+
+/* Page transitions (TransitionRouter): pages cross-fade, and a clicked
+   painting grows from its thumbnail into place. */
+::view-transition-old(root) {
+  animation: page-out 0.32s var(--ease) both;
+}
+::view-transition-new(root) {
+  animation: page-in 0.5s var(--ease) both;
+}
+::view-transition-group(painting) {
+  animation-duration: 0.55s;
+  animation-timing-function: var(--ease);
+}
+::view-transition-old(painting),
+::view-transition-new(painting) {
+  height: 100%;
+  animation-duration: 0.55s;
+  animation-timing-function: var(--ease);
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-shared-painting] {
+    view-transition-name: painting;
+  }
+}
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1339,6 +1539,11 @@ figcaption {
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.12s !important;
   }
 }
 
@@ -1369,10 +1574,6 @@ figcaption {
   .menu-viewer-caption {
     grid-column: 1 / -1;
     min-height: 0;
-  }
-  .menu-viewer-side .text-button {
-    grid-column: 1 / -1;
-    justify-self: start;
   }
 
   .chapter--judas .judas-image {
@@ -1512,9 +1713,6 @@ figcaption {
   .chapter--gow {
     margin-top: 88px;
   }
-  .gow-cover img {
-    aspect-ratio: 16 / 10;
-  }
   /* On a phone the heading leads, then the screen, then its controls. */
   .menu-viewer {
     display: flex;
@@ -1538,10 +1736,6 @@ figcaption {
     order: 3;
     min-height: 0;
   }
-  .menu-viewer-side .text-button {
-    order: 4;
-    align-self: flex-start;
-  }
   .menu-viewer-side .chapter-title {
     margin-bottom: -6px;
   }
@@ -1564,7 +1758,7 @@ figcaption {
   }
   .tanuki-grid .tanuki-world {
     grid-column: 1 / -1 !important;
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 16 / 9;
   }
   .tanuki-grid figure:not(.tanuki-world) {
     grid-column: auto !important;
@@ -1578,9 +1772,6 @@ figcaption {
   .painting-rows {
     --row: 128px;
     gap: 6px;
-  }
-  .painting-title {
-    display: none;
   }
   .project-article-body {
     grid-template-columns: minmax(0, 1fr);
