@@ -235,7 +235,7 @@ function Ewa() {
             2020 to now, <Brand name="Dream Engine" />
           </p>
           <p className="statement" data-reveal>
-            Deep in a frozen winter, people have started to vanish. Survive what waits in the dark and uncover the truth before you’re next.
+            Deep in a frozen winter, people have started to vanish. Survive what waits in the dark and uncover the truth.
           </p>
           <Link className="text-link" to="/portfolio?project=ewa" data-reveal>
             Watch the teaser and see more
