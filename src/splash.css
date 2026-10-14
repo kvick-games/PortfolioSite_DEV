@@ -181,6 +181,7 @@
     display: block;
     position: absolute;
     inset: 0 0 var(--caption-h) 0;
+    overflow: hidden;
     pointer-events: none;
   }
   .splash-picture {

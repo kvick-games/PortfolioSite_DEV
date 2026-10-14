@@ -189,7 +189,9 @@ export default function ProjectSplash() {
     const stage = stageRef.current;
     if (!stage) return;
     const sync = () => {
-      const gap = parseFloat(getComputedStyle(stage).getPropertyValue("--splash-gap")) || 0;
+      // The strip's resolved gap; the custom property itself is an unresolved clamp().
+      const strip = stage.querySelector(".splash-strip");
+      const gap = strip ? parseFloat(getComputedStyle(strip).columnGap) || 0 : 0;
       const free = stage.clientWidth - gap * (panels.length - 1);
       const closed = free / (OPEN_GROW + panels.length - 1);
       stage.style.setProperty("--closed-w", `${closed}px`);
