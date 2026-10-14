@@ -646,50 +646,24 @@ figcaption {
 
 /* Judas ----------------------------------------------------------------- */
 
-/* The trailer runs the full width, as the God of War art does; the copy
-   sits beneath it, the name on the left and the account on the right. */
+/* The trailer takes most of the width; the copy sits in the narrow column
+   beside it, level with its bottom edge. */
 .chapter--judas {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: clamp(28px, 3vw, 48px) var(--gap);
+  gap: var(--gap);
+  align-items: end;
 }
 .judas-image {
-  grid-column: 1 / -1;
+  grid-column: 1 / span 9;
   aspect-ratio: 16 / 9;
 }
 .judas-copy {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 18px var(--gap);
-  align-items: start;
-}
-.judas-copy .chapter-title,
-.judas-copy .meta {
-  grid-column: 1 / span 5;
-}
-.judas-copy .meta {
-  grid-row: 2;
-}
-.judas-copy > p:not(.meta),
-.judas-copy .text-link {
-  grid-column: 7 / span 5;
-  max-width: 52ch;
-}
-.judas-copy > p:not(.meta) {
-  grid-row: 1 / span 2;
-  align-self: end;
-}
-.judas-copy .text-link {
-  grid-row: 3;
-  justify-self: start;
-}
-@media (max-width: 720px) {
-  .judas-copy {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  grid-column: 10 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
 }
 
 /* Tanuki ---------------------------------------------------------------- */
@@ -821,9 +795,11 @@ figcaption {
   gap: var(--gap);
   align-items: start;
 }
+/* The generated levels lead: one large, the rest stacked beside it. The
+   copy and the pipeline sketch follow. */
 .levelgen-copy {
   grid-column: 1 / span 4;
-  grid-row: 1 / span 2;
+  grid-row: 2;
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -832,20 +808,30 @@ figcaption {
 }
 .levelgen-pipeline {
   grid-column: 5 / -1;
+  grid-row: 2;
+  margin-top: clamp(20px, 2.4vw, 40px);
   background: #1e1f21;
 }
 .levelgen-pipeline img {
   height: auto;
 }
 .levelgen-rooms {
-  grid-column: 5 / -1;
+  grid-column: 1 / -1;
+  grid-row: 1;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gap);
+  margin-bottom: clamp(20px, 2.4vw, 40px);
 }
 .levelgen-rooms li {
-  aspect-ratio: 4 / 3;
+  grid-column: 9 / -1;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
+}
+.levelgen-rooms li:first-child {
+  grid-column: 1 / span 8;
+  grid-row: 1 / span 3;
+  aspect-ratio: auto;
 }
 .levelgen-rooms img {
   width: 100%;
@@ -1578,6 +1564,12 @@ img[data-fade]:not([data-loaded]) {
 /* Tablet ---------------------------------------------------------------- */
 
 @media (max-width: 1080px) {
+  .chapter--judas .judas-image {
+    grid-column: 1 / -1;
+  }
+  .judas-copy {
+    grid-column: 1 / span 8;
+  }
   .menu-viewer-stage {
     grid-column: 1 / -1;
   }
@@ -1637,11 +1629,11 @@ img[data-fade]:not([data-loaded]) {
   }
   .levelgen-copy {
     grid-column: 1 / span 10;
-    grid-row: auto;
+    grid-row: 2;
   }
-  .levelgen-pipeline,
-  .levelgen-rooms {
+  .levelgen-pipeline {
     grid-column: 1 / -1;
+    grid-row: 3;
   }
   .dreamatron-auteur,
   .dreamatron-door {
@@ -1792,7 +1784,16 @@ img[data-fade]:not([data-loaded]) {
     aspect-ratio: 4 / 5;
   }
   .levelgen-rooms {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .levelgen-rooms li {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+  .levelgen-rooms li:first-child {
+    grid-column: 1 / -1 !important;
+    aspect-ratio: 16 / 10;
   }
   .painting-rows {
     --row: 128px;

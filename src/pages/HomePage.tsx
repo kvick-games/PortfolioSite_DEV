@@ -288,6 +288,18 @@ function Tools() {
   return (
     <section className="chapter chapter--tools" id="level-generator" aria-labelledby="levelgen-title">
       <div className="levelgen">
+        <ul className="levelgen-rooms" aria-label="Generated levels">
+          {[
+            ["levelgenerator-1", "Generated interior with wood floors"],
+            ["levelgenerator-2", "Generated kitchen with peeling tiles"],
+            ["levelgenerator-5", "Generated hallway with a lit doorway"],
+            ["levelgenerator-3", "Exterior of a generated structure"],
+          ].map(([name, alt]) => (
+            <li key={name} data-reveal>
+              <img src={img(name)} alt={alt} loading="lazy" />
+            </li>
+          ))}
+        </ul>
         <div className="levelgen-copy">
           <h2 id="levelgen-title" className="chapter-title" data-reveal>
             Level Generator
@@ -311,18 +323,6 @@ function Tools() {
           </Link>
         </div>
         <LevelGenSketch pipelineSrc={img("levelgenerator-mapgenpipeline")} />
-        <ul className="levelgen-rooms" aria-label="Generated levels">
-          {[
-            ["levelgenerator-1", "Generated interior with wood floors"],
-            ["levelgenerator-2", "Generated kitchen with peeling tiles"],
-            ["levelgenerator-5", "Generated hallway with a lit doorway"],
-            ["levelgenerator-3", "Exterior of a generated structure"],
-          ].map(([name, alt]) => (
-            <li key={name} data-reveal>
-              <img src={img(name)} alt={alt} loading="lazy" />
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );
