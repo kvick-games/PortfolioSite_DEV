@@ -26,10 +26,10 @@ export default function AboutPage() {
             games.
           </p>
           <p>
-            I studied Illustration and Fine Art at the Academy of Art University
-            in San Francisco, then moved into a Bachelor of Science in game
-            programming, and later took Caltech’s AI and Machine Learning
-            bootcamp.
+            I graduated with a Bachelor of Science in computer science, focused
+            on game programming, after studying Illustration and Fine Art at the
+            Academy of Art University in San Francisco, and later took
+            Caltech’s AI and Machine Learning bootcamp.
           </p>
           <p>
             I write C++, C#, Python, Lua and TypeScript, and I’ve worked solo,

@@ -182,8 +182,9 @@ main:focus {
   font-size: 0.84em;
   font-weight: 500;
   letter-spacing: 0.3em;
-  /* Two-word names such as Dream Engine: a clear gap, never split across lines. */
-  word-spacing: 0.2em;
+  /* Two-word names such as Dream Engine: the word gap is about two letter
+     gaps ("D R E A M  E N G I N E"), and the name never splits across lines. */
+  word-spacing: -0.22em;
   white-space: nowrap;
   margin-right: -0.3em;
 }
@@ -1058,53 +1059,118 @@ figcaption {
   gap: 20px;
   max-width: 60ch;
 }
-.about-links {
+.about-contact {
+  align-self: flex-start;
+  margin-top: 12px;
+}
+
+/* The résumé (ResumeSummary), set in the page's type beside the bio. */
+.resume-summary-block {
   grid-column: 8 / -1;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 28px;
+  gap: clamp(28px, 2.6vw, 40px);
 }
-/* The résumés as their first pages; the one under the pointer keeps its
-   light while the other dims, as the paintings do. */
-.resume-cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--gap);
-  width: 100%;
-  max-width: 440px;
-}
-.resume-card {
+.resume-summary-head {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  text-decoration: none;
-  transition: filter 0.35s var(--ease);
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
 }
-.resume-card img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 900 / 1165;
-  border-radius: 3px;
-  box-shadow: 0 18px 40px rgb(0 0 0 / 0.45);
+.resume-summary-head h3 {
+  font-size: clamp(24px, 1.9vw, 30px);
+  font-weight: 600;
+  font-stretch: 86%;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
-.resume-card-label {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: var(--size-small);
-  line-height: 1.35;
-}
-.resume-card-kind {
+.resume-summary-head p {
   color: var(--ink-2);
 }
-.resume-card:focus-visible {
-  outline-offset: 6px;
+.resume-summary-head .text-link {
+  margin-left: auto;
+  font-size: var(--size-small);
 }
-@media (hover: hover) {
-  .resume-cards:has(.resume-card:hover) .resume-card:not(:hover) {
-    filter: grayscale(1) brightness(0.62);
-  }
+.resume-summary-block :is(h3, h4, p, ol, ul, dl, dd) {
+  margin: 0;
+  padding: 0;
+}
+.resume-summary-block :is(ol, ul) {
+  list-style: none;
+}
+.resume-summary-jobs {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.resume-summary-job-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+.resume-summary-job-head h4 {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.resume-summary-job-head h4 .brand {
+  font-size: 0.82em;
+  color: inherit;
+}
+.resume-summary-job-head span {
+  flex: none;
+  font-size: var(--size-small);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.resume-summary-role {
+  margin-top: 2px;
+  font-size: var(--size-small);
+  color: var(--ink-2);
+}
+.resume-summary-jobs ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: var(--size-small);
+  line-height: 1.5;
+}
+.resume-summary-jobs ul li {
+  position: relative;
+  padding-left: 16px;
+}
+.resume-summary-jobs ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+  width: 6px;
+  height: 1px;
+  background: var(--accent);
+}
+.resume-summary-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  font-size: var(--size-small);
+  line-height: 1.5;
+}
+.resume-summary-facts > div {
+  display: grid;
+  grid-template-columns: 7.5em minmax(0, 1fr);
+  gap: 16px;
+}
+.resume-summary-facts dt {
+  color: var(--ink-2);
+}
+.resume-summary-facts dd span {
+  display: block;
 }
 
 /* Inner pages ----------------------------------------------------------- */
@@ -1572,6 +1638,50 @@ img[data-fade]:not([data-loaded]) {
     view-transition-name: painting;
   }
 }
+/* The theme switch (ThemeToggle): the new theme spreads from the toggle in
+   a circle whose edge dissolves through grain. The page itself stays put. */
+@property --theme-r {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+html.theme-switch::view-transition-old(root) {
+  animation: none;
+}
+html.theme-switch::view-transition-new(root) {
+  --edge: radial-gradient(circle at var(--theme-x) var(--theme-y), #000 calc(var(--theme-r) - 200px), transparent var(--theme-r));
+  animation: theme-reveal 1.15s cubic-bezier(0.45, 0, 0.2, 1) both;
+  mask-image:
+    radial-gradient(circle at var(--theme-x) var(--theme-y), #000 calc(var(--theme-r) - 240px), transparent calc(var(--theme-r) - 140px)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3.2 0 0 0 -1.1'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+    var(--edge);
+  mask-size: 100% 100%, 160px 160px, 100% 100%;
+  mask-repeat: no-repeat, repeat, no-repeat;
+  mask-composite: add, intersect;
+}
+@keyframes theme-reveal {
+  from {
+    --theme-r: 0px;
+  }
+  to {
+    --theme-r: var(--theme-reach);
+  }
+}
+/* Without view transitions, the colours ease across instead. */
+html.theme-fading,
+html.theme-fading * {
+  transition:
+    background-color 0.6s var(--ease),
+    color 0.6s var(--ease),
+    border-color 0.6s var(--ease) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.theme-switch::view-transition-new(root) {
+    mask-image: none;
+    animation: page-in 0.3s ease both !important;
+  }
+}
+
 @keyframes page-out {
   to {
     opacity: 0;
@@ -1681,10 +1791,11 @@ img[data-fade]:not([data-loaded]) {
     grid-column: 1 / -1;
   }
   .about-text {
-    grid-column: 1 / span 7;
+    grid-column: 1 / span 10;
   }
-  .about-links {
-    grid-column: 9 / -1;
+  .resume-summary-block {
+    grid-column: 1 / span 10;
+    margin-top: 32px;
   }
   .project-article-body > * {
     grid-column: 2 / span 10;

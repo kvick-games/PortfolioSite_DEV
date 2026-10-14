@@ -13,7 +13,8 @@ import ScrollWordmark from "../components/ScrollWordmark";
 import SectionShaders from "../components/SectionShaders";
 import TimelineMini from "../components/TimelineMini";
 import { artPieces } from "../data/artPieces";
-import { contact, resumes } from "../data/site";
+import { contact } from "../data/site";
+import ResumeSummary from "../components/ResumeSummary";
 
 const img = (name: string) => `/Resources/Site/img/${name}.webp`;
 
@@ -406,10 +407,11 @@ function About() {
       <div className="about-columns">
         <div className="about-text">
           <p data-reveal>
-            I studied illustration and fine art at the Academy of Art
-            University in San Francisco, then graduated with a BS focused on game
-            programming. I’m happiest where the two overlap: the screens, systems and tools
-            players and makers actually touch.
+            I graduated with a Bachelor of Science in computer science, focused
+            on game programming. Before that I studied illustration and fine art
+            at the Academy of Art University in San Francisco. I’m happiest
+            where the two overlap: the screens, systems and tools players and
+            makers actually touch.
           </p>
           <p data-reveal>
             These days I’m deep in AI. I spend my time testing what models can
@@ -420,31 +422,11 @@ function About() {
             I write C++, Lua, Python, C# and TypeScript, and work in Unreal,
             Unity, Houdini, Blender and now our own <Brand name="Dream Engine" />.
           </p>
-        </div>
-        <div className="about-links" data-reveal>
-          <a className="button" href={contact.href} target="_blank" rel="noreferrer">
+          <a className="button about-contact" href={contact.href} target="_blank" rel="noreferrer" data-reveal>
             {contact.label}
           </a>
-          <ul className="resume-cards" aria-label="Résumés">
-            {resumes.map((resume) => (
-              <li key={resume.href}>
-                <a className="resume-card" href={resume.href} target="_blank" rel="noreferrer">
-                  <img src={resume.preview} alt="" width={900} height={1165} loading="lazy" />
-                  <span className="resume-card-label">
-                    <span>
-                      {resume.role}
-                      <span className="sr-only"> résumé</span>
-                    </span>
-                    <span className="resume-card-kind">PDF</span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-          <Link className="text-link" to="/about">
-            More about me
-          </Link>
         </div>
+        <ResumeSummary />
       </div>
     </section>
   );
