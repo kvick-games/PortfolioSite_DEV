@@ -1,0 +1,339 @@
+{
+  "source": {
+    "repo": "AI Timeline site source, src/data/timeline.ts (commit b81bbe5, 2 Oct 2026; colours from src/data/companyProfiles.ts)",
+    "live": "https://www.dreamatron.ai/timeline",
+    "asOf": "2026-10-02",
+    "snapshotTaken": "2026-10-13",
+    "note": "Static snapshot of six LLM lines, releases only (events such as API previews are left out, as in the live default view). Gaps are days since the previous release in the full source line; averageGap is the mean over the whole line, as on the live site. The now line sits at asOf, the date of the source data commit."
+  },
+  "window": {
+    "start": "2025-01-01",
+    "end": "2027-04-01"
+  },
+  "lanes": [
+    {
+      "id": "openai-gpt",
+      "company": "OpenAI",
+      "label": "GPT",
+      "accent": "#139a74",
+      "marker": "circle",
+      "averageGap": 82,
+      "releases": [
+        {
+          "name": "o1",
+          "date": "2024-12-05",
+          "gap": 140
+        },
+        {
+          "name": "o3",
+          "date": "2025-04-16",
+          "gap": 132
+        },
+        {
+          "name": "GPT-5",
+          "date": "2025-08-07",
+          "gap": 113
+        },
+        {
+          "name": "GPT-5.1",
+          "date": "2025-11-12",
+          "gap": 97
+        },
+        {
+          "name": "GPT-5.2",
+          "date": "2025-12-11",
+          "gap": 29
+        },
+        {
+          "name": "GPT-5.3",
+          "date": "2026-02-05",
+          "gap": 56
+        },
+        {
+          "name": "GPT-5.4",
+          "date": "2026-03-05",
+          "gap": 28
+        },
+        {
+          "name": "GPT-5.5",
+          "date": "2026-04-23",
+          "gap": 49
+        },
+        {
+          "name": "GPT-5.6 Sol",
+          "date": "2026-07-09",
+          "gap": 77
+        },
+        {
+          "name": "GPT-6 Astra",
+          "date": "2026-09-03",
+          "gap": 56,
+          "landmark": true
+        },
+        {
+          "name": "GPT-6 Luna",
+          "date": "2026-09-22",
+          "gap": 19
+        },
+        {
+          "name": "GPT-6 Sol",
+          "date": "2026-09-22",
+          "gap": 0
+        },
+        {
+          "name": "GPT-6.1 Sol",
+          "date": "2026-09-29",
+          "gap": 7
+        }
+      ]
+    },
+    {
+      "id": "anthropic-claude",
+      "company": "Anthropic",
+      "label": "Claude",
+      "accent": "#d38b14",
+      "marker": "circle",
+      "averageGap": 76,
+      "releases": [
+        {
+          "name": "Claude 3.5",
+          "date": "2024-06-20",
+          "gap": 108,
+          "landmark": true
+        },
+        {
+          "name": "Claude 3.7",
+          "date": "2025-02-24",
+          "gap": 249
+        },
+        {
+          "name": "Claude 4",
+          "date": "2025-05-22",
+          "gap": 87
+        },
+        {
+          "name": "Claude 4.5 Sonnet",
+          "date": "2025-09-29",
+          "gap": 130
+        },
+        {
+          "name": "Claude Opus 4.5",
+          "date": "2025-11-24",
+          "gap": 56,
+          "landmark": true
+        },
+        {
+          "name": "Claude 4.6 Opus",
+          "date": "2026-02-05",
+          "gap": 73
+        },
+        {
+          "name": "Claude 4.6 Sonnet",
+          "date": "2026-02-17",
+          "gap": 12
+        },
+        {
+          "name": "Claude 4.7 Opus",
+          "date": "2026-04-16",
+          "gap": 58
+        },
+        {
+          "name": "Claude 4.8 Opus",
+          "date": "2026-05-28",
+          "gap": 42
+        },
+        {
+          "name": "Claude Fable 5",
+          "date": "2026-06-09",
+          "gap": 12,
+          "landmark": true
+        },
+        {
+          "name": "Claude Sonnet 5",
+          "date": "2026-06-30",
+          "gap": 21
+        },
+        {
+          "name": "Claude Opus 5",
+          "date": "2026-07-24",
+          "gap": 24
+        },
+        {
+          "name": "Claude Fable 5.1",
+          "date": "2026-09-01",
+          "gap": 39
+        },
+        {
+          "name": "Claude Opus 5.5",
+          "date": "2026-09-22",
+          "gap": 21,
+          "landmark": true
+        },
+        {
+          "name": "Claude Sonnet 5.5",
+          "date": "2026-09-28",
+          "gap": 6
+        }
+      ]
+    },
+    {
+      "id": "google-gemini",
+      "company": "Google",
+      "label": "Gemini",
+      "accent": "#2d6ed8",
+      "marker": "circle",
+      "averageGap": 105,
+      "releases": [
+        {
+          "name": "Gemini 1.5",
+          "date": "2024-02-15",
+          "gap": 71
+        },
+        {
+          "name": "Gemini 2.0",
+          "date": "2025-02-05",
+          "gap": 356
+        },
+        {
+          "name": "Gemini 2.5",
+          "date": "2025-03-25",
+          "gap": 48,
+          "landmark": true
+        },
+        {
+          "name": "Gemini 3.0 Pro",
+          "date": "2025-11-18",
+          "gap": 238
+        },
+        {
+          "name": "Gemini 3.1 Pro (Preview)",
+          "date": "2026-02-19",
+          "gap": 93
+        },
+        {
+          "name": "Gemini 3.1 Flash-Lite",
+          "date": "2026-03-03",
+          "gap": 12
+        },
+        {
+          "name": "Gemini 3.5 Flash",
+          "date": "2026-05-19",
+          "gap": 77
+        },
+        {
+          "name": "Gemini Omni",
+          "date": "2026-05-19",
+          "gap": 0
+        },
+        {
+          "name": "Gemini 3.6 Flash",
+          "date": "2026-07-21",
+          "gap": 63
+        },
+        {
+          "name": "Gemini 3.7 Flash",
+          "date": "2026-08-13",
+          "gap": 23
+        },
+        {
+          "name": "Gemini 3.8 Flash",
+          "date": "2026-09-02",
+          "gap": 20
+        }
+      ]
+    },
+    {
+      "id": "google-omni",
+      "company": "Google",
+      "label": "Gemini Omni",
+      "accent": "#2d6ed8",
+      "marker": "diamond",
+      "averageGap": 100,
+      "releases": [
+        {
+          "name": "Gemini Omni",
+          "date": "2026-05-19"
+        },
+        {
+          "name": "Gemini Omni 1.1 Flash",
+          "date": "2026-08-27",
+          "gap": 100
+        }
+      ]
+    },
+    {
+      "id": "xai-grok",
+      "company": "SpaceXAI",
+      "label": "Grok",
+      "accent": "#777f90",
+      "marker": "circle",
+      "averageGap": 105,
+      "releases": [
+        {
+          "name": "Grok 2",
+          "date": "2024-08-13",
+          "gap": 138
+        },
+        {
+          "name": "Grok 3",
+          "date": "2025-02-17",
+          "gap": 188
+        },
+        {
+          "name": "Grok 4",
+          "date": "2025-07-09",
+          "gap": 142
+        },
+        {
+          "name": "Grok 4.1",
+          "date": "2025-11-17",
+          "gap": 131
+        },
+        {
+          "name": "Grok 4.20",
+          "date": "2026-02-17",
+          "gap": 92
+        },
+        {
+          "name": "Grok 4.3",
+          "date": "2026-04-17",
+          "gap": 59
+        },
+        {
+          "name": "Grok 4.5",
+          "date": "2026-07-08",
+          "gap": 82
+        },
+        {
+          "name": "Grok 4.6",
+          "date": "2026-08-12",
+          "gap": 35
+        },
+        {
+          "name": "Grok 4.7",
+          "date": "2026-09-21",
+          "gap": 40
+        }
+      ]
+    },
+    {
+      "id": "meta-muse-spark",
+      "company": "Meta AI",
+      "label": "Muse Spark",
+      "accent": "#4d8df7",
+      "marker": "circle",
+      "averageGap": 55,
+      "releases": [
+        {
+          "name": "Muse Spark 1.1",
+          "date": "2026-07-09"
+        },
+        {
+          "name": "Muse Spark 1.3",
+          "date": "2026-09-02",
+          "gap": 55
+        }
+      ]
+    }
+  ]
+}

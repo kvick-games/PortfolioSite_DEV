@@ -9,6 +9,7 @@ import PaintingRows from "../components/PaintingRows";
 import ProjectSplash from "../components/ProjectSplash";
 import RecipeSketch from "../components/RecipeSketch";
 import ScrollWordmark from "../components/ScrollWordmark";
+import TimelineMini from "../components/TimelineMini";
 import { artPieces } from "../data/artPieces";
 import { contact, resumes } from "../data/site";
 
@@ -318,44 +319,7 @@ function Dreamatron() {
         designing and building creative applications for film, sound and
         games, and the interfaces that hold them together.
       </p>
-      <div className="dreamatron-live">
-        <figure data-reveal>
-          <a
-            href="https://www.dreamatron.ai/timeline"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open the AI Timeline at dreamatron.ai"
-          >
-            <img
-              src={img("dreamatron-timeline")}
-              alt="The AI Timeline: release lines for OpenAI, Anthropic, Google and others, with glowing release markers and gap labels"
-              loading="lazy"
-            />
-          </a>
-        </figure>
-        <div className="dreamatron-live-copy">
-          <h3 data-reveal>AI Timeline</h3>
-          <p className="meta" data-reveal>
-            Live at dreamatron.ai, 2026
-          </p>
-          <p data-reveal>
-            A map of AI progress, from model releases and generative media to
-            voice, world models, coding tools and robotics. The board pans like
-            a canvas with a zoom rail, and every gap is measured against its
-            line’s average. It grew out of my earlier{" "}
-            <Link to="/portfolio?project=ai-model-timeline">model timeline</Link>.
-          </p>
-          <a
-            className="text-link"
-            href="https://www.dreamatron.ai/timeline"
-            target="_blank"
-            rel="noreferrer"
-            data-reveal
-          >
-            Open the timeline
-          </a>
-        </div>
-      </div>
+      <TimelineMini />
       <div className="dreamatron-private">
         <div className="dreamatron-auteur">
           <h3 data-reveal>

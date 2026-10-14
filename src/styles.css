@@ -749,39 +749,7 @@ figcaption {
   margin-top: clamp(32px, 4vw, 64px);
   max-width: 40ch;
 }
-.dreamatron-live {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--gap);
-  align-items: end;
-  margin-top: clamp(48px, 6vw, 96px);
-}
-.dreamatron-live figure {
-  grid-column: 1 / span 8;
-  background: var(--night);
-}
-.dreamatron-live figure a {
-  display: block;
-  overflow: hidden;
-}
-.dreamatron-live figure img {
-  height: auto;
-  transition: transform 0.7s var(--ease);
-}
-.dreamatron-live figure a:hover img {
-  transform: scale(1.02);
-}
-.dreamatron-live-copy {
-  grid-column: 9 / -1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: flex-start;
-}
-.dreamatron-live-copy a:not(.text-link) {
-  font-weight: 600;
-  text-underline-offset: 4px;
-}
+/* The AI Timeline block is src/components/TimelineMini.tsx (timeline-mini.css). */
 .chapter--dreamatron h3 {
   font-size: var(--size-statement);
   font-weight: 600;
@@ -1446,14 +1414,9 @@ figcaption {
   .levelgen-rooms {
     grid-column: 1 / -1;
   }
-  .dreamatron-live figure,
-  .dreamatron-live-copy,
   .dreamatron-auteur,
   .dreamatron-door {
     grid-column: 1 / -1;
-  }
-  .dreamatron-live-copy {
-    max-width: 60ch;
   }
   .about-text {
     grid-column: 1 / span 7;
@@ -1515,7 +1478,6 @@ figcaption {
   .tanuki-notes,
   .ewa-grid,
   .levelgen,
-  .dreamatron-live,
   .dreamatron-private,
   .paint-head,
   .about-columns,
@@ -1533,7 +1495,6 @@ figcaption {
   .tanuki-notes > *,
   .ewa-grid > *,
   .levelgen > *,
-  .dreamatron-live > *,
   .dreamatron-private > *,
   .paint-head > *,
   .about-columns > *,
