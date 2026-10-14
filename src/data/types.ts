@@ -31,3 +31,13 @@ export interface MiscProject {
   details: string[];
   Article: ComponentType;
 }
+
+export interface ArtPiece {
+  slug: string;
+  title: string;
+  description?: string;
+  sourceUrl: string;
+  coverImage: string;
+  images: string[];
+  embedUrl?: string;
+}

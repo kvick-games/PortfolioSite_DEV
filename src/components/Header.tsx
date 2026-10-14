@@ -4,11 +4,13 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 const navItems = [
   { href: "/projects", label: "Projects" },
   { href: "/portfolio", label: "Portfolio" },
+  { href: "/art", label: "Art" },
   { href: "/about", label: "About" },
 ];
 
 function sectionForPath(pathname: string) {
   if (pathname.startsWith("/about")) return "About";
+  if (pathname.startsWith("/art")) return "Art";
   if (pathname.startsWith("/projects")) return "Projects";
   return "Portfolio";
 }
