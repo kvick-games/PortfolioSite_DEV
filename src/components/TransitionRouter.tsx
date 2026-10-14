@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { flushSync } from "react-dom";
 import {
+  NavigationType,
   Router,
   UNSAFE_createBrowserHistory as createBrowserHistory,
 } from "react-router-dom";
@@ -23,8 +24,9 @@ function settle(image: HTMLImageElement) {
 /**
  * BrowserRouter, except every change of page runs inside a View Transition:
  * the old page fades out as the new one fades in (styles.css, "Page
- * transitions"), and the scroll reset in App happens under the fade. Same-page
- * hash jumps and browsers without the API update instantly, as before.
+ * transitions"), and the scroll reset in App happens under the fade. A jump to
+ * another section of the same page cross-fades the same way, instead of
+ * cutting. Browsers without the API update instantly, as before.
  */
 export default function TransitionRouter({ children }: { children: ReactNode }) {
   const historyRef = useRef<ReturnType<typeof createBrowserHistory>>(null);
@@ -38,11 +40,14 @@ export default function TransitionRouter({ children }: { children: ReactNode }) 
   useLayoutEffect(() => {
     let current = history.location;
     return history.listen(({ action, location }) => {
-      const samePage =
-        location.pathname === current.pathname && location.search === current.search;
+      const sameView =
+        location.pathname === current.pathname &&
+        location.search === current.search &&
+        location.hash === current.hash;
       current = location;
       const update = () => setState({ action, location });
-      if (samePage || !document.startViewTransition || document.hidden) {
+      // Clicking the link for where you already are still goes there with a fade.
+      if ((sameView && action !== NavigationType.Push) || !document.startViewTransition || document.hidden) {
         update();
         return;
       }

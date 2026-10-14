@@ -1,5 +1,5 @@
 import Brand from "./Brand";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { contact } from "../data/site";
 import ThemeToggle from "./ThemeToggle";
 
@@ -12,24 +12,16 @@ const sections = [
 ];
 
 export default function Header() {
-  const { pathname, search } = useLocation();
-  const onHome = pathname === "/portfolio" && !search;
   return (
     <header className="site-header">
       <nav className="site-nav" aria-label="Primary">
-        {sections.map(({ id, label }) =>
-          // On the home page each link scrolls to its section; from another
-          // page, a router Link so the page cross-fades instead of reloading.
-          onHome ? (
-            <a key={id} href={`#${id}`}>
-              {label}
-            </a>
-          ) : (
-            <Link key={id} to={`/portfolio#${id}`}>
-              {label}
-            </Link>
-          ),
-        )}
+        {/* Router links, so the page cross-fades to the section (TransitionRouter),
+            whether it's this page or another. */}
+        {sections.map(({ id, label }) => (
+          <Link key={id} to={`/portfolio#${id}`}>
+            {label}
+          </Link>
+        ))}
       </nav>
       <div className="header-end">
         <a className="header-contact" href={contact.href} target="_blank" rel="noreferrer">

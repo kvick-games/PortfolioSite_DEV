@@ -18,6 +18,17 @@ export default function App() {
       : null;
     if (target) target.scrollIntoView({ behavior: viewTransitionRunning() ? "instant" : "auto" });
     else window.scrollTo({ top: 0, behavior: "instant" });
+    // Under a cross-fade, whatever is now on screen arrives already revealed,
+    // so the fade lands on finished content instead of revealing it after.
+    if (viewTransitionRunning()) {
+      const vh = window.innerHeight;
+      document
+        .querySelectorAll<HTMLElement>("[data-reveal]:not(.revealed), .article-section > *:not(.revealed)")
+        .forEach((element) => {
+          const rect = element.getBoundingClientRect();
+          if (rect.bottom > 0 && rect.top < vh) element.classList.add("reveal-now", "revealed");
+        });
+    }
     const titles: Record<string, string> = {
       "/portfolio": "Interfaces for games and creative tools",
       "/projects": "Experiments",
