@@ -234,7 +234,7 @@ function Ewa() {
             2020 to now, <Brand name="Dream Engine" />
           </p>
           <p className="statement" data-reveal>
-            Every room was painted before it was built. Keep your light on.
+            Third-person survival horror. Explore the dark, solve what it hides, and make it out alive.
           </p>
           <Link className="text-link" to="/portfolio?project=ewa" data-reveal>
             Watch the teaser and see more
