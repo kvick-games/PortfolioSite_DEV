@@ -19,7 +19,7 @@ Show the work as working interfaces. The first screen states the job ("Interface
 | Section | Composition |
 |---|---|
 | Hero | Statement and actions |
-| God of War | Tabbed menu viewer: muted loops plus stills, captions from the case study |
+| God of War | Key art first, then a tabbed menu viewer: muted loops plus stills, captions from the case study |
 | Judas | Image and copy, pushed to the end of the row |
 | Tanuki | Header row, mosaic, three design notes |
 | EWA | Night field: key art, concept painting, letterbox-cropped captures |

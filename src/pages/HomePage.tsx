@@ -96,6 +96,14 @@ function Hero() {
 function GodOfWar() {
   return (
     <section className="chapter chapter--gow" id="work" aria-labelledby="gow-title">
+      <figure className="gow-cover" data-reveal>
+        <img
+          src={img("gow-banner")}
+          alt="God of War (2018) key art: Kratos and Atreus fighting a troll in a burning forest"
+          width={2000}
+          height={1125}
+        />
+      </figure>
       <MenuViewer
         views={godOfWarViews}
         label="gow"
