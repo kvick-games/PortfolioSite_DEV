@@ -9,6 +9,7 @@ import PaintingRows from "../components/PaintingRows";
 import ProjectSplash from "../components/ProjectSplash";
 import RecipeSketch from "../components/RecipeSketch";
 import ScrollWordmark from "../components/ScrollWordmark";
+import SectionShaders from "../components/SectionShaders";
 import TimelineMini from "../components/TimelineMini";
 import { artPieces } from "../data/artPieces";
 import { contact, resumes } from "../data/site";
@@ -414,6 +415,7 @@ function About() {
 export default function HomePage() {
   return (
     <main id="main" tabIndex={-1} className="home">
+      <SectionShaders />
       <Hero />
       <GodOfWar />
       <Judas />

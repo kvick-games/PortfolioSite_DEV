@@ -1,0 +1,43 @@
+/* Section shaders: one fixed WebGL canvas behind the home page ------------
+
+   The canvas renders at about half resolution and the browser scales it up;
+   the backgrounds are soft, so the upscale is invisible. It sits below every
+   section (z-index -1 in the root stacking context, above the body's black). */
+
+.section-shaders {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100vh;
+  /* The large viewport height, so mobile toolbars do not resize the canvas. */
+  height: 100lvh;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.section-shaders canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.section-shaders.is-off,
+:root[data-theme="light"] .section-shaders {
+  display: none;
+}
+
+@media print {
+  .section-shaders {
+    display: none;
+  }
+}
+
+/* In the dark theme these fields are black anyway; making them transparent
+   lets the scene show through. Media inside them stays opaque. */
+:root[data-theme="dark"] .home .field-night,
+:root[data-theme="dark"] .home .field-accent {
+  background: transparent;
+}
