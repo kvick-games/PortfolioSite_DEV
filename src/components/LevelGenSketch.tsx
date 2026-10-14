@@ -2,33 +2,23 @@ import {
   useCallback,
   useEffect,
   useId,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
   type CSSProperties,
-  type PointerEvent,
 } from "react";
-import { generateLevel, type LevelMap } from "./levelGenMap";
-import { PipelineGraph, PipelineList, type Rerun } from "./LevelGenPipeline";
-import {
-  DONE,
-  LAST_STEP,
-  LAYER_AT,
-  NODE,
-  PHASE_MS,
-  type Layer,
-  type PipeNode,
-} from "./levelGenGraph";
+import { generateLevel, type LevelMap, type Slot } from "./levelGenMap";
+import LevelGenStepRail, { type Rerun } from "./LevelGenStepRail";
+import { DONE, LAST_STEP, PHASE_MS, STEPS, type Step } from "./levelGenSteps";
 import "./LevelGenSketch.css";
 
 const FIRST_SEED = 2023;
 /** One grid cell, in SVG units. */
 const U = 10;
-/** Each phase of a quest-request re-run, in ms. */
-const RERUN_MS = 620;
-/** Below this width the graph turns into the step list. */
-const GRAPH_MIN = 720;
+/** Each step of a quest-request re-run, in ms. */
+const RERUN_MS = 520;
+/** Room expansion shows at most this many growth rounds. */
+const GROWTH_SHOWN = 6;
 
 const reducedMotion = () =>
   typeof window !== "undefined" &&
@@ -49,73 +39,81 @@ const useCompact = () => {
 };
 
 type Mode = "play" | "step" | "objective";
-const delay = (ms: number) => ({ "--d": ms }) as CSSProperties;
+type Anim = { "data-in"?: true; "data-out"?: true; style?: CSSProperties };
+const at = (ms: number) => ({ "--d": Math.round(ms) }) as CSSProperties;
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+const pts = (poly: Array<[number, number]>) => poly.map(([x, y]) => `${x},${y}`).join(" ");
 
-interface ObjectiveRun {
-  newRoom: boolean;
-  cells: number;
-  walls: number;
-  doors: number;
-  fresh: Set<string>;
+/** Every keyed piece of a map, by the step that makes it. */
+function piecesOf(map: LevelMap) {
+  return {
+    1: map.points.map((p) => `p${p.id}:${p.x},${p.y}`),
+    2: map.edges.map((e) => `e${e.a}-${e.b}`),
+    3: map.edges.map((e) => `e${e.a}-${e.b}:${e.kept}`),
+    4: map.rooms.map((r) => r.key),
+    5: [...map.halls.map((c) => c.key), ...map.doors.map((d) => d.key)],
+    6: map.walls.map((w) => w.key),
+    7: map.slots.map((s) => s.key),
+    8: map.slots.map((s) => `${s.key}:${s.kept}`),
+    9: map.props.map((p) => `${p.key}:${p.w}x${p.h}`),
+  } as Record<number, string[]>;
 }
 
-/** What changed when a quest request added an objective. */
-function diffMaps(prev: LevelMap, next: LevelMap) {
-  const added = <T extends { key: string }>(a: T[], b: T[]) => {
-    const old = new Set(a.map((x) => x.key));
-    return b.filter((x) => !old.has(x.key));
-  };
-  const changed = <T extends { key: string }>(a: T[], b: T[]) =>
-    added(a, b).length > 0 || added(b, a).length > 0;
-  const newRoom = next.rooms.length > prev.rooms.length;
-  const cells = added(prev.cells, next.cells).length;
-  const walls = added(prev.walls, next.walls).length;
-  const doors = added(prev.doors, next.doors).length;
-  const slots = changed(prev.slots, next.slots);
-  const props = changed(prev.props, next.props);
-  const nodes = new Set(["spawner", "create", "mapdata", "rooms"]);
-  if (newRoom) nodes.add("footprints");
-  if (cells) nodes.add("cells");
-  if (walls) nodes.add("wall").add("cells");
-  if (doors) nodes.add("door").add("cells");
-  if (cells || walls || doors) nodes.add("construct");
-  if (slots) nodes.add("populate").add("spawnProps").add("setup");
-  if (props) nodes.add("populate").add("spawnProps").add("resolve");
-  const phases = [...new Set([...nodes].filter((id) => id !== "spawner").map((id) => NODE[id].phases[0]))].sort(
-    (a, b) => a - b,
-  );
-  const oldLinks = new Set(prev.links.map(([a, b]) => `e${a}-${b}`));
-  const fresh = new Set<string>();
-  for (const room of next.rooms) if (room.id >= prev.rooms.length) fresh.add(`f${room.id}`);
-  for (const [a, b] of next.links) if (!oldLinks.has(`e${a}-${b}`)) fresh.add(`e${a}-${b}`);
-  return { rerun: { nodes, phases, index: 0 } as Rerun, run: { newRoom, cells, walls, doors, fresh } };
+interface ObjectiveRun {
+  prev: LevelMap;
+  newRoom: boolean;
+  /** Keys present now that weren't before. */
+  fresh: Set<string>;
+  steps: number[];
+}
+
+/** What a quest request changed, and so which steps re-run. */
+function diffMaps(prev: LevelMap, next: LevelMap): ObjectiveRun {
+  const before = piecesOf(prev);
+  const after = piecesOf(next);
+  const steps: number[] = [];
+  for (let n = 1; n <= LAST_STEP; n++) {
+    const old = new Set(before[n]);
+    const now = new Set(after[n]);
+    if (after[n].some((k) => !old.has(k)) || before[n].some((k) => !now.has(k))) steps.push(n);
+  }
+  const keys = (map: LevelMap) =>
+    new Set<string>([
+      ...map.points.map((p) => `p${p.id}`),
+      ...map.edges.filter((e) => e.kept).map((e) => e.key),
+      ...map.rooms.map((r) => `${r.key}:${r.objective}`),
+      ...map.halls.map((c) => c.key),
+      ...map.walls.map((w) => w.key),
+      ...map.doors.map((d) => d.key),
+      ...map.slots.filter((s) => s.kept).map((s) => s.key),
+      ...map.props.map((p) => p.key),
+    ]);
+  const old = keys(prev);
+  const fresh = new Set([...keys(next)].filter((k) => !old.has(k)));
+  return { prev, newRoom: next.rooms.length > prev.rooms.length, fresh, steps };
 }
 
 /**
- * A browser sketch of the level generator, driven step by step through a
- * live recreation of the real pipeline diagram. The original diagram image
- * stays one toggle away.
+ * A browser sketch of the level generator, run step by step: random points,
+ * Delaunay triangulation, edge pruning, room expansion, doors, the mesh, every
+ * possible slot, slot pruning and props. Everything arrives and leaves by
+ * fading; nothing on the plan moves.
  */
-export default function LevelGenSketch({ pipelineSrc }: { pipelineSrc: string }) {
+export default function LevelGenSketch() {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const compact = useCompact();
   const [seed, setSeed] = useState(FIRST_SEED);
   const [objectives, setObjectives] = useState(0);
   const [phase, setPhase] = useState(0);
   const [mode, setMode] = useState<Mode>("play");
+  const [run, setRun] = useState(0);
   const [rerun, setRerun] = useState<Rerun | null>(null);
   const [objectiveRun, setObjectiveRun] = useState<ObjectiveRun | null>(null);
-  const [hover, setHover] = useState<PipeNode | null>(null);
-  const [showOriginal, setShowOriginal] = useState(false);
-  const [graph, setGraph] = useState(
-    () => typeof window === "undefined" || window.innerWidth > 760,
-  );
+  const [hover, setHover] = useState<Step | null>(null);
   const [announce, setAnnounce] = useState("");
   const root = useRef<HTMLDivElement>(null);
   const timers = useRef<number[]>([]);
   const started = useRef(false);
-  const hovering = useRef(false);
 
   const cols = compact ? 22 : 50;
   const rows = compact ? 19 : 17;
@@ -123,17 +121,6 @@ export default function LevelGenSketch({ pipelineSrc }: { pipelineSrc: string })
     () => generateLevel(seed, cols, rows, objectives),
     [seed, cols, rows, objectives],
   );
-
-  // Graph or list, by the width the component actually has.
-  useLayoutEffect(() => {
-    const element = root.current;
-    if (!element) return;
-    const measure = () => setGraph(element.clientWidth >= GRAPH_MIN);
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
 
   const stop = () => {
     timers.current.forEach((t) => window.clearTimeout(t));
@@ -147,6 +134,7 @@ export default function LevelGenSketch({ pipelineSrc }: { pipelineSrc: string })
     stop();
     started.current = true;
     setMode("play");
+    setRun((n) => n + 1);
     setRerun(null);
     setObjectiveRun(null);
     if (reducedMotion()) {
@@ -154,10 +142,10 @@ export default function LevelGenSketch({ pipelineSrc }: { pipelineSrc: string })
       return;
     }
     setPhase(0);
-    let at = 60;
+    let t = 60;
     for (let p = 1; p <= DONE; p++) {
-      later(() => setPhase(p), at);
-      at += PHASE_MS[p] ?? 0;
+      later(() => setPhase(p), t);
+      t += PHASE_MS[p] ?? 0;
     }
   }, []);
 
@@ -183,16 +171,11 @@ export default function LevelGenSketch({ pipelineSrc }: { pipelineSrc: string })
     stop();
     started.current = true;
     setMode("step");
+    setRun((n) => n + 1);
     setRerun(null);
     setObjectiveRun(null);
-    if (reducedMotion()) {
-      setPhase(step);
-    } else {
-      // Drop back one step for a frame so this step's pieces build again.
-      setPhase(step - 1);
-      requestAnimationFrame(() => requestAnimationFrame(() => setPhase(step)));
-    }
-    setAnnounce(`Step ${step} of ${LAST_STEP}.`);
+    setPhase(step);
+    setAnnounce(`Step ${step} of ${LAST_STEP}: ${STEPS[step - 1].label}.`);
   };
 
   const generate = () => {
@@ -208,153 +191,167 @@ export default function LevelGenSketch({ pipelineSrc }: { pipelineSrc: string })
     stop();
     started.current = true;
     const next = generateLevel(seed, cols, rows, objectives + 1);
-    const { rerun: plan, run } = diffMaps(map, next);
+    const diff = diffMaps(map, next);
     setMode("objective");
+    setRun((n) => n + 1);
     setPhase(DONE);
     setObjectives((n) => n + 1);
-    setObjectiveRun(run);
+    setObjectiveRun(diff);
+    const plan = { steps: diff.steps, index: 0 };
     if (reducedMotion()) {
-      setRerun({ ...plan, index: plan.phases.length });
+      setRerun({ ...plan, index: plan.steps.length });
     } else {
       setRerun(plan);
-      plan.phases.forEach((_: number, i: number) => later(() => setRerun({ ...plan, index: i + 1 }), (i + 1) * RERUN_MS));
+      plan.steps.forEach((_, i) => later(() => setRerun({ ...plan, index: i + 1 }), (i + 1) * RERUN_MS));
     }
     setAnnounce(
-      run.newRoom
-        ? `Objective room added. Rebuilt ${plural(run.cells, "cell")}, ${plural(run.walls, "wall run")} and ${plural(run.doors, "door")}.`
-        : "Objective given to an existing room.",
+      diff.newRoom
+        ? `Objective room added. ${plural(diff.steps.length, "step")} ran again.`
+        : "No space for a new room, so the objective went to a dead-end room.",
     );
   };
 
-  // Hovering a node highlights what it makes; hovering the map, what made it.
-  const focusLayers = (layers: Layer[] | null) => {
+  // Hovering a step highlights what it makes on the plan.
+  const onHover = (step: Step | null) => {
+    setHover(step);
     const element = root.current;
     if (!element) return;
-    if (layers && layers.length) element.dataset.focus = layers.join(" ");
+    if (step) element.dataset.focus = step.produces.join(" ");
     else delete element.dataset.focus;
   };
-  const onHover = (node: PipeNode | null) => {
-    hovering.current = !!node;
-    setHover(node);
-    focusLayers(node ? node.produces : null);
-  };
-  const onMapPointer = (event: PointerEvent<SVGSVGElement>) => {
-    if (event.pointerType !== "mouse" || hovering.current) return;
-    const layer = (event.target as Element).closest("[data-layer]")?.getAttribute("data-layer");
-    focusLayers(layer ? [layer as Layer] : null);
-  };
 
-  // Map timing: where each layer starts within its phase.
-  const rerunStart = (p: number) => {
-    const i = rerun ? rerun.phases.indexOf(p) : -1;
-    return i < 0 ? 0 : i * RERUN_MS + 140;
+  // Timing. A piece fades in when the step that makes it plays; in a quest
+  // re-run, only new pieces fade in, when their step's turn comes.
+  const rerunAt = (step: number) => {
+    const i = objectiveRun ? objectiveRun.steps.indexOf(step) : -1;
+    return (i < 0 ? 0 : i) * RERUN_MS + 120;
   };
-  const layerStyle = (layer: Layer) => {
-    const [p, at] = LAYER_AT[layer];
-    const o = mode === "objective" ? rerunStart(p) : mode === "step" ? at * 0.6 : at;
-    return { "--o": `${Math.round(o)}ms` } as CSSProperties;
+  const enter = (step: number, key: string, ms: number): Anim => {
+    if (mode === "objective") {
+      return objectiveRun?.fresh.has(key) ? { "data-in": true, style: at(rerunAt(step) + ms * 0.3) } : {};
+    }
+    return phase === step ? { "data-in": true, style: at(ms) } : {};
   };
-  const past = (until: number) => (phase > until ? " is-past" : "");
+  const leave = (ms: number): Anim => ({ "data-out": true, style: at(ms) });
 
   const width = cols * U;
   const height = rows * U;
   // Sweep delays: left to right across the map.
   const sweep = (x: number, y: number, span: number) =>
-    Math.round(((x + y * 0.35) / (cols + rows * 0.35)) * span);
-  const hallFloor = useMemo(
-    () =>
-      map.cells
-        .filter((c) => c.room < 0)
-        .map((c) => `M${c.x} ${c.y}h1v1h-1z`)
-        .join(""),
-    [map],
-  );
-  const used = useMemo(() => {
-    const cells = new Set<string>();
-    for (const p of map.props)
-      for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) cells.add(`${x},${y}`);
-    return cells;
+    ((x + y * 0.35) / (cols + rows * 0.35)) * span;
+
+  const counts = useMemo(() => {
+    const kept = map.edges.filter((e) => e.kept);
+    return {
+      kept: kept.length,
+      loops: kept.filter((e) => !e.mst).length,
+      pruned: map.edges.length - kept.length,
+      slotsKept: map.slots.filter((s) => s.kept).length,
+      objective: map.rooms.filter((r) => r.objective).length,
+    };
+  }, [map]);
+  const hallPath = (m: LevelMap, skip?: Set<string>) =>
+    m.halls
+      .filter((c) => !skip?.has(c.key))
+      .map((c) => `M${c.x} ${c.y}h1v1h-1z`)
+      .join("");
+  const growth = useMemo(() => {
+    const shown = Math.min(map.growthRounds, GROWTH_SHOWN);
+    return Array.from({ length: shown }, (_, k) => Math.round(((k + 1) * map.growthRounds) / shown) - 1);
+  }, [map]);
+  const growStep = 1300 / Math.max(growth.length, 1);
+  const edgeOrder = useMemo(() => {
+    const mid = (i: number) => {
+      const e = map.edges[i];
+      return map.points[e.a].x + map.points[e.b].x;
+    };
+    const order = new Map<string, number>();
+    map.edges
+      .map((_, i) => i)
+      .sort((a, b) => mid(a) - mid(b))
+      .forEach((i, rank) => order.set(map.edges[i].key, rank / Math.max(map.edges.length - 1, 1)));
+    return order;
   }, [map]);
 
-  const objectiveCount = map.rooms.filter((room) => room.objective).length;
-  const bespoke = map.rooms.filter((room) => room.bespoke).length;
-  const generated = map.rooms.filter((room) => !room.bespoke && !room.objective).length;
+  const slotRect = (s: Slot) => {
+    if (s.kind === "floor") return { x: s.x + 0.32, y: s.y + 0.32, width: 0.36, height: 0.36 };
+    if (s.side === "n") return { x: s.x + 0.18, y: s.y + 0.14, width: 0.64, height: 0.24 };
+    if (s.side === "s") return { x: s.x + 0.18, y: s.y + 0.62, width: 0.64, height: 0.24 };
+    if (s.side === "w") return { x: s.x + 0.14, y: s.y + 0.18, width: 0.24, height: 0.64 };
+    return { x: s.x + 0.62, y: s.y + 0.18, width: 0.24, height: 0.64 };
+  };
 
-  // The line between diagram and map: the hovered node, else the step.
+  // Pieces a quest request removed fade out where they were.
+  const gone = useMemo(() => {
+    if (!objectiveRun) return null;
+    const { prev } = objectiveRun;
+    const now = (keys: string[]) => new Set(keys);
+    const walls = now(map.walls.map((w) => w.key));
+    const doors = now(map.doors.map((d) => d.key));
+    const props = now(map.props.map((p) => p.key));
+    const slots = now(map.slots.filter((s) => s.kept).map((s) => s.key));
+    const halls = now(map.halls.map((c) => c.key));
+    const floors = now(map.rooms.map((r) => `${r.key}:${r.objective}`));
+    return {
+      floors: prev.rooms.filter((r) => !floors.has(`${r.key}:${r.objective}`)),
+      walls: prev.walls.filter((w) => !walls.has(w.key)),
+      doors: prev.doors.filter((d) => !doors.has(d.key)),
+      props: prev.props.filter((p) => !props.has(p.key)),
+      slots: prev.slots.filter((s) => s.kept && !slots.has(s.key)),
+      halls: prev.halls.filter((c) => !halls.has(c.key)),
+    };
+  }, [objectiveRun, map]);
+
+  // The line under the steps: the hovered step, else the current one.
+  const shown = hover ? hover.n : phase;
   let lead = "";
   let rest = "";
-  if (hover) {
-    lead = hover.label2 ? `${hover.label} ${hover.label2}` : hover.label;
-    rest = hover.about;
-  } else if (mode === "objective" && objectiveRun) {
+  if (mode === "objective" && objectiveRun && !hover) {
     lead = "Quest request.";
     rest = objectiveRun.newRoom
-      ? `CreateMapData() adds a room to hold the objective, then only the new pieces are built: ${plural(objectiveRun.cells, "cell")}, ${plural(objectiveRun.walls, "wall run")}, ${plural(objectiveRun.doors, "door")}.`
-      : "No space for a new room, so CreateMapData() gives the objective to a quiet room.";
+      ? "A point is added where there is the most space and the steps run again. Only the pieces that changed are rebuilt."
+      : "No space for another room, so the objective goes to a dead-end room and its props are cleared.";
   } else {
-    switch (phase) {
+    const label = STEPS[shown - 1]?.label;
+    if (label) lead = `${label}.`;
+    switch (shown) {
       case 1:
-        lead = "LevelConfig";
-        rest = `hands over ${plural(bespoke, "bespoke room")} to place.`;
+        rest = `${plural(map.points.length, "point")} scattered across the grid, each kept clear of the others. Every point will become a room.`;
         break;
       case 2:
-        lead = "CreateMapData()";
-        rest = `places the bespoke room first, then ${plural(generated, "generated footprint")} around it.`;
+        rest = `Every point is joined to its natural neighbours: ${plural(map.edges.length, "candidate connection")}, none crossing.`;
         break;
       case 3:
-        lead = "MapData";
-        rest = `${plural(map.rooms.length, "room")} and the ${plural(map.links.length, "connection")} between them. No geometry yet.`;
+        rest = `A minimum spanning tree keeps every room reachable and ${plural(counts.loops, "extra edge")} ${counts.loops === 1 ? "survives as a loop" : "survive as loops"}. The other ${counts.pruned} are cut.`;
         break;
       case 4:
-        lead = "CellData[]";
-        rest = `${plural(map.cells.length, "cell")}, ${plural(map.walls.length, "wall run")} and ${plural(map.doors.length, "door")}. Each room is given a Theme.`;
+        rest = "Each point grows outward a row at a time until it reaches its size or meets a neighbour.";
         break;
       case 5:
-        lead = "ConstructMapMesh()";
-        rest = "builds walls, doors and floors from MapData, consulting each room's Theme.";
+        rest = `Each kept edge becomes a route: ${plural(map.doors.length, "door")} where it crosses a wall, and ${plural(map.halls.length, "hall cell")} where rooms don't touch.`;
         break;
       case 6:
-        lead = "SetupSlots()";
-        rest = `${plural(map.slots.length, "slot")} along the walls, kept clear of doorways.`;
+        rest = `${plural(map.walls.length, "wall run")}, doors and floors are built from the cells. Each room has a theme.`;
         break;
       case 7:
-        lead = "ResolveSlots()";
-        rest = `each room's Theme fills ${plural(map.props.length, "slot")} with props; the rest stay empty.`;
+        rest = `Every cell of every room could hold something: ${plural(map.slots.length, "candidate slot")}, along the walls and in the open.`;
+        break;
+      case 8:
+        rest = `${map.slots.length - counts.slotsKept} are cut to keep doorways and walking lanes clear and props spaced out. ${counts.slotsKept} remain.`;
+        break;
+      case 9:
+        rest = `Each room's theme turns kept slots into props: ${plural(map.props.length, "prop")}. Some slots stay empty.`;
         break;
       case DONE:
         lead = `Seed ${seed}.`;
-        rest = `${plural(map.rooms.length, "room")}, ${plural(map.props.length, "prop")}. Select a step to replay it.`;
+        rest = `${plural(map.rooms.length, "room")}, ${plural(map.doors.length, "door")}, ${plural(map.props.length, "prop")}. Select a step to replay it.`;
         break;
     }
   }
 
   const label = `Generated floor plan, seed ${seed}: ${map.rooms.length} rooms${
-    objectiveCount ? `, ${objectiveCount} holding an objective` : ""
+    counts.objective ? `, ${counts.objective} holding an objective` : ""
   }.`;
-  const diagramProps = {
-    phase,
-    rerun,
-    hover: hover?.id ?? null,
-    onSelect: (node: PipeNode) => jump(node.phases[0]),
-    onJump: jump,
-    onReplay: play,
-    onHover,
-  };
-
-  const original = (
-    <a className="lg-original" href={pipelineSrc} target="_blank" rel="noreferrer">
-      <img
-        src={pipelineSrc}
-        alt="The original pipeline diagram, from GameMode and LevelConfig through CreateMapData(), MapData and ConstructMapMesh() to PopulateRooms() and SpawnProps()"
-      />
-      <span className="sr-only">(opens full size in a new tab)</span>
-    </a>
-  );
-  const diagram = showOriginal ? original : graph ? (
-    <PipelineGraph {...diagramProps} />
-  ) : (
-    <PipelineList {...diagramProps} />
-  );
 
   const floorPlan = (
     <svg
@@ -365,8 +362,6 @@ export default function LevelGenSketch({ pipelineSrc }: { pipelineSrc: string })
       preserveAspectRatio="xMidYMid meet"
       role="img"
       aria-label={label}
-      onPointerOver={onMapPointer}
-      onPointerLeave={() => !hovering.current && focusLayers(null)}
     >
       <defs>
         <pattern id={`${uid}-dots`} width={U} height={U} patternUnits="userSpaceOnUse">
@@ -392,219 +387,252 @@ export default function LevelGenSketch({ pipelineSrc }: { pipelineSrc: string })
         height={height + U * 1.2}
         fill={`url(#${uid}-dots)`}
       />
-      <g key={`${seed}-${cols}`} transform={`scale(${U})`}>
+      <g key={`${seed}-${cols}-${run}`} className="lg-plan" transform={`scale(${U})`}>
+        {/* 5 + 6: hall floors, then room floors with their themes. */}
         {phase >= 5 ? (
-          <g className="lg-floor" data-layer="floor" style={layerStyle("floor")}>
-            <path className="lg-halls" d={hallFloor} />
-            <g transform={`scale(${1 / U})`}>
-              {map.rooms
-                .filter((room) => !room.objective)
-                .map((room, i) => (
-                  <polygon
-                    key={`t${room.id}`}
-                    points={room.poly.map(([x, y]) => `${x * U},${y * U}`).join(" ")}
-                    fill={`url(#${uid}-t${room.theme})`}
-                    style={delay(i * 70)}
-                  />
-                ))}
-            </g>
-          </g>
-        ) : null}
-        {phase >= 2 ? (
-          <g className="lg-objectives" data-layer="objective" style={layerStyle("objective")}>
-            {map.rooms
-              .filter((room) => room.objective)
-              .map((room) => (
-                <g key={`o${room.id}`}>
-                  <polygon className="lg-objective-floor" points={room.poly.map(([x, y]) => `${x},${y}`).join(" ")} />
-                  <polygon
-                    className="lg-objective-hatch"
-                    transform={`scale(${1 / U})`}
-                    points={room.poly.map(([x, y]) => `${x * U},${y * U}`).join(" ")}
-                    fill={`url(#${uid}-obj)`}
-                  />
-                </g>
-              ))}
-          </g>
-        ) : null}
-        {phase >= 4 ? (
-          <g className={`lg-cells${phase >= 5 ? " is-floor" : ""}`} data-layer="cells" style={layerStyle("cells")}>
-            {map.cells.map((c) => (
-              <rect
-                key={c.key}
-                x={c.x + 0.08}
-                y={c.y + 0.08}
-                width={0.84}
-                height={0.84}
-                data-corridor={c.room < 0 || undefined}
-                style={delay(sweep(c.x, c.y, 650))}
-              />
-            ))}
-          </g>
-        ) : null}
-        {phase >= 1 && map.rooms[0]?.bespoke ? (
-          <g className={`lg-bespoke${past(1)}`} data-layer="bespoke" style={layerStyle("bespoke")}>
-            <polygon pathLength={1} points={map.rooms[0].poly.map(([x, y]) => `${x},${y}`).join(" ")} />
-          </g>
-        ) : null}
-        {phase >= 2 ? (
-          <g className={`lg-footprints${past(4)}`} data-layer="footprints" style={layerStyle("footprints")}>
-            {map.rooms.map((room, i) => (
-              <polygon
-                key={`f${room.id}`}
-                pathLength={1}
-                data-bespoke={room.bespoke || undefined}
-                data-objective={room.objective || undefined}
-                points={room.poly.map(([x, y]) => `${x},${y}`).join(" ")}
-                style={delay(i * 70)}
-              />
-            ))}
-          </g>
-        ) : null}
-        {phase >= 3 ? (
-          <g className={`lg-links${past(4)}`} data-layer="graph" style={layerStyle("graph")}>
-            {map.links.map(([a, b]) => {
-              const p = map.rooms[a];
-              const q = map.rooms[b];
-              return (
-                <line
-                  key={`e${a}-${b}`}
-                  pathLength={1}
-                  x1={p.ax + 0.5}
-                  y1={p.ay + 0.5}
-                  x2={q.ax + 0.5}
-                  y2={q.ay + 0.5}
-                  style={delay(Math.min(a, b) * 45)}
-                />
-              );
-            })}
-            {map.rooms.map((room, i) => (
-              <circle
-                key={`n${room.id}`}
-                cx={room.ax + 0.5}
-                cy={room.ay + 0.5}
-                r={0.38}
-                data-objective={room.objective || undefined}
-                style={delay(i * 50)}
-              />
-            ))}
-          </g>
-        ) : null}
-        {objectiveRun && objectiveRun.fresh.size ? (
-          <g className="lg-fresh" data-layer="objective" style={layerStyle("footprints")}>
-            {map.rooms
-              .filter((room) => objectiveRun.fresh.has(`f${room.id}`))
-              .map((room) => (
-                <polygon key={`ff${room.id}`} pathLength={1} points={room.poly.map(([x, y]) => `${x},${y}`).join(" ")} />
-              ))}
-            {map.links
-              .filter(([a, b]) => objectiveRun.fresh.has(`e${a}-${b}`))
-              .map(([a, b]) => (
-                <line
-                  key={`fe${a}-${b}`}
-                  pathLength={1}
-                  x1={map.rooms[a].ax + 0.5}
-                  y1={map.rooms[a].ay + 0.5}
-                  x2={map.rooms[b].ax + 0.5}
-                  y2={map.rooms[b].ay + 0.5}
-                  style={delay(900)}
-                />
-              ))}
-          </g>
-        ) : null}
-        {phase >= 4 ? (
-          <g className={`lg-swatches${past(4)}`} style={{ "--o": "820ms" } as CSSProperties}>
-            <g transform={`scale(${1 / U})`}>
-              {map.rooms
-                .filter((room) => !room.objective)
-                .map((room, i) => (
-                  <rect
-                    key={`s${room.id}`}
-                    x={(room.rects[0].x + 0.3) * U}
-                    y={(room.rects[0].y + 0.3) * U}
-                    width={1.6 * U}
-                    height={1.6 * U}
-                    fill={`url(#${uid}-t${room.theme})`}
-                    style={delay(i * 60)}
-                  />
-                ))}
-            </g>
-          </g>
-        ) : null}
-        {phase >= 4 ? (
-          <g className={`lg-wallmarks${past(4)}`} data-layer="walls" style={{ "--o": "560ms" } as CSSProperties}>
-            {map.walls.map((w) => (
-              <line key={w.key} x1={w.x1} y1={w.y1} x2={w.x2} y2={w.y2} style={delay(sweep(w.x1, w.y1, 300))} />
-            ))}
-            {map.doors.map((d) => (
-              <path key={d.key} className="lg-doormark" d={d.d} />
-            ))}
-          </g>
-        ) : null}
-        {phase >= 5 ? (
-          <g className="lg-walls" data-layer="walls" style={layerStyle("walls")}>
-            {map.walls.map((w) => (
-              <line
-                key={w.key}
-                pathLength={1}
-                x1={w.x1}
-                y1={w.y1}
-                x2={w.x2}
-                y2={w.y2}
-                style={delay(sweep(Math.min(w.x1, w.x2), Math.min(w.y1, w.y2), 520))}
-              />
-            ))}
-          </g>
-        ) : null}
-        {phase >= 5 ? (
-          <g className="lg-doors" data-layer="doors" style={layerStyle("doors")}>
-            {map.doors.map((d) => (
-              <path key={d.key} d={d.d} />
+          <g className="lg-halls" data-layer="doors">
+            <path d={hallPath(map, mode === "objective" ? objectiveRun?.fresh : undefined)} {...(phase === 5 && mode !== "objective" ? { "data-in": true, style: at(0) } : {})} />
+            {mode === "objective"
+              ? map.halls
+                  .filter((c) => objectiveRun?.fresh.has(c.key))
+                  .map((c) => <rect key={c.key} className="lg-hall-new" x={c.x} y={c.y} width={1} height={1} {...enter(5, c.key, 0)} />)
+              : null}
+            {gone?.halls.map((c) => (
+              <rect key={`g${c.key}`} x={c.x} y={c.y} width={1} height={1} {...leave(rerunAt(5))} />
             ))}
           </g>
         ) : null}
         {phase >= 6 ? (
-          <g className={`lg-slots${past(6)}`} data-layer="slots" style={layerStyle("slots")}>
-            {map.slots.map((s) => (
-              <rect
-                key={s.key}
-                data-used={used.has(`${s.x},${s.y}`) || undefined}
-                x={s.x + 0.24}
-                y={s.y + 0.24}
-                width={s.w - 0.48}
-                height={s.h - 0.48}
-                style={delay(sweep(s.x, s.y, 420))}
+          <g className="lg-floor" data-layer="mesh">
+            <g transform={`scale(${1 / U})`}>
+              {map.rooms.map((room, i) => (
+                <polygon
+                  key={room.key}
+                  points={room.poly.map(([x, y]) => `${x * U},${y * U}`).join(" ")}
+                  fill={room.objective ? `url(#${uid}-obj)` : `url(#${uid}-t${room.theme})`}
+                  data-objective={room.objective || undefined}
+                  {...enter(6, `${room.key}:${room.objective}`, i * 50)}
+                />
+              ))}
+              {gone?.floors.map((room) => (
+                <polygon
+                  key={`g${room.key}`}
+                  points={room.poly.map(([x, y]) => `${x * U},${y * U}`).join(" ")}
+                  fill={room.objective ? `url(#${uid}-obj)` : `url(#${uid}-t${room.theme})`}
+                  {...leave(rerunAt(6))}
+                />
+              ))}
+            </g>
+          </g>
+        ) : null}
+
+        {/* 4: rooms grow from their points; their outlines give way to the mesh. */}
+        {phase === 4
+          ? growth.slice(0, -1).map((round, k) => (
+              <g
+                key={`g${round}`}
+                className="lg-grow"
+                data-layer="rooms"
+                style={{ ...at(k * growStep), "--g": `${Math.round(growStep * 2.2)}ms` } as CSSProperties}
+              >
+                {map.rooms.map((room) => {
+                  const r = room.growth[round];
+                  return <rect key={room.id} x={r.x} y={r.y} width={r.w} height={r.h} />;
+                })}
+              </g>
+            ))
+          : null}
+        {phase >= 4 && phase <= 6 && mode !== "objective" ? (
+          <g className="lg-rooms" data-layer="rooms">
+            {map.rooms.map((room) => (
+              <polygon
+                key={room.key}
+                points={pts(room.poly)}
+                data-objective={room.objective || undefined}
+                {...(phase === 6 ? leave(0) : phase === 4 ? { "data-in": true, style: at((growth.length - 1) * growStep) } : {})}
               />
             ))}
           </g>
         ) : null}
+
+        {/* 2 + 3: the triangulation, then the edges pruning leaves. */}
+        {phase >= 2 && phase <= 6 && mode !== "objective" ? (
+          <g className={`lg-tri${phase >= 4 ? " is-dim" : ""}`} data-layer="delaunay">
+            {map.edges
+              .filter((e) => e.kept || phase <= 3)
+              .map((e) => {
+                const p = map.points[e.a];
+                const q = map.points[e.b];
+                const rank = edgeOrder.get(e.key) ?? 0;
+                const anim =
+                  phase === 6
+                    ? leave(0)
+                    : phase === 3 && !e.kept
+                      ? leave(250 + rank * 800)
+                      : phase === 2
+                        ? { "data-in": true as const, style: at(rank * 1100) }
+                        : {};
+                return (
+                  <line
+                    key={e.key}
+                    x1={p.x + 0.5}
+                    y1={p.y + 0.5}
+                    x2={q.x + 0.5}
+                    y2={q.y + 0.5}
+                    data-kept={(phase >= 3 && e.kept) || undefined}
+                    data-loop={(phase >= 3 && e.kept && !e.mst) || undefined}
+                    data-pruned={(phase === 3 && !e.kept) || undefined}
+                    {...anim}
+                  />
+                );
+              })}
+          </g>
+        ) : null}
+
+        {/* 6: walls and doors. */}
+        {phase >= 6 ? (
+          <g className="lg-walls" data-layer="mesh">
+            {map.walls.map((w) => (
+              <line
+                key={w.key}
+                x1={w.x1}
+                y1={w.y1}
+                x2={w.x2}
+                y2={w.y2}
+                {...enter(6, w.key, 150 + sweep(Math.min(w.x1, w.x2), Math.min(w.y1, w.y2), 600))}
+              />
+            ))}
+            {gone?.walls.map((w) => (
+              <line key={`g${w.key}`} x1={w.x1} y1={w.y1} x2={w.x2} y2={w.y2} {...leave(rerunAt(6))} />
+            ))}
+          </g>
+        ) : null}
+        {phase >= 6 ? (
+          <g className="lg-doors" data-layer="mesh">
+            {map.doors.map((d) => (
+              <path key={d.key} d={d.d} {...enter(6, d.key, 650 + sweep(d.x, d.y, 400))} />
+            ))}
+            {gone?.doors.map((d) => <path key={`g${d.key}`} d={d.d} {...leave(rerunAt(6))} />)}
+          </g>
+        ) : null}
+
+        {/* 5: where each kept edge crosses a wall, a door. */}
+        {phase === 5 || (phase === 6 && mode !== "objective") ? (
+          <g className="lg-doormarks" data-layer="doors">
+            {map.doors.map((d) => (
+              <line
+                key={d.key}
+                x1={d.vertical ? d.x : d.x + 0.15}
+                y1={d.vertical ? d.y + 0.15 : d.y}
+                x2={d.vertical ? d.x : d.x + 0.85}
+                y2={d.vertical ? d.y + 0.85 : d.y}
+                {...(phase === 6 ? leave(500) : { "data-in": true as const, style: at(350 + sweep(d.x, d.y, 700)) })}
+              />
+            ))}
+          </g>
+        ) : null}
+
+        {/* 7 + 8: every possible slot, then the ones pruning keeps. */}
         {phase >= 7 ? (
-          <g className="lg-props" data-layer="props" style={layerStyle("props")}>
-            {map.props.map((p) =>
-              p.round ? (
-                <circle key={p.key} cx={p.x + 0.5} cy={p.y + 0.5} r={0.3} style={delay(sweep(p.x, p.y, 380))} />
-              ) : (
+          <g className={`lg-slots${phase >= 9 ? " is-dim" : ""}`} data-layer="slots">
+            {map.slots
+              .filter((s) => s.kept || phase <= 8)
+              .map((s) => (
                 <rect
-                  key={p.key}
-                  x={p.x + 0.2}
-                  y={p.y + 0.2}
-                  width={p.w - 0.4}
-                  height={p.h - 0.4}
-                  style={delay(sweep(p.x, p.y, 380))}
+                  key={s.key}
+                  {...slotRect(s)}
+                  data-kind={s.kind}
+                  data-pruned={(phase === 8 && !s.kept) || undefined}
+                  {...(phase === 8 && !s.kept
+                    ? leave(250 + sweep(s.x, s.y, 800))
+                    : phase === 7
+                      ? { "data-in": true as const, style: at(sweep(s.x, s.y, 1000)) }
+                      : enter(8, s.key, 0))}
                 />
+              ))}
+            {gone?.slots.map((s) => (
+              <rect key={`g${s.key}`} {...slotRect(s)} {...leave(rerunAt(8))} />
+            ))}
+          </g>
+        ) : null}
+
+        {/* 9: props. */}
+        {phase >= 9 ? (
+          <g className="lg-props" data-layer="props">
+            {map.props.map((p) => {
+              const anim = enter(9, p.key, sweep(p.x, p.y, 1000));
+              return p.round ? (
+                <circle key={p.key} cx={p.x + 0.5} cy={p.y + 0.5} r={0.3} {...anim} />
+              ) : (
+                <rect key={p.key} x={p.x + 0.2} y={p.y + 0.2} width={p.w - 0.4} height={p.h - 0.4} {...anim} />
+              );
+            })}
+            {gone?.props.map((p) =>
+              p.round ? (
+                <circle key={`g${p.key}`} cx={p.x + 0.5} cy={p.y + 0.5} r={0.3} {...leave(rerunAt(9))} />
+              ) : (
+                <rect key={`g${p.key}`} x={p.x + 0.2} y={p.y + 0.2} width={p.w - 0.4} height={p.h - 0.4} {...leave(rerunAt(9))} />
               ),
             )}
           </g>
         ) : null}
-        {phase >= 2 ? (
-          <g className="lg-markers" data-layer="objective" style={layerStyle("doors")}>
+
+        {/* 1: the points every room grows from. */}
+        {phase >= 1 && phase <= 6 && mode !== "objective" ? (
+          <g className={`lg-points${phase >= 4 ? " is-dim" : ""}`} data-layer="points">
+            {map.points.map((p, i) => (
+              <circle
+                key={p.id}
+                cx={p.x + 0.5}
+                cy={p.y + 0.5}
+                r={0.42}
+                data-objective={p.objective || undefined}
+                {...(phase === 6
+                  ? leave(0)
+                  : phase === 1
+                    ? { "data-in": true as const, style: at((i * 900) / map.points.length) }
+                    : {})}
+              />
+            ))}
+          </g>
+        ) : null}
+
+        {/* A quest request: the new point and its edges, glimpsed while the steps re-run. */}
+        {mode === "objective" && objectiveRun?.newRoom ? (
+          <g className="lg-glimpse" data-layer="objective">
+            {map.edges
+              .filter((e) => e.kept && objectiveRun.fresh.has(e.key))
+              .map((e) => (
+                <line
+                  key={e.key}
+                  x1={map.points[e.a].x + 0.5}
+                  y1={map.points[e.a].y + 0.5}
+                  x2={map.points[e.b].x + 0.5}
+                  y2={map.points[e.b].y + 0.5}
+                  style={at(rerunAt(3))}
+                />
+              ))}
+            {map.points
+              .filter((p) => objectiveRun.fresh.has(`p${p.id}`))
+              .map((p) => (
+                <circle key={p.id} cx={p.x + 0.5} cy={p.y + 0.5} r={0.42} style={at(rerunAt(1))} />
+              ))}
+          </g>
+        ) : null}
+
+        {/* Objective markers, once the rooms are built. */}
+        {phase >= 6 ? (
+          <g className="lg-markers" data-layer="objective">
             {map.rooms
               .filter((room) => room.objective)
               .map((room) => (
-                <g key={`m${room.id}`} transform={`translate(${room.ax + 0.5} ${room.ay + 0.5})`}>
-                  <circle className="lg-ring" r={0.9} />
-                  <polygon className="lg-diamond" points="0,-0.52 0.52,0 0,0.52 -0.52,0" />
-                </g>
+                <polygon
+                  key={room.key}
+                  className="lg-diamond"
+                  transform={`translate(${room.ax + 0.5} ${room.ay + 0.5})`}
+                  points="0,-0.55 0.55,0 0,0.55 -0.55,0"
+                  {...enter(6, `${room.key}:true`, 500)}
+                />
               ))}
           </g>
         ) : null}
@@ -613,44 +641,29 @@ export default function LevelGenSketch({ pipelineSrc }: { pipelineSrc: string })
   );
 
   return (
-    <div
-      className="levelgen-pipeline lg"
-      ref={root}
-      data-form={graph ? "graph" : "list"}
-      data-reveal
-    >
+    <div className="levelgen-pipeline lg" ref={root} data-reveal>
       <div className="lg-stage">
-        {graph ? diagram : floorPlan}
+        <LevelGenStepRail phase={phase} rerun={rerun} onJump={jump} onReplay={play} onHover={onHover} />
         <p className="lg-caption" aria-hidden="true">
           {lead ? <strong>{lead}</strong> : null} {rest}
         </p>
-        {graph ? floorPlan : diagram}
+        {floorPlan}
       </div>
 
       <div className="lg-bar">
+        <span className="lg-seed">Seed {seed}</span>
+        <button type="button" className="lg-button lg-button--ink" onClick={generate}>
+          Generate
+        </button>
         <button
           type="button"
-          className="lg-toggle"
-          aria-pressed={showOriginal}
-          onClick={() => setShowOriginal((v) => !v)}
+          className="lg-button"
+          onClick={placeObjective}
+          disabled={counts.objective >= map.rooms.length - 1}
         >
-          Original diagram
+          <span className="lg-glyph" aria-hidden="true" />
+          Place an objective
         </button>
-        <div className="lg-actions">
-          <span className="lg-seed">Seed {seed}</span>
-          <button type="button" className="lg-button lg-button--ink" onClick={generate}>
-            Generate
-          </button>
-          <button
-            type="button"
-            className="lg-button"
-            onClick={placeObjective}
-            disabled={objectiveCount >= map.rooms.length}
-          >
-            <span className="lg-glyph" aria-hidden="true" />
-            Place an objective
-          </button>
-        </div>
       </div>
       <p className="lg-note">
         A sketch of the idea, running in your browser. The real generator runs

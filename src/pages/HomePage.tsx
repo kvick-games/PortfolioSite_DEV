@@ -301,7 +301,7 @@ function Tools() {
             </li>
           ))}
         </ul>
-        <LevelGenSketch pipelineSrc={img("levelgenerator-mapgenpipeline")} />
+        <LevelGenSketch />
       </div>
     </section>
   );

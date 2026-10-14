@@ -1,45 +1,45 @@
-/**
- * A small, deterministic sketch of a two-stage level generator for the home
- * page. It is NOT the Unreal Engine 5 generator; it only mirrors the idea:
- * first an abstract map (room footprints and how they connect), then cell
- * data, walls and doors, a theme per room, slots along the walls and the
- * props each room's theme resolves into some of those slots.
- */
+// A small, deterministic level-generator sketch for the portfolio page,
+// NOT the Unreal Engine 5 generator. Its nine stages are random points,
+// Delaunay triangulation, edge pruning, room expansion, doors and halls,
+// mesh generation, all candidate slots, slot pruning, and prop instantiation.
 
-export interface Rect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
+export interface Rect { x: number; y: number; w: number; h: number }
+export interface Point { id: number; x: number; y: number; objective: boolean }
+export interface Edge { key: string; a: number; b: number; length: number; mst: boolean; kept: boolean }
 export interface Room {
+  key: string;
   id: number;
-  rects: Rect[];
-  /** Outline of the room's cells, in cell units. */
+  rect: Rect;
   poly: Array<[number, number]>;
-  /** Anchor cell (corridors start and end here). */
   ax: number;
   ay: number;
-  bespoke: boolean;
-  objective: boolean;
   theme: number;
+  objective: boolean;
+  growth: Rect[];
 }
-
-export interface Segment {
-  key: string;
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-}
-
+export interface Segment { key: string; x1: number; y1: number; x2: number; y2: number }
 export interface Door {
   key: string;
-  /** SVG path in cell units: the door leaf, then its swing. */
+  // SVG path in cell units: the door leaf, then its swing.
   d: string;
+  x: number;
+  y: number;
+  vertical: boolean;
+  rooms: number[];
 }
-
+export interface Cell { key: string; x: number; y: number; room: number }
+export type SlotKind = "wall" | "floor";
+export type PruneReason = "door" | "lane" | "spacing" | "objective";
+export interface Slot {
+  key: string;
+  room: number;
+  x: number;
+  y: number;
+  kind: SlotKind;
+  side?: "n" | "s" | "e" | "w";
+  kept: boolean;
+  reason?: PruneReason;
+}
 export interface Prop {
   key: string;
   room: number;
@@ -48,30 +48,17 @@ export interface Prop {
   w: number;
   h: number;
   round: boolean;
+  slots: string[];
 }
-
-/** A candidate prop position along a room's walls (SetupSlots). */
-export interface Slot {
-  key: string;
-  room: number;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
-export interface Cell {
-  key: string;
-  x: number;
-  y: number;
-  room: number;
-}
-
 export interface LevelMap {
   cols: number;
   rows: number;
+  points: Point[];
+  triangles: Array<[number, number, number]>;
+  edges: Edge[];
   rooms: Room[];
-  links: Array<[number, number]>;
+  growthRounds: number;
+  halls: Cell[];
   cells: Cell[];
   walls: Segment[];
   doors: Door[];
@@ -83,7 +70,7 @@ const EMPTY = -1;
 const CORRIDOR = -2;
 
 export const THEME_COUNT = 3;
-/** How often each theme resolves a one-cell slot into a round prop. */
+// How often each theme resolves a one-cell slot into a round prop.
 const ROUND_CHANCE = [0.12, 0.65, 0.35];
 
 function mulberry32(seed: number) {
@@ -98,6 +85,14 @@ function mulberry32(seed: number) {
 
 type Rng = () => number;
 const intRng = (r: Rng, lo: number, hi: number) => lo + Math.floor(r() * (hi - lo + 1));
+
+// Local choices do not consume another room's random stream.
+function hash(seed: number, a: number, b = 0): number {
+  let h = (seed ^ Math.imul(a + 1, 0x9e3779b1) ^ Math.imul(b + 1, 0x85ebca6b)) >>> 0;
+  h = Math.imul(h ^ (h >>> 16), 0x7feb352d);
+  h = Math.imul(h ^ (h >>> 15), 0x846ca68b);
+  return (h ^ (h >>> 16)) >>> 0;
+}
 
 /** Clockwise outline of a simply connected set of cells. */
 function outline(cells: Set<number>, cols: number): Array<[number, number]> {
@@ -132,32 +127,134 @@ function outline(cells: Set<number>, cols: number): Array<[number, number]> {
   });
 }
 
-/** An L-shaped path of cells from a to b. */
-function corridor(horizontalFirst: boolean, ax: number, ay: number, bx: number, by: number) {
-  const path: Array<[number, number]> = [];
-  let x = ax;
-  let y = ay;
-  path.push([x, y]);
-  const stepX = () => {
-    while (x !== bx) {
-      x += Math.sign(bx - x);
-      path.push([x, y]);
-    }
+type Triangle = [number, number, number];
+
+// Bowyer-Watson; insertion order resolves points on a shared circumcircle.
+function triangulate(points: Point[], cols: number, rows: number): Triangle[] {
+  if (points.length < 3) return [];
+  const vertices = points.map(({ x, y }) => ({ x: x + 0.5, y: y + 0.5 }));
+  const n = vertices.length;
+  const span = Math.max(cols, rows, 1) * 10000;
+  const cx = cols / 2;
+  const cy = rows / 2;
+  vertices.push(
+    { x: cx - 2 * span, y: cy - span },
+    { x: cx + 2 * span, y: cy - span },
+    { x: cx, y: cy + 2 * span },
+  );
+  const orient = (a: number, b: number, c: number) =>
+    (vertices[b].x - vertices[a].x) * (vertices[c].y - vertices[a].y) -
+    (vertices[b].y - vertices[a].y) * (vertices[c].x - vertices[a].x);
+  const inCircle = ([a, b, c]: Triangle, p: number) => {
+    const ax = vertices[a].x - vertices[p].x;
+    const ay = vertices[a].y - vertices[p].y;
+    const bx = vertices[b].x - vertices[p].x;
+    const by = vertices[b].y - vertices[p].y;
+    const dx = vertices[c].x - vertices[p].x;
+    const dy = vertices[c].y - vertices[p].y;
+    const u = (ax * ax + ay * ay) * (bx * dy - by * dx);
+    const v = (bx * bx + by * by) * (ax * dy - ay * dx);
+    const w = (dx * dx + dy * dy) * (ax * by - ay * bx);
+    const epsilon = 1e-12 * Math.max(1, Math.abs(u) + Math.abs(v) + Math.abs(w));
+    return u - v + w >= -epsilon;
   };
-  const stepY = () => {
-    while (y !== by) {
-      y += Math.sign(by - y);
-      path.push([x, y]);
+  let triangles: Triangle[] = [[n, n + 1, n + 2]];
+  for (let p = 0; p < n; p++) {
+    const boundary = new Map<string, { a: number; b: number; count: number }>();
+    const survivors: Triangle[] = [];
+    for (const t of triangles) {
+      if (!inCircle(t, p)) {
+        survivors.push(t);
+        continue;
+      }
+      for (const [a, b] of [[t[0], t[1]], [t[1], t[2]], [t[2], t[0]]]) {
+        const key = `${Math.min(a, b)},${Math.max(a, b)}`;
+        const edge = boundary.get(key);
+        if (edge) edge.count++;
+        else boundary.set(key, { a, b, count: 1 });
+      }
     }
-  };
-  if (horizontalFirst) {
-    stepX();
-    stepY();
-  } else {
-    stepY();
-    stepX();
+    for (const { a, b, count } of boundary.values()) {
+      if (count !== 1) continue;
+      const area = orient(a, b, p);
+      if (Math.abs(area) <= 1e-9) continue;
+      survivors.push(area > 0 ? [a, b, p] : [b, a, p]);
+    }
+    triangles = survivors;
   }
-  return path;
+  return triangles
+    .filter((t) => t.every((v) => v < n))
+    .map((t): Triangle => {
+      // Rotate without changing winding, then sort for stable stage data.
+      const at = t.indexOf(Math.min(...t));
+      return [t[at], t[(at + 1) % 3], t[(at + 2) % 3]];
+    })
+    .sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
+}
+
+const byLength = (a: Edge, b: Edge) => a.length - b.length || a.a - b.a || a.b - b.b;
+const neighbours = (i: number, cols: number) => [i - cols, i + cols, i - 1, i + 1];
+const space = (owner: number) => owner >= 0 ? owner : CORRIDOR;
+
+// Dijkstra with a small min-heap; equal costs visit the lower cell index first.
+function route(owner: Int16Array, cols: number, rows: number, a: Room, b: Room): number[] {
+  const start = a.ay * cols + a.ax;
+  const end = b.ay * cols + b.ax;
+  const distance = new Float64Array(owner.length).fill(Infinity);
+  const previous = new Int32Array(owner.length).fill(-1);
+  type Entry = [number, number];
+  const heap: Entry[] = [];
+  const before = (a: Entry, b: Entry) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);
+  const push = (entry: Entry) => {
+    let at = heap.length;
+    heap.push(entry);
+    while (at > 0) {
+      const parent = (at - 1) >> 1;
+      if (!before(entry, heap[parent])) break;
+      heap[at] = heap[parent];
+      at = parent;
+    }
+    heap[at] = entry;
+  };
+  const pop = (): Entry => {
+    const first = heap[0];
+    const last = heap.pop()!;
+    if (heap.length) {
+      let at = 0;
+      while (at * 2 + 1 < heap.length) {
+        let child = at * 2 + 1;
+        if (child + 1 < heap.length && before(heap[child + 1], heap[child])) child++;
+        if (!before(heap[child], last)) break;
+        heap[at] = heap[child];
+        at = child;
+      }
+      heap[at] = last;
+    }
+    return first;
+  };
+  distance[start] = 0;
+  push([0, start]);
+  while (heap.length) {
+    const [cost, cell] = pop();
+    if (cost !== distance[cell]) continue;
+    if (cell === end) break;
+    for (const next of neighbours(cell, cols)) {
+      const x = next % cols;
+      const y = Math.floor(next / cols);
+      if (x <= 0 || x >= cols - 1 || y <= 0 || y >= rows - 1) continue;
+      const o = owner[next];
+      const entry = o === a.id || o === b.id || o === CORRIDOR ? 1 : o === EMPTY ? 3 : 14;
+      const total = cost + entry + (space(owner[cell]) === space(o) ? 0 : 5);
+      if (total >= distance[next]) continue;
+      distance[next] = total;
+      previous[next] = cell;
+      push([total, next]);
+    }
+  }
+  if (!Number.isFinite(distance[end])) return [];
+  const path: number[] = [];
+  for (let cell = end; cell !== -1; cell = previous[cell]) path.push(cell);
+  return path.reverse();
 }
 
 export function generateLevel(
@@ -167,238 +264,226 @@ export function generateLevel(
   objectives: number,
 ): LevelMap {
   const rng = mulberry32(seed);
-  const owner = new Int16Array(cols * rows).fill(EMPTY);
-  const rooms: Room[] = [];
-  const roomCells: Array<Set<number>> = [];
-  const compact = cols < 32;
   const int = (lo: number, hi: number) => intRng(rng, lo, hi);
+  const compact = cols < 32;
+  const owner = new Int16Array(cols * rows).fill(EMPTY);
 
-  const fits = (rects: Rect[], roomGap: number, corridorGap: number) =>
-    rects.every((r) => {
-      if (r.x < 1 || r.y < 1 || r.x + r.w > cols - 1 || r.y + r.h > rows - 1) return false;
-      for (let y = r.y - roomGap; y < r.y + r.h + roomGap; y++) {
-        if (y < 0 || y >= rows) continue;
-        for (let x = r.x - roomGap; x < r.x + r.w + roomGap; x++) {
-          if (x < 0 || x >= cols) continue;
-          const o = owner[y * cols + x];
-          if (o >= 0) return false;
-          if (o === CORRIDOR) {
-            const dx = x < r.x ? r.x - x : x >= r.x + r.w ? x - (r.x + r.w - 1) : 0;
-            const dy = y < r.y ? r.y - y : y >= r.y + r.h ? y - (r.y + r.h - 1) : 0;
-            if (Math.max(dx, dy) <= corridorGap) return false;
-          }
-        }
-      }
-      return true;
-    });
+  // 1. Integer seed cells, spread out by rejection sampling.
+  const points: Point[] = [];
+  const target = compact ? 8 : 13;
+  const separation = compact ? 5 : 6;
+  for (let attempt = 0; attempt < 3000 && points.length < target; attempt++) {
+    if (cols < 5 || rows < 5) break;
+    const x = int(2, cols - 3);
+    const y = int(2, rows - 3);
+    if (points.some((p) => Math.hypot(p.x - x, p.y - y) < separation)) continue;
+    points.push({ id: points.length, x, y, objective: false });
+  }
 
-  const addRoom = (rects: Rect[], bespoke: boolean, objective: boolean, theme: number) => {
-    const id = rooms.length;
-    const set = new Set<number>();
-    for (const r of rects) {
-      for (let y = r.y; y < r.y + r.h; y++) {
-        for (let x = r.x; x < r.x + r.w; x++) {
-          owner[y * cols + x] = id;
-          set.add(y * cols + x);
-        }
+  // Objectives add the most isolated available seed cell, before triangulation.
+  let fallback = 0;
+  const objectiveCount = Math.max(0, Math.floor(objectives) || 0);
+  for (let k = 0; k < objectiveCount; k++) {
+    const r = mulberry32(seed + 7919 * (k + 1));
+    let best = -1, ties = 0, bx = 2, by = 2;
+    for (let y = 2; y <= rows - 3; y++) {
+      for (let x = 2; x <= cols - 3; x++) {
+        const distance = Math.min(...points.map((p) => (p.x - x) ** 2 + (p.y - y) ** 2));
+        if (distance > best) { best = distance; ties = 1; bx = x; by = y; }
+        else if (distance === best && r() < 1 / ++ties) { bx = x; by = y; }
       }
     }
-    const main = rects[0];
-    rooms.push({
-      id,
-      rects,
-      poly: outline(set, cols),
-      ax: main.x + Math.floor(main.w / 2),
-      ay: main.y + Math.floor(main.h / 2),
-      bespoke,
-      objective,
-      theme,
+    if (best < (compact ? 3.5 : 4) ** 2) { fallback = objectiveCount - k; break; }
+    points.push({ id: points.length, x: bx, y: by, objective: true });
+  }
+
+  // 2. Every unique edge of the triangulation.
+  const triangles = triangulate(points, cols, rows);
+  const edgeMap = new Map<string, Edge>();
+  const addEdge = (u: number, v: number) => {
+    const a = Math.min(u, v);
+    const b = Math.max(u, v);
+    edgeMap.set(`${a},${b}`, {
+      key: `e${a}-${b}`, a, b,
+      length: Math.hypot(points[a].x - points[b].x, points[a].y - points[b].y),
+      mst: false,
+      kept: false,
     });
-    roomCells.push(set);
+  };
+  for (const [a, b, c] of triangles) {
+    addEdge(a, b);
+    addEdge(b, c);
+    addEdge(c, a);
+  }
+  if (!triangles.length) {
+    // A collinear point set has a one-dimensional Delaunay chain.
+    const line = [...points].sort((a, b) => a.x - b.x || a.y - b.y);
+    for (let i = 1; i < line.length; i++) addEdge(line[i - 1].id, line[i].id);
+  }
+  const edges = [...edgeMap.values()].sort((a, b) => a.a - b.a || a.b - b.b);
+
+  // 3. Kruskal's tree, followed by a small number of short loops.
+  const parent = points.map((p) => p.id);
+  const root = (id: number): number => {
+    while (parent[id] !== id) {
+      parent[id] = parent[parent[id]];
+      id = parent[id];
+    }
     return id;
   };
+  const ordered = [...edges].sort(byLength);
+  let longest = 0;
+  for (const edge of ordered) {
+    const a = root(edge.a);
+    const b = root(edge.b);
+    if (a === b) continue;
+    parent[b] = a;
+    edge.mst = edge.kept = true;
+    longest = Math.max(longest, edge.length);
+  }
+  let loops = 0;
+  for (const edge of ordered) {
+    if (edge.mst) continue;
+    if (loops >= (compact ? 1 : 2) || edge.length > longest * 1.35) break;
+    if (hash(seed, edge.a, edge.b) / 4294967296 < 0.45) {
+      edge.kept = true;
+      loops++;
+    }
+  }
 
-  // Bespoke room: an authored L-shape, placed first.
-  {
-    const w1 = compact ? int(4, 5) : int(5, 7);
-    const h1 = 3;
-    const w2 = 3;
-    const h2 = int(2, 3);
-    const leftLeg = rng() < 0.5;
-    const legBelow = rng() < 0.5;
-    for (let attempt = 0; attempt < 200; attempt++) {
-      const ox = int(1, cols - w1 - 1);
-      const oy = int(1, rows - h1 - h2 - 1);
-      const main = { x: ox, y: oy + (legBelow ? 0 : h2), w: w1, h: h1 };
-      const leg = { x: ox + (leftLeg ? 0 : w1 - w2), y: oy + (legBelow ? h1 : 0), w: w2, h: h2 };
-      if (fits([main, leg], 2, 0)) {
-        addRoom([main, leg], true, false, 0);
+  // 4. All rooms grow together, one strip per room per round.
+  const rooms: Room[] = points.map((p) => ({
+    key: "", id: p.id, rect: { x: p.x, y: p.y, w: 1, h: 1 },
+    poly: [], ax: p.x, ay: p.y, theme: hash(seed ^ 0x5bd1e995, p.id) % THEME_COUNT,
+    objective: p.objective, growth: [],
+  }));
+  const roomRng = rooms.map((room) => mulberry32(hash(seed, room.id)));
+  const limits = roomRng.map((r) => ({
+    w: intRng(r, compact ? 3 : 4, compact ? 6 : 9),
+    h: intRng(r, 3, compact ? 5 : 6),
+  }));
+  for (const p of points) owner[p.y * cols + p.x] = p.id;
+  let growthRounds = 0;
+  while (rooms.length) {
+    let grew = false;
+    for (const room of rooms) {
+      const sides = [0, 1, 2, 3];
+      for (let i = sides.length - 1; i > 0; i--) {
+        const j = intRng(roomRng[room.id], 0, i);
+        [sides[i], sides[j]] = [sides[j], sides[i]];
+      }
+      const { x, y, w, h } = room.rect;
+      for (const side of sides) {
+        const next = { x, y, w, h };
+        const strip = { x, y, w, h };
+        if (side === 0) { next.y--; next.h++; strip.y--; strip.h = 1; }
+        if (side === 1) { next.h++; strip.y += h; strip.h = 1; }
+        if (side === 2) { next.x--; next.w++; strip.x--; strip.w = 1; }
+        if (side === 3) { next.w++; strip.x += w; strip.w = 1; }
+        if (next.x < 1 || next.y < 1 || next.x + next.w > cols - 1 ||
+            next.y + next.h > rows - 1 || next.w > limits[room.id].w ||
+            next.h > limits[room.id].h) continue;
+        let free = true;
+        for (let sy = strip.y; sy < strip.y + strip.h; sy++) {
+          for (let sx = strip.x; sx < strip.x + strip.w; sx++) {
+            if (owner[sy * cols + sx] !== EMPTY) free = false;
+          }
+        }
+        if (!free) continue;
+        for (let sy = strip.y; sy < strip.y + strip.h; sy++) {
+          for (let sx = strip.x; sx < strip.x + strip.w; sx++) owner[sy * cols + sx] = room.id;
+        }
+        room.rect = next;
+        grew = true;
         break;
       }
     }
+    if (!grew) break;
+    for (const room of rooms) room.growth.push({ ...room.rect });
+    growthRounds++;
   }
-
-  // Generated footprints.
-  const target = Math.max(4, Math.round((cols * rows) / (compact ? 72 : 88)));
-  for (let attempt = 0; attempt < 600 && rooms.length < target; attempt++) {
-    const w = compact ? int(3, 6) : int(3, 8);
-    const h = compact ? int(3, 5) : int(3, 6);
-    const r = { x: int(1, cols - w - 1), y: int(1, rows - h - 1), w, h };
-    if (fits([r], 2, 0)) addRoom([r], false, false, int(0, THEME_COUNT - 1));
+  const roomCells = rooms.map(() => new Set<number>());
+  for (let i = 0; i < owner.length; i++) {
+    if (owner[i] >= 0) roomCells[owner[i]].add(i);
   }
-
-  // Abstract connections: a minimum spanning tree, plus a loop or two.
-  const dist = (a: Room, b: Room) => Math.hypot(a.ax - b.ax, a.ay - b.ay);
-  const links: Array<[number, number]> = [];
-  {
-    const inTree = new Set([0]);
-    let longest = 0;
-    while (inTree.size < rooms.length) {
-      let best: [number, number] | null = null;
-      let bestD = Infinity;
-      for (const a of inTree) {
-        for (const b of rooms) {
-          if (inTree.has(b.id)) continue;
-          const d = dist(rooms[a], b);
-          if (d < bestD) {
-            bestD = d;
-            best = [a, b.id];
-          }
-        }
-      }
-      if (!best) break;
-      links.push(best);
-      inTree.add(best[1]);
-      longest = Math.max(longest, bestD);
-    }
-    const has = (a: number, b: number) =>
-      links.some(([p, q]) => (p === a && q === b) || (p === b && q === a));
-    const extras: Array<[number, number, number]> = [];
-    for (let a = 0; a < rooms.length; a++) {
-      for (let b = a + 1; b < rooms.length; b++) {
-        if (!has(a, b)) extras.push([a, b, dist(rooms[a], rooms[b])]);
-      }
-    }
-    extras.sort((p, q) => p[2] - q[2]);
-    let loops = compact ? 1 : 2;
-    for (const [a, b, d] of extras) {
-      if (loops <= 0 || d > longest * 1.25) break;
-      if (rng() < 0.6) {
-        links.push([a, b]);
-        loops--;
-      }
-    }
-  }
-
-  const paths: Array<Array<[number, number]>> = [];
-  // Of the two L-shaped routes, take the one that runs through fewer other
-  // rooms, hugs fewer walls and reuses more of the existing corridors.
-  const cost = (path: Array<[number, number]>, a: Room, b: Room) => {
-    let total = 0;
-    for (const [x, y] of path) {
-      const o = owner[y * cols + x];
-      if (o === a.id || o === b.id) continue;
-      if (o >= 0) total += 4;
-      else if (o === CORRIDOR) total -= 0.6;
-      else {
-        for (const [dx, dy] of [
-          [1, 0],
-          [-1, 0],
-          [0, 1],
-          [0, -1],
-        ]) {
-          const nx = x + dx;
-          const ny = y + dy;
-          if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) continue;
-          const n = owner[ny * cols + nx];
-          if (n >= 0 && n !== a.id && n !== b.id) total += 1.5;
-          else if (n === CORRIDOR) total += 0.8;
-        }
-      }
-    }
-    return total;
-  };
-  const carve = (a: Room, b: Room, r: Rng) => {
-    const first = r() < 0.5;
-    const p1 = corridor(first, a.ax, a.ay, b.ax, b.ay);
-    const p2 = corridor(!first, a.ax, a.ay, b.ax, b.ay);
-    const path = cost(p2, a, b) < cost(p1, a, b) ? p2 : p1;
-    for (const [x, y] of path) {
-      if (owner[y * cols + x] === EMPTY) owner[y * cols + x] = CORRIDOR;
-    }
-    paths.push(path);
-  };
-  for (const [a, b] of links) carve(rooms[a], rooms[b], rng);
-
-  // Themes come from the base seed so they never shift when objectives are added.
-  const themeRng = mulberry32(seed ^ 0x5bd1e995);
   for (const room of rooms) {
-    if (!room.bespoke) room.theme = intRng(themeRng, 0, THEME_COUNT - 1);
+    const { x, y, w, h } = room.rect;
+    room.key = `r${room.id}:${x},${y},${w},${h}`;
+    room.poly = outline(roomCells[room.id], cols);
   }
 
-  // Objectives: each one makes a room to hold it, or claims a quiet room.
-  for (let k = 0; k < objectives; k++) {
-    const r = mulberry32(seed + 7919 * (k + 1));
-    let placed = false;
-    for (let attempt = 0; attempt < 400 && !placed; attempt++) {
-      const w = intRng(r, 3, compact ? 4 : 5);
-      const h = intRng(r, 3, 4);
-      const rect = { x: intRng(r, 1, cols - w - 1), y: intRng(r, 1, rows - h - 1), w, h };
-      if (!fits([rect], 1, 1)) continue;
-      const id = addRoom([rect], false, true, 0);
-      const room = rooms[id];
-      let nearest = rooms[0];
-      for (const other of rooms) {
-        if (other.id !== id && dist(room, other) < dist(room, nearest)) nearest = other;
-      }
-      links.push([nearest.id, id]);
-      carve(room, nearest, r);
-      placed = true;
+  // Objective choice uses only graph topology, never the generation RNG.
+  const graph: number[][] = rooms.map(() => []);
+  for (const { a, b, kept } of edges) {
+    if (kept) { graph[a].push(b); graph[b].push(a); }
+  }
+  const hops = rooms.map(() => -1);
+  const queue = rooms.length ? [0] : [];
+  if (rooms.length) hops[0] = 0;
+  for (let head = 0; head < queue.length; head++) {
+    for (const next of graph[queue[head]]) {
+      if (hops[next] !== -1) continue;
+      hops[next] = hops[queue[head]] + 1;
+      queue.push(next);
     }
-    if (placed) continue;
-    const degree = (id: number) => links.filter(([a, b]) => a === id || b === id).length;
-    const open = rooms.filter((room) => !room.objective);
-    if (!open.length) break;
-    const leaves = open.filter((room) => degree(room.id) <= 1);
-    const pool = leaves.length ? leaves : open;
-    pool[Math.floor(r() * pool.length)].objective = true;
+  }
+  const candidates = rooms.slice(1).filter((room) => !room.objective).sort((a, b) =>
+    Number(graph[b.id].length === 1) - Number(graph[a.id].length === 1) ||
+    hops[b.id] - hops[a.id] || a.id - b.id);
+  for (const room of candidates.slice(0, fallback)) {
+    room.objective = true;
+    points[room.id].objective = true;
   }
 
-  // Doors: wherever a corridor crosses into a room.
-  const edgeKey = (ax: number, ay: number, bx: number, by: number) =>
-    ay === by ? `v${Math.max(ax, bx)},${ay}` : `h${ax},${Math.max(ay, by)}`;
+  // 5. Cheapest grid routes; each space boundary on a route gets a door.
   const doorKeys = new Set<string>();
   const doors: Door[] = [];
-  for (const path of paths) {
-    for (let i = 0; i < path.length - 1; i++) {
-      const [ax, ay] = path[i];
-      const [bx, by] = path[i + 1];
-      const oa = owner[ay * cols + ax];
-      const ob = owner[by * cols + bx];
-      if (oa === ob || (oa >= 0 && ob >= 0)) continue;
-      const key = edgeKey(ax, ay, bx, by);
+  const connections = ordered.filter((e) => e.kept).sort((a, b) =>
+    Number(b.mst) - Number(a.mst) || byLength(a, b));
+  for (const edge of connections) {
+    const path = route(owner, cols, rows, rooms[edge.a], rooms[edge.b]);
+    for (const cell of path) {
+      if (owner[cell] === EMPTY) owner[cell] = CORRIDOR;
+    }
+    for (let i = 1; i < path.length; i++) {
+      const from = path[i - 1];
+      const to = path[i];
+      const oa = owner[from];
+      const ob = owner[to];
+      if (space(oa) === space(ob)) continue;
+      const ax = from % cols;
+      const ay = Math.floor(from / cols);
+      const bx = to % cols;
+      const by = Math.floor(to / cols);
+      const vertical = ay === by;
+      const x = vertical ? Math.max(ax, bx) : ax;
+      const y = vertical ? ay : Math.max(ay, by);
+      const key = `${vertical ? "v" : "h"}${x},${y}`;
       if (doorKeys.has(key)) continue;
       doorKeys.add(key);
-      // The leaf swings into the room.
-      const [rx, ry] = oa >= 0 ? [ax, ay] : [bx, by];
-      const [cx, cy] = oa >= 0 ? [bx, by] : [ax, ay];
+      // Swing into the room; between rooms, swing into the one entered.
+      const [rx, ry] = ob >= 0 ? [bx, by] : [ax, ay];
+      const [cx, cy] = ob >= 0 ? [ax, ay] : [bx, by];
       let d: string;
-      if (ay === by) {
-        const X = Math.max(ax, bx);
+      if (vertical) {
+        const X = x;
         const dir = rx > cx ? 1 : -1;
         d = `M${X} ${ay}L${X + dir} ${ay}A1 1 0 0 ${dir > 0 ? 1 : 0} ${X} ${ay + 1}`;
       } else {
-        const Y = Math.max(ay, by);
+        const Y = y;
         const dir = ry > cy ? 1 : -1;
         d = `M${ax} ${Y}L${ax} ${Y + dir}A1 1 0 0 ${dir > 0 ? 0 : 1} ${ax + 1} ${Y}`;
       }
-      doors.push({ key: `d${key}`, d });
+      doors.push({
+        key: `d${key}`, d, x, y, vertical,
+        rooms: [oa, ob].filter((o) => o >= 0).sort((a, b) => a - b),
+      });
     }
   }
 
-  // Cells, and walls wherever floor meets void or a different space.
-  const group = (o: number) => (o >= 0 ? o : o === CORRIDOR ? CORRIDOR : EMPTY);
+  // 6. Floor cells and walls, leaving door edges open.
   const cells: Cell[] = [];
+  const halls: Cell[] = [];
   const horizontal = new Map<number, number[]>();
   const vertical = new Map<number, number[]>();
   const push = (map: Map<number, number[]>, line: number, at: number) => {
@@ -409,21 +494,19 @@ export function generateLevel(
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       const o = owner[y * cols + x];
-      if (o === EMPTY) {
-        // Void cells only matter as neighbours of floor.
-        continue;
-      }
-      cells.push({ key: `c${y * cols + x}`, x, y, room: o });
-      const g = group(o);
+      if (o === EMPTY) continue;
+      const cell = { key: `c${x},${y}`, x, y, room: o };
+      cells.push(cell);
+      if (o === CORRIDOR) halls.push(cell);
       const up = y > 0 ? owner[(y - 1) * cols + x] : EMPTY;
       const left = x > 0 ? owner[y * cols + x - 1] : EMPTY;
       const right = x < cols - 1 ? owner[y * cols + x + 1] : EMPTY;
       const down = y < rows - 1 ? owner[(y + 1) * cols + x] : EMPTY;
       if (up === EMPTY) push(horizontal, y, x);
       if (left === EMPTY) push(vertical, x, y);
-      if (right === EMPTY || (group(right) !== g && !doorKeys.has(`v${x + 1},${y}`)))
+      if (right === EMPTY || (right !== o && !doorKeys.has(`v${x + 1},${y}`)))
         push(vertical, x + 1, y);
-      if (down === EMPTY || (group(down) !== g && !doorKeys.has(`h${x},${y + 1}`)))
+      if (down === EMPTY || (down !== o && !doorKeys.has(`h${x},${y + 1}`)))
         push(horizontal, y + 1, x);
     }
   }
@@ -447,75 +530,136 @@ export function generateLevel(
   merge(horizontal, true);
   merge(vertical, false);
 
-  // SetupSlots: every wall-side cell kept clear of doorways is a slot.
-  // ResolveSlots: each room's theme fills some of them with props.
+  // 7. Every room cell is a candidate, including objective rooms.
   const slots: Slot[] = [];
-  const props: Prop[] = [];
-  const nearDoor = (x: number, y: number) =>
-    [
-      `v${x},${y}`,
-      `v${x + 1},${y}`,
-      `h${x},${y}`,
-      `h${x},${y + 1}`,
-    ].some((k) => doorKeys.has(k));
+  const slotsByRoom: Slot[][] = rooms.map(() => []);
+  const slotAt = new Map<number, Slot>();
+  const sides = [
+    ["n", 0, -1], ["s", 0, 1], ["w", -1, 0], ["e", 1, 0],
+  ] as const;
+  const corners = new Set<string>();
   for (const room of rooms) {
-    if (room.objective) continue;
-    const r = mulberry32(seed * 31 + room.id * 104729);
     const set = roomCells[room.id];
-    const inRoom = (x: number, y: number) => set.has(y * cols + x);
-    const clear = (x: number, y: number) =>
-      inRoom(x, y) &&
-      !nearDoor(x, y) &&
-      ![
-        [1, 0],
-        [-1, 0],
-        [0, 1],
-        [0, -1],
-      ].some(([dx, dy]) => inRoom(x + dx, y + dy) && nearDoor(x + dx, y + dy));
-    const edge: Array<[number, number]> = [];
-    for (const i of set) {
-      const x = i % cols;
-      const y = Math.floor(i / cols);
-      const onWall = !inRoom(x + 1, y) || !inRoom(x - 1, y) || !inRoom(x, y + 1) || !inRoom(x, y - 1);
-      if (onWall && clear(x, y)) edge.push([x, y]);
+    for (const cell of set) {
+      const x = cell % cols;
+      const y = Math.floor(cell / cols);
+      const outside = sides.filter(([, dx, dy]) => !set.has((y + dy) * cols + x + dx));
+      const slot: Slot = {
+        key: `s${room.id}-${x},${y}`, room: room.id, x, y,
+        kind: outside.length ? "wall" : "floor", kept: true,
+      };
+      if (outside.length) slot.side = outside[0][0];
+      if (outside.length >= 2) corners.add(slot.key);
+      slots.push(slot);
+      slotsByRoom[room.id].push(slot);
+      slotAt.set(cell, slot);
     }
-    edge.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
-    for (const [x, y] of edge) slots.push({ key: `s${room.id}-${x},${y}`, room: room.id, x, y, w: 1, h: 1 });
-    const used = new Set<number>();
-    const want = Math.min(4, Math.max(1, Math.round(set.size / 8)));
-    for (let n = 0, tries = 0; n < want && tries < 40 && edge.length; tries++) {
-      const [x, y] = edge[Math.floor(r() * edge.length)];
-      if (used.has(y * cols + x)) continue;
-      // Stretch along the wall when the next cell is free too.
-      const alongX = !inRoom(x, y - 1) || !inRoom(x, y + 1);
-      const nx = alongX ? x + 1 : x;
-      const ny = alongX ? y : y + 1;
-      const long =
-        r() < 0.55 && clear(nx, ny) && !used.has(ny * cols + nx) && edge.some(([ex, ey]) => ex === nx && ey === ny);
-      used.add(y * cols + x);
-      if (long) used.add(ny * cols + nx);
-      props.push({
-        key: `p${room.id}-${x},${y}`,
-        room: room.id,
-        x,
-        y,
-        w: long && alongX ? 2 : 1,
-        h: long && !alongX ? 2 : 1,
-        round: !long && r() < ROUND_CHANCE[room.theme],
+  }
+
+  // 8. Door clearance, shortest walking lanes, then alternating spacing.
+  const prune = (slot: Slot, reason: PruneReason) => {
+    slot.kept = false;
+    slot.reason = reason;
+  };
+  for (const room of rooms) {
+    const roomSlots = slotsByRoom[room.id];
+    const set = roomCells[room.id];
+    const entries = doors.filter((d) => d.rooms.includes(room.id))
+      .sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0)
+      .map((door) => {
+        const cell = door.y * cols + door.x;
+        const other = cell - (door.vertical ? 1 : cols);
+        return set.has(cell) ? cell : other;
       });
-      n++;
+    const lane = new Set<number>();
+    const walk = (start: number, end: number) => {
+      const previous = new Map<number, number>([[start, -1]]);
+      const queue = [start];
+      for (let head = 0; head < queue.length; head++) {
+        const cell = queue[head];
+        if (cell === end) break;
+        for (const next of neighbours(cell, cols)) {
+          if (!set.has(next) || previous.has(next)) continue;
+          previous.set(next, cell);
+          queue.push(next);
+        }
+      }
+      if (!previous.has(end)) return;
+      for (let cell = end; cell !== -1; cell = previous.get(cell)!) lane.add(cell);
+    };
+    for (let i = 1; i < entries.length; i++) walk(entries[i - 1], entries[i]);
+    if (entries.length === 1) walk(entries[0], room.ay * cols + room.ax);
+    // Apply clearance first so spacing sees all neighbouring door/lane cells.
+    for (const slot of roomSlots) {
+      if (room.objective) prune(slot, "objective");
+      else if (entries.some((cell) =>
+        Math.max(Math.abs(slot.x - cell % cols), Math.abs(slot.y - Math.floor(cell / cols))) <= 1))
+        prune(slot, "door");
+      else if (lane.has(slot.y * cols + slot.x)) prune(slot, "lane");
     }
-    // A table in the middle of larger rooms.
-    const main = room.rects[0];
-    if (main.w >= 5 && main.h >= 4) {
-      const tx = main.x + Math.floor(main.w / 2) - 1;
-      const ty = main.y + Math.floor(main.h / 2);
-      if (clear(tx, ty) && clear(tx + 1, ty) && !used.has(ty * cols + tx) && !used.has(ty * cols + tx + 1)) {
-        slots.push({ key: `s${room.id}-t`, room: room.id, x: tx, y: ty, w: 2, h: 1 });
-        props.push({ key: `p${room.id}-t`, room: room.id, x: tx, y: ty, w: 2, h: 1, round: false });
+    for (const slot of roomSlots) {
+      if (!slot.kept) continue;
+      if (slot.kind === "floor") {
+        let nearLane = false;
+        for (let dy = -1; dy <= 1; dy++) {
+          for (let dx = -1; dx <= 1; dx++) {
+            const reason = slotAt.get((slot.y + dy) * cols + slot.x + dx)?.reason;
+            if (reason === "door" || reason === "lane") nearLane = true;
+          }
+        }
+        if ((slot.x - room.rect.x) % 2 !== 1 || (slot.y - room.rect.y) % 2 !== 1 || nearLane)
+          prune(slot, "spacing");
+      } else if (!corners.has(slot.key)) {
+        const alongX = slot.side === "n" || slot.side === "s";
+        const previous = slotAt.get(slot.y * cols + slot.x - (alongX ? 1 : cols));
+        if (previous?.room === room.id && previous.kept && previous.kind === "wall" &&
+            previous.side === slot.side && !corners.has(previous.key)) prune(slot, "spacing");
       }
     }
   }
 
-  return { cols, rows, rooms, links, cells, walls, doors, slots, props };
+  // 9. Per-room prop streams keep distant rooms stable.
+  const props: Prop[] = [];
+  for (const room of rooms) {
+    if (room.objective) continue;
+    const r = mulberry32(seed * 31 + room.id * 104729);
+    const roomSlots = slotsByRoom[room.id];
+    const wallSlots = roomSlots.filter((s) => s.kind === "wall" && s.kept);
+    const used = new Set<string>();
+    const want = Math.min(5, Math.max(1, Math.round(roomCells[room.id].size / 7)));
+    for (let n = 0, tries = 0; n < want && tries < 40 && wallSlots.length; tries++) {
+      const slot = wallSlots[intRng(r, 0, wallSlots.length - 1)];
+      if (used.has(slot.key)) continue;
+      const alongX = slot.side === "n" || slot.side === "s";
+      const next = slotAt.get(slot.y * cols + slot.x + (alongX ? 1 : cols));
+      const long = r() < 0.55 && next !== undefined && next.room === room.id &&
+        next.kind === "wall" && next.side === slot.side &&
+        next.reason !== "door" && next.reason !== "lane" && !used.has(next.key);
+      const covered = [slot.key];
+      used.add(slot.key);
+      if (long && next) {
+        covered.push(next.key);
+        used.add(next.key);
+        next.kept = true;
+        delete next.reason;
+      }
+      props.push({
+        key: `p${room.id}-${slot.x},${slot.y}`, room: room.id,
+        x: slot.x, y: slot.y,
+        w: long && alongX ? 2 : 1, h: long && !alongX ? 2 : 1,
+        round: !long && r() < ROUND_CHANCE[room.theme], slots: covered,
+      });
+      n++;
+    }
+    for (const slot of roomSlots) {
+      if (slot.kind !== "floor" || !slot.kept || r() >= 0.5) continue;
+      props.push({
+        key: `p${room.id}-${slot.x},${slot.y}`, room: room.id,
+        x: slot.x, y: slot.y, w: 1, h: 1,
+        round: r() < ROUND_CHANCE[room.theme], slots: [slot.key],
+      });
+    }
+  }
+
+  return { cols, rows, points, triangles, edges, rooms, growthRounds, halls, cells, walls, doors, slots, props };
 }
