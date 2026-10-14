@@ -5,7 +5,7 @@ export const artDimensions: Record<string, [number, number]> = {
   "redblue": [1254, 1586],
   "red-hall": [960, 540],
   "furnace-room": [1920, 817],
-  "fallen-animated": [1920, 979],
+  "fallen-animated": [1440, 720],
   "fallen": [1920, 897],
   "memory": [602, 555],
   "always-something-left-unsaid": [1000, 1500],

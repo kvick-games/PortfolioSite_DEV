@@ -6,6 +6,8 @@ import {
   type ReactNode,
 } from "react";
 import Brand from "./Brand";
+import SplashAtmosphere from "./SplashAtmosphere";
+import SplashLayers, { type SplashLayer } from "./SplashLayers";
 import SplashPaintings from "./SplashPaintings";
 import "../splash.css";
 
@@ -24,6 +26,10 @@ type Panel = {
   wordmark?: boolean;
   /** Open, the panel shows a grid of paintings instead of `image`. */
   grid?: boolean;
+  /** Open, the picture is these aligned layers, which follow the pointer. */
+  layers?: SplashLayer[];
+  /** Open, snow and a low fog drift over the picture. */
+  weather?: boolean;
   /** Open, a muted loop plays over `image`, which is its first frame. */
   video?: { mp4: string; webm: string; poster: string };
 };
@@ -40,6 +46,7 @@ const panels: Panel[] = [
     width: 2880,
     height: 1620,
     focus: "47%",
+    weather: true,
   },
   {
     href: "#judas",
@@ -50,6 +57,10 @@ const panels: Panel[] = [
     width: 1800,
     height: 1013,
     focus: "50%",
+    layers: [
+      { src: "/Resources/Site/img/layers/judas/plate.webp", depth: 0 },
+      { src: "/Resources/Site/img/layers/judas/judas.webp", depth: 1 },
+    ],
   },
   {
     href: "#dreamatron",
@@ -296,6 +307,8 @@ export default function ProjectSplash() {
                   <span className="splash-img--lit">
                     {panel.grid ? (
                       <SplashPaintings load={gridReady} />
+                    ) : panel.layers ? (
+                      <SplashLayers layers={panel.layers} width={panel.width} height={panel.height} />
                     ) : (
                       <img
                         className="splash-img"
@@ -305,6 +318,7 @@ export default function ProjectSplash() {
                         height={panel.height}
                       />
                     )}
+                    {panel.weather ? <SplashAtmosphere playing={index === active} /> : null}
                     {panel.video ? (
                       <SplashVideo video={panel.video} playing={index === active} load={gridReady} />
                     ) : null}

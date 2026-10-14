@@ -153,15 +153,22 @@
    colour one. Only the window edges travel. */
 
 @media (hover: hover) and (pointer: fine) and (min-width: 721px) {
+  /* The strip runs edge to edge; the title and the first caption keep the
+     page margin. */
   .splash {
     display: flex;
     flex-direction: column;
     height: calc(100svh - var(--splash-header, 84px));
     min-height: 560px;
+    padding-inline: 0;
     padding-bottom: clamp(20px, 2.4vw, 36px);
   }
   .splash-title {
+    padding-inline: var(--margin);
     font-size: clamp(30px, 3.1vw, 52px);
+  }
+  .splash-item:first-child .splash-caption {
+    padding-left: var(--margin);
   }
 
   .splash-stage {
@@ -269,6 +276,29 @@
   .is-active .splash-paintings-tile {
     animation: splash-letter 0.6s var(--splash-ease) both;
     animation-delay: calc(var(--col) * 60ms + var(--n) * 50ms + 80ms);
+  }
+
+  /* The Judas panel's layers: the figure shifts with the pointer over a
+     still plate. */
+  .splash-layers {
+    position: absolute;
+    inset: 0;
+  }
+  .splash-layers [data-depth] {
+    will-change: transform;
+  }
+
+  /* The God of War panel's snow and fog, over the picture. */
+  .splash-atmosphere {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1.2s var(--splash-ease);
+  }
+  .splash-atmosphere.is-ready {
+    opacity: 1;
   }
 
   /* A loop in place of the still, played only while its panel is open. */

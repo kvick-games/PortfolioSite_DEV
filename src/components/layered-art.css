@@ -22,3 +22,43 @@
   display: block;
   height: auto;
 }
+
+/* Light catching a layer's edges: a soft band sweeps across them now and
+   then and fades; nothing else about the layer changes. */
+.layered-art-rim {
+  -webkit-mask: var(--rim) center / 100% 100% no-repeat;
+  mask: var(--rim) center / 100% 100% no-repeat;
+  background: linear-gradient(
+      105deg,
+      transparent 36%,
+      rgb(255 214 170 / 0.45) 44%,
+      rgb(255 246 232) 50%,
+      rgb(255 214 170 / 0.45) 56%,
+      transparent 64%
+    )
+    0 0 / 300% 100% no-repeat;
+  mix-blend-mode: plus-lighter;
+  animation: layered-art-rim 7s cubic-bezier(0.45, 0.05, 0.25, 1) 1.2s infinite;
+}
+@keyframes layered-art-rim {
+  0% {
+    background-position: 100% 0;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  34% {
+    opacity: 1;
+  }
+  40%,
+  100% {
+    background-position: 0% 0;
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .layered-art-rim {
+    display: none;
+  }
+}

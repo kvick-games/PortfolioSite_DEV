@@ -181,7 +181,7 @@ export default function JudasTrailer({
         hidden={playing}
       >
         {layers ? (
-          <LayeredArt layers={layers} axis="x" width={1800} height={1013} alt={alt} />
+          <LayeredArt layers={layers} axis="x" range={0.025} width={1800} height={1013} alt={alt} />
         ) : (
           <img
             ref={markLoaded}

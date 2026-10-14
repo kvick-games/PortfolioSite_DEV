@@ -106,7 +106,7 @@ const gowLayers = [
   layer("gow", "troll", 0.6),
   layer("gow", "kratos", 0.55),
   layer("gow", "atreus", 0.6),
-  layer("gow", "logo", 0.6),
+  { ...layer("gow", "logo", 0.6), rim: "/Resources/Site/img/layers/gow/logo-rim.webp" },
 ];
 const judasLayers = [layer("judas", "plate", 0), layer("judas", "judas", 0.75)];
 

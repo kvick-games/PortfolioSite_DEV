@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties } from "react";
+import { Fragment, useEffect, useRef, type CSSProperties } from "react";
 import "./layered-art.css";
 
 export interface ArtLayer {
@@ -6,6 +6,8 @@ export interface ArtLayer {
   src: string;
   /** 0 is the far plate, which stays put; 1 is the nearest layer. */
   depth: number;
+  /** A mask of the layer's edges; a slow highlight sweeps along them. */
+  rim?: string;
 }
 
 /** How far the nearest layer travels across a full pass, as a share of the height. */
@@ -26,6 +28,7 @@ export default function LayeredArt({
   alt,
   className,
   axis = "y",
+  range = RANGE,
 }: {
   layers: ArtLayer[];
   width: number;
@@ -33,6 +36,8 @@ export default function LayeredArt({
   alt: string;
   className?: string;
   axis?: "x" | "y";
+  /** Overrides RANGE; sideways drift reads larger, so it wants less. */
+  range?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -50,7 +55,7 @@ export default function LayeredArt({
       if (rect.bottom < -vh * 0.25 || rect.top > vh * 1.25) return;
       // -1 as the picture enters at the bottom, 0 centred, 1 leaving the top.
       const progress = Math.max(-1, Math.min(1, (vh / 2 - (rect.top + rect.height / 2)) / ((vh + rect.height) / 2)));
-      const travel = rect.height * RANGE;
+      const travel = rect.height * range;
       items.forEach((item) => {
         const depth = Number(item.dataset.depth);
         const shift = (-progress * depth * travel).toFixed(2);
@@ -69,7 +74,7 @@ export default function LayeredArt({
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
     };
-  }, [layers, axis]);
+  }, [layers, axis, range]);
 
   return (
     <div
@@ -80,17 +85,26 @@ export default function LayeredArt({
       style={{ "--ratio": `${width} / ${height}` } as CSSProperties}
     >
       {layers.map((layer, index) => (
-        <img
-          key={layer.name}
-          className="layered-art-layer"
-          data-depth={layer.depth}
-          src={layer.src}
-          alt=""
-          width={width}
-          height={height}
-          decoding="async"
-          fetchPriority={index === 0 ? "high" : undefined}
-        />
+        <Fragment key={layer.name}>
+          <img
+            className="layered-art-layer"
+            data-depth={layer.depth}
+            src={layer.src}
+            alt=""
+            width={width}
+            height={height}
+            decoding="async"
+            fetchPriority={index === 0 ? "high" : undefined}
+          />
+          {layer.rim ? (
+            <span
+              className="layered-art-layer layered-art-rim"
+              data-depth={layer.depth}
+              style={{ "--rim": `url("${layer.rim}")` } as CSSProperties}
+              aria-hidden="true"
+            />
+          ) : null}
+        </Fragment>
       ))}
     </div>
   );

@@ -54,9 +54,9 @@ export const artPieces: ArtPiece[] = [
     title: "Fallen Animated",
     description: "I wanted to try an experiment for awhile now to make an animated version of one of my paintings, so here it is!",
     sourceUrl: "https://kvick.artstation.com/projects/d0gWe1",
-    coverImage: "/Resources/ArtStation/fallen-animated/01-mike-nevins-process-01.jpg",
+    coverImage: "/Resources/ArtStation/fallen-animated/01-mike-nevins-fallen-animated.jpg",
     images: [
-      "/Resources/ArtStation/fallen-animated/01-mike-nevins-process-01.jpg"
+      "/Resources/ArtStation/fallen-animated/01-mike-nevins-fallen-animated.jpg"
     ],
     embedUrl: "https://www.youtube-nocookie.com/embed/ccFQ-1J6kEw?feature=oembed&rel=0",
     loop: "/Resources/ArtStation/fallen-animated/loop.mp4",
