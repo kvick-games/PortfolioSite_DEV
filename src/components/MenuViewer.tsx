@@ -7,6 +7,7 @@ import {
 } from "react";
 import MagneticCursor from "./MagneticCursor";
 import VideoGlyph, { VideoSeek } from "./VideoGlyph";
+import RuneText from "./RuneText";
 
 export interface MenuView {
   id: string;
@@ -166,7 +167,7 @@ export default function MenuViewer({
           />
         </div>
         <p className="menu-viewer-caption" aria-live="polite">
-          {view.caption}
+          <RuneText key={view.id} text={view.caption} />
         </p>
       </div>
     </div>
