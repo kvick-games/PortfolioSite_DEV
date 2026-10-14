@@ -56,8 +56,40 @@
   object-position: var(--focus) 50%;
 }
 
-.splash-tab {
+.splash-label {
   display: none;
+}
+
+/* Container units below measure the picture, or the stacked row's frame. */
+.splash-picture,
+.splash-media {
+  container-type: size;
+}
+
+/* The stacked wordmark (the DREAMATRON panel): a still of its letter-by-letter
+   reveal, each row one frame. Sized to its box, so it fits any panel. */
+.splash-wordmark {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.18em;
+  padding: 0 8%;
+  box-sizing: border-box;
+  background: #000;
+  color: var(--accent);
+  font-size: min(5.4cqw, 7.4cqh);
+  font-weight: 400;
+  line-height: 1;
+}
+.splash-wordmark-row {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+}
+.splash-wordmark-row > span {
+  text-align: center;
+}
+.splash-wordmark .is-passing {
+  opacity: 0.5;
 }
 
 .splash-caption {
@@ -79,6 +111,13 @@
 }
 .splash-meta .brand {
   font-size: 1em;
+}
+/* Years: their own line in the stacked rows, set apart by space in the accordion. */
+.splash-when {
+  display: block;
+  white-space: nowrap;
+  opacity: 0.72;
+  font-variant-numeric: tabular-nums;
 }
 /* Narrow columns tighten the brand spacing, as the phone header does. */
 .splash-name .brand {
@@ -128,9 +167,9 @@
   .splash-stage {
     --splash-gap: clamp(6px, 0.55vw, 10px);
     --caption-h: 92px;
-    /* A soft, symmetric ease: windows drift open rather than snap. */
-    --splash-ease: cubic-bezier(0.45, 0.05, 0.25, 1);
-    --splash-time: 1.1s;
+    /* Quick to respond, soft to settle. */
+    --splash-ease: cubic-bezier(0.3, 0.1, 0.15, 1);
+    --splash-time: 0.6s;
     --reveal: calc(var(--open-w, 0px) - var(--closed-w, 0px));
     position: relative;
     flex: 1;
@@ -171,12 +210,53 @@
     filter: grayscale(1) brightness(0.42);
   }
   .splash-img--lit {
+    position: absolute;
+    inset: 0;
     opacity: 0;
-    transition: opacity 0.9s var(--splash-ease);
+    transition: opacity 0.45s var(--splash-ease);
   }
   .is-active .splash-img--lit {
     opacity: 1;
-    transition-duration: 1.2s;
+    transition-duration: 0.55s;
+  }
+
+  /* The Paintings panel: staggered columns of paintings, a little larger
+     than the panel so the pointer parallax never shows an edge. */
+  .splash-paintings {
+    position: absolute;
+    inset: -60px -40px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    background: #000;
+  }
+  .splash-paintings-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    will-change: transform;
+  }
+  .splash-paintings-column:nth-child(2) {
+    margin-top: -18%;
+  }
+  .splash-paintings-column:nth-child(3) {
+    margin-top: -7%;
+  }
+  .splash-paintings-column img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .is-active .splash-paintings-column img {
+    animation: splash-letter 0.6s var(--splash-ease) both;
+    animation-delay: calc(var(--col) * 60ms + var(--n) * 50ms + 80ms);
+  }
+
+  /* Opening the wordmark panel replays the reveal: each frame's letters fade
+     up in order, in place. */
+  .is-active .splash-wordmark.splash-img--lit .splash-wordmark-row > span {
+    animation: splash-letter 0.45s var(--splash-ease) both;
+    animation-delay: calc(var(--r) * 70ms + var(--c) * 28ms + 100ms);
   }
 
   .splash-strip {
@@ -217,10 +297,14 @@
     display: none;
   }
 
-  .splash-tab {
+  /* The vertical names. Each has two fixed places, one for when its panel
+     sits left of the open one and one for right of it, and fades between
+     them; it never travels with the panel. */
+  .splash-label {
+    --at: calc(var(--i) * (var(--closed-w, 0px) + var(--splash-gap)) + var(--closed-w, 0px) / 2);
     position: absolute;
     z-index: 1;
-    left: 50%;
+    left: var(--at);
     bottom: 18px;
     display: block;
     writing-mode: vertical-rl;
@@ -230,16 +314,20 @@
     font-weight: 600;
     letter-spacing: -0.005em;
     line-height: 1;
-    transition: opacity 0.7s var(--splash-ease) 0.2s;
+    color: var(--night-ink, #fff);
+    opacity: 0;
+    transition: opacity 0.2s var(--splash-ease);
   }
-  .splash-tab .brand {
+  .splash-label--after {
+    left: calc(var(--at) + var(--reveal));
+  }
+  .splash-label.is-shown {
+    opacity: 1;
+    transition: opacity 0.4s var(--splash-ease) 0.35s;
+  }
+  .splash-label .brand {
     margin: 0;
     font-size: 0.88em;
-  }
-  .is-active .splash-tab {
-    opacity: 0;
-    transition-delay: 0s;
-    transition-duration: 0.45s;
   }
 
   .splash-caption {
@@ -251,11 +339,15 @@
     overflow: hidden;
     white-space: nowrap;
     opacity: 0;
-    transition: opacity 0.4s var(--splash-ease);
+    transition: opacity 0.2s var(--splash-ease);
   }
   .is-active .splash-caption {
     opacity: 1;
-    transition: opacity 0.8s var(--splash-ease) 0.45s;
+    transition: opacity 0.45s var(--splash-ease) 0.2s;
+  }
+  .splash-when {
+    display: inline;
+    margin-left: 1.1em;
   }
   .splash-name {
     font-size: clamp(26px, 2.2vw, 38px);
@@ -274,11 +366,20 @@
   }
 }
 
+@keyframes splash-letter {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .splash-item,
   .splash-picture,
   .splash-img,
-  .splash-tab,
+  .splash-img--lit,
+  .splash-label,
+  .splash-wordmark-row > span,
+  .splash-paintings-column img,
   .splash-caption {
     animation: none;
     transition: none;
