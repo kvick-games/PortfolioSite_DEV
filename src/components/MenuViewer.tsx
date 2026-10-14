@@ -5,6 +5,7 @@ import {
   type KeyboardEvent,
   type ReactNode,
 } from "react";
+import MagneticCursor from "./MagneticCursor";
 
 export interface MenuView {
   id: string;
@@ -37,6 +38,12 @@ export default function MenuViewer({
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(reducedMotion);
   const tabs = useRef<Array<HTMLButtonElement | null>>([]);
+  const tablist = useRef<HTMLDivElement>(null);
+  const snapped = useRef<number | null>(null);
+  const activeRef = useRef(active);
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
   const video = useRef<HTMLVideoElement>(null);
   const view = views[active];
 
@@ -97,6 +104,7 @@ export default function MenuViewer({
       <div className="menu-viewer-side">
         {children}
         <div
+          ref={tablist}
           className="menu-viewer-tabs"
           role="tablist"
           aria-label={`${label} menus`}
@@ -114,11 +122,27 @@ export default function MenuViewer({
               aria-selected={index === active}
               aria-controls={`${label}-panel`}
               tabIndex={index === active ? 0 : -1}
-              onClick={() => setActive(index)}
+              onClick={(event) => {
+                // With the magnetic cursor, a click selects the tab it has
+                // snapped to, which can sit a few pixels past the pointer.
+                const target =
+                  event.detail > 0 && snapped.current !== null
+                    ? snapped.current
+                    : index;
+                setActive(target);
+                if (target !== index) tabs.current[target]?.focus();
+              }}
             >
               {item.label}
             </button>
           ))}
+          <MagneticCursor
+            listRef={tablist}
+            tabsRef={tabs}
+            snappedRef={snapped}
+            activeRef={activeRef}
+            onSelect={setActive}
+          />
         </div>
         <p className="menu-viewer-caption" aria-live="polite">
           {view.caption}

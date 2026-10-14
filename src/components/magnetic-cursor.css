@@ -1,0 +1,117 @@
+/* Magnetic tab cursor (God of War menu viewer) ---------------------------- */
+
+.menu-viewer-tabs {
+  position: relative;
+  isolation: isolate;
+}
+
+/* The pull begins a little before the tabs: a quiet field around the list. */
+.menu-viewer-tabs[data-magnet]::before {
+  content: "";
+  position: absolute;
+  inset: -16px -18px; /* stays inside the page margin */
+  z-index: -1;
+}
+.menu-viewer-tabs[data-magnet],
+.menu-viewer-tabs[data-magnet] [role="tab"] {
+  cursor: none;
+}
+
+@media (min-width: 721px) {
+  /* The frame takes over from hover: the tab it holds is the one that moves. */
+  .menu-viewer-tabs[data-magnet] [role="tab"]:hover:not([aria-selected="true"]) {
+    background: transparent;
+    padding-left: 16px;
+  }
+  .menu-viewer-tabs [role="tab"][data-snapped] {
+    padding-left: 22px !important;
+  }
+}
+
+.magnet {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.18s;
+}
+.magnet[data-state="off"] {
+  opacity: 0;
+  transition-duration: 0.3s;
+}
+
+.magnet-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  outline-offset: -1px;
+  will-change: transform, width, height;
+  transition: opacity 0.16s;
+}
+.magnet[data-state="free"] .magnet-frame {
+  opacity: 0;
+}
+/* On the selected tab the fill would tint it; the corners are enough. */
+.magnet[data-on-selected] .magnet-frame {
+  background: none;
+  outline-color: transparent;
+}
+
+/* Selection corners, after the game's menu frame. */
+.magnet-frame i {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 0 solid var(--accent);
+}
+.magnet-frame i:nth-child(1) {
+  top: 0;
+  left: 0;
+  border-width: 2px 0 0 2px;
+}
+.magnet-frame i:nth-child(2) {
+  top: 0;
+  right: 0;
+  border-width: 2px 2px 0 0;
+}
+.magnet-frame i:nth-child(3) {
+  bottom: 0;
+  right: 0;
+  border-width: 0 2px 2px 0;
+}
+.magnet-frame i:nth-child(4) {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 2px 2px;
+}
+
+/* The reticle: a ring while it roams, folded into the frame once it snaps. */
+.magnet-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+.magnet-dot::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  box-sizing: border-box;
+  transition:
+    transform 0.18s var(--ease),
+    opacity 0.18s;
+}
+.magnet[data-state="snapped"] .magnet-dot::before {
+  transform: scale(0.3);
+  opacity: 0;
+}
