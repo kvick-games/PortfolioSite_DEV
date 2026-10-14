@@ -1,7 +1,7 @@
 import { withBrand } from "./Brand";
 const experience = [
   {
-    role: "Co-Founder / Developer",
+    role: "Founder / Developer",
     company: "DREAMATRON",
     years: "2020 - Current",
     bullets: [

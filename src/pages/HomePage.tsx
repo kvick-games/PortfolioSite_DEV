@@ -169,7 +169,7 @@ function Tanuki() {
           Tanuki
         </h2>
         <p className="meta" data-reveal>
-          <Brand />, co-founder
+          <Brand />, founder
           <br />
           2020 to now, Unreal Engine
         </p>
@@ -310,7 +310,7 @@ function Dreamatron() {
         <Brand />
       </h2>
       <p className="statement dreamatron-intro" data-reveal>
-        <Brand /> is the studio I co-founded. Alongside our games, I’m
+        <Brand /> is the studio I founded. Alongside our games, I’m
         designing and building creative applications for film, sound and
         games, and the interfaces that hold them together.
       </p>

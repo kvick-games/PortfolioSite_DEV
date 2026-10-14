@@ -220,7 +220,7 @@ function TanukiArticle() {
   return (
     <ArticleShell
       title="Project Tanuki (Unreleased)"
-      details={["DREAMATRON", "Co-Founder", "2020 - Current", "Unreal Engine"]}
+      details={["DREAMATRON", "Founder", "2020 - Current", "Unreal Engine"]}
     >
       <p>
         This is a game I have been working on for the past few years. There is a lot of work
@@ -460,7 +460,7 @@ export const portfolioProjects: PortfolioProject[] = [
     category: "games",
     cardImage: "/Resources/Projects/Tanuki/MistyMorning.png",
     backgroundImage: "/Resources/Site/img/tanuki-2.webp",
-    details: ["DREAMATRON", "Co-Founder", "2020 - Current"],
+    details: ["DREAMATRON", "Founder", "2020 - Current"],
     Article: TanukiArticle,
   },
   {
