@@ -1,140 +1,532 @@
-/* Level generator sketch ------------------------------------------------- */
+/* Level generator: live pipeline diagram above a floor-plan sketch ------- */
 
 .levelgen-pipeline.lg {
   --lg-surface: var(--sheet);
   --lg-line: var(--ink);
   --lg-line-2: var(--ink-2);
+  --lg-soft: color-mix(in srgb, var(--ink) 14%, var(--sheet));
   display: flex;
   flex-direction: column;
   gap: 14px;
   min-width: 0;
   background: none;
 }
+.lg[data-offscreen] *,
+.lg[data-offscreen] *::before {
+  animation-play-state: paused !important;
+}
 
 .lg-stage {
   display: flex;
   flex-direction: column;
-  aspect-ratio: 1800 / 736;
+  gap: 4px;
+  padding: 14px 16px 12px;
   overflow: hidden;
   background: var(--lg-surface);
 }
-.lg-stage[data-view="pipeline"] {
-  background: #1e1f21;
+
+/* The graph ------------------------------------------------------------- */
+
+.lg-graph {
+  position: relative;
+  width: 100%;
+  container-type: inline-size;
 }
-.lg-pipeline {
+.lg-wires,
+.lg-traces {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.lg-traces {
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Timeline: the playhead moves through the real diagram's four milestones. */
+.lg-timeline-title {
+  fill: var(--lg-line);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.lg-timeline-base {
+  stroke: var(--lg-line-2);
+  stroke-width: 1.25;
+  opacity: 0.45;
+}
+.lg-timeline-progress {
+  fill: var(--lg-line);
+  transform-box: view-box;
+  transform-origin: 104px 0;
+  transition: transform 0.8s var(--ease);
+}
+.lg-timeline-head {
+  fill: var(--accent);
+  transition: transform 0.8s var(--ease);
+}
+.lg-timeline-end,
+.lg-milestone path {
+  fill: var(--lg-line-2);
+  transition: fill 0.3s;
+}
+.lg-milestone circle {
+  fill: var(--lg-surface);
+  stroke: var(--lg-line-2);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    fill 0.3s 0.3s,
+    stroke 0.3s 0.3s,
+    transform 0.4s var(--ease) 0.3s;
+}
+.lg-milestone[data-reached] path,
+.lg-timeline-end[data-reached] {
+  fill: var(--lg-line);
+}
+.lg-milestone[data-reached] circle {
+  fill: var(--lg-line);
+  stroke: var(--lg-line);
+}
+.lg-milestone[data-current] circle {
+  fill: var(--accent);
+  stroke: var(--accent);
+  transform: scale(1.25);
+}
+.lg-milestone-hit {
+  position: absolute;
+  z-index: 3;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.lg-milestone-hit:hover {
+  background: color-mix(in srgb, var(--ink) 16%, transparent);
+}
+.lg-milestone-hit:focus-visible {
+  outline-offset: 2px;
+}
+
+.lg-play {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1.5px solid var(--lg-line);
+  border-radius: 50%;
+  background: var(--lg-surface);
+  color: var(--lg-line);
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    transform 0.25s var(--ease);
+}
+.lg-play svg {
+  width: 62%;
+  fill: currentColor;
+}
+.lg-play:hover {
+  background: var(--lg-line);
+  color: var(--lg-surface);
+}
+.lg-play:active {
+  transform: scale(0.94);
+}
+.lg-play:focus-visible {
+  outline-offset: 2px;
+}
+
+/* Edges: dim until their step, a pulse travels them while it runs. */
+.lg-edge {
+  opacity: 0.28;
+  transition: opacity 0.35s;
+}
+.lg-edge[data-state="done"] {
+  opacity: 0.9;
+}
+.lg-edge[data-state="active"] {
+  opacity: 1;
+}
+.lg-edge[data-out] {
+  opacity: 0.14;
+}
+.lg-wire {
+  fill: none;
+  stroke: var(--lg-line-2);
+  stroke-width: 1.25;
+  transition:
+    stroke 0.3s,
+    stroke-width 0.3s;
+}
+.lg-port {
+  fill: var(--lg-line-2);
+  transition: fill 0.3s;
+}
+.lg-edge[data-state="active"] .lg-wire {
+  stroke: var(--lg-line);
+  transition-delay: calc(var(--d) * 1ms);
+}
+.lg-edge[data-state="active"] .lg-port {
+  fill: var(--lg-line);
+  transition-delay: calc(var(--d) * 1ms + var(--dur) * 0.8);
+}
+.lg-pulse {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-dasharray: 16 calc(var(--len) * 1px + 40px);
+  stroke-dashoffset: 16px;
+  opacity: 0;
+}
+.lg-edge[data-state="active"] .lg-pulse {
+  animation: lg-flow var(--dur) cubic-bezier(0.45, 0, 0.55, 1) calc(var(--d) * 1ms) 2;
+}
+
+/* Hovering a node: its incoming and outgoing edges, everything else recedes. */
+.lg-graph[data-hovering] .lg-edge[data-rel="none"] {
+  opacity: 0.12;
+}
+.lg-graph[data-hovering] .lg-edge[data-rel="up"],
+.lg-graph[data-hovering] .lg-edge[data-rel="down"] {
+  opacity: 1;
+}
+.lg-edge[data-rel="up"] .lg-wire,
+.lg-edge[data-rel="down"] .lg-wire {
+  stroke: var(--lg-line);
+  stroke-width: 2;
+}
+.lg-edge[data-rel="up"] .lg-port,
+.lg-edge[data-rel="down"] .lg-port {
+  fill: var(--lg-line);
+}
+.lg-edge[data-rel="up"] .lg-pulse,
+.lg-edge[data-rel="down"] .lg-pulse {
+  animation: lg-flow var(--dur) cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.lg-edge-label rect {
+  fill: var(--lg-surface);
+}
+.lg-edge-label text,
+.lg-legend text {
+  fill: var(--lg-line-2);
+  font-size: 9.5px;
+  font-weight: 500;
+  text-anchor: middle;
+}
+.lg-legend text {
+  text-anchor: start;
+  font-size: 10px;
+}
+.lg-legend-actor {
+  fill: var(--lg-soft);
+  stroke: var(--lg-line);
+  stroke-width: 1;
+}
+.lg-legend-fn {
+  fill: none;
+  stroke: var(--lg-line);
+  stroke-width: 1.5;
+}
+.lg-legend-data {
+  fill: none;
+  stroke: var(--lg-line-2);
+  stroke-width: 1;
+  stroke-dasharray: 2.5 2;
+}
+
+/* Nodes. Roles follow the original (actor, function, data), drawn in the
+   site's ink: actors are filled, functions outlined, data dashed. */
+.lg-node {
+  --lit: var(--lg-line);
+  --lit-ink: var(--lg-surface);
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px dashed color-mix(in srgb, var(--ink-2) 75%, transparent);
+  border-radius: calc(100cqw * 7 / 960);
+  background: var(--lg-surface);
+  color: var(--lg-line);
+  font-size: calc(100cqw * 12.5 / 960);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0.4;
+  transition:
+    opacity 0.35s,
+    color 0.2s,
+    border-color 0.25s;
+}
+.lg-node::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: var(--lit);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.lg-node > span {
+  position: relative;
+}
+.lg-node[data-role="data"] {
+  --lit: color-mix(in srgb, var(--ink) 24%, var(--sheet));
+  --lit-ink: var(--lg-line);
+}
+.lg-node[data-role="fn"] {
+  border: 1.5px solid var(--lg-line);
+  font-weight: 600;
+}
+.lg-node[data-role="mode"],
+.lg-node[data-role="actor"] {
+  border: 1px solid var(--lg-line);
+  background: var(--lg-soft);
+  font-weight: 600;
+}
+.lg-node[data-state="done"] {
+  opacity: 1;
+}
+.lg-node[data-state="active"] {
+  opacity: 1;
+  color: var(--lit-ink);
+  transition-delay: 0s, calc(var(--d) * 1ms + 140ms), 0s;
+}
+.lg-node[data-state="active"]::before {
+  transform: scaleX(1);
+  animation: lg-sweep 0.42s var(--ease) calc(var(--d) * 1ms) backwards;
+}
+.lg-node[data-role="data"][data-state="active"] {
+  border-style: solid;
+  border-color: var(--lg-line);
+}
+.lg-node:hover {
+  border-color: var(--accent);
+}
+.lg-node[data-consulted] {
+  animation: lg-consult 0.9s var(--ease) 0.35s 2 both;
+}
+
+/* A quest request: nodes that re-run carry the objective's diamond. */
+.lg-node[data-rerun="out"] {
+  opacity: 0.3;
+}
+.lg-node[data-rerun="in"]::after {
+  content: "";
+  position: absolute;
+  top: calc(100cqw * -3.5 / 960);
+  right: calc(100cqw * -3.5 / 960);
+  width: calc(100cqw * 8 / 960);
+  aspect-ratio: 1;
+  background: var(--accent);
+  transform: rotate(45deg);
+  animation: lg-pop 0.4s var(--ease) both;
+}
+.lg-node[data-rerun][data-state="active"] {
+  --lit: var(--accent);
+  --lit-ink: var(--on-accent);
+}
+
+.lg-graph[data-hovering] .lg-node[data-rel="none"] {
+  opacity: 0.3;
+}
+.lg-graph[data-hovering] .lg-node[data-rel="up"],
+.lg-graph[data-hovering] .lg-node[data-rel="down"],
+.lg-graph[data-hovering] .lg-node[data-rel="self"] {
+  opacity: 1;
+  border-color: var(--lg-line);
+}
+.lg-graph[data-hovering] .lg-node[data-rel="self"] {
+  border-color: var(--accent);
+}
+.lg-node:focus-visible {
+  outline-offset: 3px;
+}
+
+/* The outline that traces around a node as it runs. */
+.lg-trace {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  opacity: 0;
+}
+.lg-graph[data-hovering] .lg-trace {
+  stroke-opacity: 0.25;
+}
+.lg-trace[data-state="active"] {
+  opacity: 1;
+  animation: lg-trace 0.75s var(--ease) calc(var(--d) * 1ms) backwards;
+}
+
+.lg-caption {
+  min-height: calc(2 * 1.45em);
+  margin: 6px 0 0;
+  color: var(--lg-line-2);
+  font-size: var(--size-small);
+  line-height: 1.45;
+}
+.lg-caption strong {
+  margin-right: 0.3em;
+  color: var(--lg-line);
+  font-weight: 600;
+}
+
+/* The original diagram, one toggle away. */
+.lg-original {
   display: block;
-  width: 100%;
-  height: 100%;
+  background: #2d2d2d;
 }
-.lg-pipeline img {
+.lg-original img {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: auto;
   animation: lg-fade 0.4s var(--ease) both;
 }
 
-/* The step rail echoes the timeline across the top of the real diagram. */
-.lg-steps {
+/* The step list (narrow widths) ----------------------------------------- */
+
+.lg-list-head {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 14px 0;
+  gap: 10px;
+  color: var(--lg-line);
+  font-size: var(--size-small);
+  font-weight: 600;
 }
-.lg-steps ol {
-  position: relative;
-  display: flex;
+.lg-play--inline {
+  position: static;
+  width: 36px;
+}
+.lg-list ol {
+  display: grid;
   gap: 8px;
-  margin: 0;
+  margin: 12px 0 0;
   padding: 0;
   list-style: none;
 }
-.lg-steps ol::before {
+.lg-list li {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  min-height: 36px;
+  padding-left: 30px;
+}
+.lg-list li::before {
   content: "";
   position: absolute;
-  left: 14px;
-  right: 14px;
-  top: 50%;
-  height: 1px;
+  top: 0;
+  bottom: -8px;
+  left: 17px;
+  width: 1.5px;
   background: var(--lg-line-2);
-  opacity: 0.5;
+  opacity: 0.35;
 }
-.lg-steps button {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
+.lg-list li:last-child::before {
+  bottom: 50%;
 }
-.lg-steps button span {
-  width: 9px;
-  height: 9px;
+.lg-list li:first-child::before {
+  top: 50%;
+}
+.lg-list li::after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  left: 13px;
+  width: 10px;
+  height: 10px;
   border: 1.5px solid var(--lg-line-2);
   border-radius: 50%;
   background: var(--lg-surface);
   transition:
-    background-color 0.25s,
-    border-color 0.25s,
+    background-color 0.3s,
+    border-color 0.3s,
     transform 0.3s var(--ease);
 }
-.lg-steps button:hover span {
-  border-color: var(--lg-line);
-  transform: scale(1.25);
+.lg-list li[data-milestone]::after {
+  border-radius: 2px;
+  transform: rotate(45deg);
 }
-.lg-steps button[data-done] span {
+.lg-list li[data-state="done"]::after {
   border-color: var(--lg-line);
   background: var(--lg-line);
 }
-.lg-steps button[aria-current="step"] span {
+.lg-list li[data-state="active"]::after {
   border-color: var(--accent);
   background: var(--accent);
-  transform: scale(1.35);
 }
-.lg-steps button:focus-visible {
-  outline-offset: 0;
+.lg-unit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
-.lg-step-name {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--lg-line);
-  font-size: var(--size-small);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+.lg-chip {
+  position: relative;
+  min-height: 36px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: normal;
+  text-align: center;
+}
+.lg-chip-text {
+  color: var(--lg-line-2);
+  font-size: 13px;
+}
+.lg-chip-port {
+  flex: none;
+  width: 18px;
+  height: 10px;
+  overflow: visible;
+}
+.lg-chip-port path:first-child {
+  stroke: var(--lg-line-2);
+  stroke-width: 1.25;
+}
+.lg-chip-mark {
+  fill: var(--lg-line-2);
+}
+.lg-chip[data-rerun="in"]::after {
+  top: -3px;
+  right: -3px;
+  width: 8px;
 }
 
-/* The map. Inside the scaled group one unit is one cell. */
+/* The floor plan. Inside the scaled group one unit is one cell. -------- */
+
 .lg-map {
   display: block;
-  flex: 1 1 0;
   width: 100%;
-  min-height: 0;
+  height: auto;
   --k: 1ms;
 }
 .lg-map[data-mode="step"] {
   --k: 0.55ms;
 }
 .lg-map[data-mode="objective"] {
-  --k: 0ms;
+  --k: 0.2ms;
 }
 .lg-map g > * {
   animation-delay: calc(var(--d, 0) * var(--k) + var(--o, 0ms));
 }
-.lg-map[data-mode="objective"] .lg-cells {
-  --o: 180ms;
-}
-.lg-map[data-mode="objective"] .lg-walls {
-  --o: 480ms;
-}
-.lg-map[data-mode="objective"] .lg-doors {
-  --o: 640ms;
-}
-.lg-map[data-mode="objective"] .lg-markers {
-  --o: 760ms;
+.lg-map [data-layer] {
+  transition: opacity 0.3s;
 }
 
 .lg-dot {
@@ -154,20 +546,19 @@
   fill-opacity: 0.12;
 }
 .lg-cells.is-floor rect {
-  fill-opacity: 0.07;
-}
-.lg-cells.is-floor rect[data-corridor],
-.lg-cells.is-themed rect {
   fill-opacity: 0;
 }
-.lg-halls path {
+
+.lg-halls {
   fill: var(--lg-line);
   fill-opacity: 0.08;
-  animation: lg-fade 0.5s var(--ease) both;
 }
-
-.lg-theme polygon {
+.lg-floor > * {
   animation: lg-fade 0.6s var(--ease) both;
+}
+.lg-floor polygon {
+  animation: lg-fade 0.6s var(--ease) both;
+  animation-delay: calc(var(--d, 0) * var(--k) + var(--o, 0ms));
 }
 .lg-pat {
   fill: none;
@@ -190,14 +581,19 @@
   opacity: 0.75;
 }
 
-.lg-footprints,
-.lg-graph {
-  transition: opacity 0.5s var(--ease);
+/* The bespoke room arrives with the config, as an authored outline. */
+.lg-bespoke polygon {
+  fill: none;
+  stroke: var(--lg-line);
+  stroke-width: 0.1;
+  stroke-dasharray: 0.02 0.012;
+  animation: lg-fade 0.5s var(--ease) both;
+  transition: opacity 0.4s;
 }
-.lg-footprints.is-past,
-.lg-graph.is-past {
+.lg-bespoke.is-past polygon {
   opacity: 0;
 }
+
 .lg-footprints polygon {
   fill: none;
   stroke: var(--lg-line);
@@ -212,20 +608,73 @@
   stroke: var(--accent);
   stroke-width: 0.12;
 }
-.lg-graph line {
+.lg-links line {
   stroke: var(--lg-line);
   stroke-width: 0.06;
   stroke-dasharray: 1;
   animation: lg-draw 0.5s var(--ease) both;
 }
-.lg-graph circle {
+.lg-links circle {
   fill: var(--lg-line);
   transform-box: fill-box;
   transform-origin: center;
   animation: lg-pop 0.4s var(--ease) both;
 }
-.lg-graph circle[data-objective] {
+.lg-links circle[data-objective] {
   fill: var(--accent);
+}
+.lg-footprints,
+.lg-links {
+  transition: opacity 0.5s var(--ease);
+}
+.lg-footprints.is-past,
+.lg-links.is-past {
+  opacity: 0;
+  pointer-events: none;
+}
+/* A quest request: the new room's footprint and link flash, then go. */
+.lg-fresh polygon,
+.lg-fresh line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-dasharray: 1;
+  animation: lg-flash 2.4s var(--ease) both;
+}
+.lg-fresh polygon {
+  stroke-width: 0.12;
+}
+.lg-fresh line {
+  stroke-width: 0.08;
+}
+
+/* CellData[]: each room's theme as a swatch, walls and doors as marks. */
+.lg-swatches rect {
+  stroke: var(--lg-line);
+  stroke-width: 0.6;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lg-pop 0.4s var(--ease) both;
+  transition: opacity 0.4s;
+}
+.lg-swatches.is-past rect {
+  opacity: 0;
+}
+.lg-wallmarks line {
+  stroke: var(--lg-line-2);
+  stroke-width: 0.05;
+  stroke-dasharray: 0.22 0.16;
+  animation: lg-fade 0.4s var(--ease) both;
+}
+.lg-doormark {
+  fill: none;
+  stroke: var(--lg-line);
+  stroke-width: 0.06;
+  stroke-dasharray: 0.12 0.1;
+  animation: lg-fade 0.4s var(--ease) 0.2s both;
+}
+.lg-wallmarks.is-past {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .lg-walls line {
@@ -241,6 +690,23 @@
   stroke: var(--lg-line-2);
   stroke-width: 0.06;
   animation: lg-fade 0.45s var(--ease) both;
+}
+
+/* SetupSlots(): candidate slots along the walls. ResolveSlots(): props. */
+.lg-slots rect {
+  fill: none;
+  stroke: var(--lg-line-2);
+  stroke-width: 0.05;
+  stroke-dasharray: 0.1 0.08;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lg-pop 0.35s var(--ease) both;
+  transition: opacity 0.5s var(--ease);
+}
+.lg-slots.is-past rect {
+  opacity: 0;
+  transition-delay: 0.9s;
+  pointer-events: none;
 }
 
 .lg-props rect,
@@ -270,6 +736,82 @@
   animation-delay: calc(var(--o, 0ms) + 220ms);
 }
 
+/* Hover links the two halves: a node shows what it makes on the map, and a
+   piece of the map points back at the nodes that made it. */
+.lg[data-focus] .lg-map [data-layer]:where(:not(.is-past)) {
+  opacity: 0.16;
+}
+.lg[data-focus~="bespoke"] .lg-map [data-layer="bespoke"],
+.lg[data-focus~="footprints"] .lg-map .lg-footprints,
+.lg[data-focus~="graph"] .lg-map .lg-links,
+.lg[data-focus~="cells"] .lg-map [data-layer="cells"],
+.lg[data-focus~="walls"] .lg-map [data-layer="walls"]:not(.is-past),
+.lg[data-focus~="doors"] .lg-map [data-layer="doors"],
+.lg[data-focus~="floor"] .lg-map [data-layer="floor"],
+.lg[data-focus~="slots"] .lg-map [data-layer="slots"],
+.lg[data-focus~="props"] .lg-map [data-layer="props"],
+.lg[data-focus~="objective"] .lg-map [data-layer="objective"] {
+  opacity: 1;
+}
+.lg[data-focus~="bespoke"] .lg-bespoke.is-past polygon,
+.lg[data-focus~="slots"] .lg-slots rect {
+  opacity: 1;
+  transition-delay: 0s;
+}
+.lg[data-focus~="cells"] .lg-cells rect {
+  fill-opacity: 0.3;
+}
+.lg[data-focus~="bespoke"] .lg-bespoke polygon {
+  stroke-width: 0.16;
+}
+.lg[data-focus~="bespoke"] .lg-graph:not([data-hovering]) .lg-node[data-produces~="bespoke"],
+.lg[data-focus~="footprints"] .lg-graph:not([data-hovering]) .lg-node[data-produces~="footprints"],
+.lg[data-focus~="graph"] .lg-graph:not([data-hovering]) .lg-node[data-produces~="graph"],
+.lg[data-focus~="cells"] .lg-graph:not([data-hovering]) .lg-node[data-produces~="cells"],
+.lg[data-focus~="walls"] .lg-graph:not([data-hovering]) .lg-node[data-produces~="walls"],
+.lg[data-focus~="doors"] .lg-graph:not([data-hovering]) .lg-node[data-produces~="doors"],
+.lg[data-focus~="floor"] .lg-graph:not([data-hovering]) .lg-node[data-produces~="floor"],
+.lg[data-focus~="slots"] .lg-graph:not([data-hovering]) .lg-node[data-produces~="slots"],
+.lg[data-focus~="props"] .lg-graph:not([data-hovering]) .lg-node[data-produces~="props"],
+.lg[data-focus~="objective"] .lg-graph:not([data-hovering]) .lg-node[data-produces~="objective"] {
+  border-color: var(--accent);
+  border-style: solid;
+}
+
+@keyframes lg-flow {
+  0% {
+    stroke-dashoffset: 16px;
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: calc(var(--len) * -1px);
+    opacity: 0;
+  }
+}
+@keyframes lg-sweep {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes lg-trace {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+@keyframes lg-consult {
+  0%,
+  100% {
+    outline: 1.5px solid transparent;
+    outline-offset: 2px;
+  }
+  40% {
+    outline: 1.5px solid var(--accent);
+    outline-offset: 4px;
+  }
+}
 @keyframes lg-draw {
   from {
     stroke-dashoffset: 1;
@@ -281,6 +823,25 @@
   to {
     stroke-dashoffset: 0;
     opacity: 1;
+  }
+}
+@keyframes lg-flash {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  30% {
+    stroke-dashoffset: 0;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
   }
 }
 @keyframes lg-fade {
@@ -314,7 +875,8 @@
   }
 }
 
-/* Controls */
+/* Controls ------------------------------------------------------------- */
+
 .lg-bar {
   display: flex;
   flex-wrap: wrap;
@@ -322,10 +884,7 @@
   justify-content: space-between;
   gap: 12px 20px;
 }
-.lg-views {
-  display: flex;
-}
-.lg-views [role="tab"] {
+.lg-toggle {
   display: inline-flex;
   align-items: center;
   min-height: 40px;
@@ -337,10 +896,10 @@
   cursor: pointer;
   transition: background-color 0.2s;
 }
-.lg-views [role="tab"]:hover {
+.lg-toggle:hover {
   background: var(--ground-2);
 }
-.lg-views [role="tab"][aria-selected="true"] {
+.lg-toggle[aria-pressed="true"] {
   background: var(--ink);
   color: var(--ground);
 }
@@ -349,14 +908,6 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-}
-.lg-actions[hidden],
-.lg-note[hidden] {
-  display: flex;
-  visibility: hidden;
-}
-.lg-note[hidden] {
-  display: block;
 }
 .lg-seed {
   margin-right: 6px;
@@ -408,22 +959,21 @@
 }
 
 @media (pointer: coarse) {
-  .lg-steps button {
-    width: 36px;
-    height: 36px;
-  }
-  .lg-steps ol {
-    gap: 2px;
-  }
-  .lg-views [role="tab"],
+  .lg-toggle,
   .lg-button {
     min-height: 44px;
+  }
+  .lg-chip {
+    min-height: 40px;
   }
 }
 
 @media (max-width: 720px) {
-  .lg-stage[data-view="sketch"] {
-    aspect-ratio: 1 / 1;
+  .lg-stage {
+    padding: 12px 12px 14px;
+  }
+  .lg-caption {
+    min-height: calc(3 * 1.45em);
   }
   .lg-bar {
     gap: 14px 10px;
@@ -434,17 +984,15 @@
   .lg-seed {
     margin: 0 0 0 auto;
   }
-  .lg-actions[hidden],
-  .lg-note[hidden] {
-    display: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .lg-map *,
-  .lg-pipeline img {
+  .lg *,
+  .lg *::before,
+  .lg *::after {
     animation: none !important;
   }
+  .lg-pulse,
   .lg-ring {
     display: none;
   }

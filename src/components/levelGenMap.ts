@@ -2,7 +2,8 @@
  * A small, deterministic sketch of a two-stage level generator for the home
  * page. It is NOT the Unreal Engine 5 generator; it only mirrors the idea:
  * first an abstract map (room footprints and how they connect), then cell
- * data, walls and doors, a theme per room, and props placed in slots.
+ * data, walls and doors, a theme per room, slots along the walls and the
+ * props each room's theme resolves into some of those slots.
  */
 
 export interface Rect {
@@ -49,6 +50,16 @@ export interface Prop {
   round: boolean;
 }
 
+/** A candidate prop position along a room's walls (SetupSlots). */
+export interface Slot {
+  key: string;
+  room: number;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export interface Cell {
   key: string;
   x: number;
@@ -64,6 +75,7 @@ export interface LevelMap {
   cells: Cell[];
   walls: Segment[];
   doors: Door[];
+  slots: Slot[];
   props: Prop[];
 }
 
@@ -71,6 +83,8 @@ const EMPTY = -1;
 const CORRIDOR = -2;
 
 export const THEME_COUNT = 3;
+/** How often each theme resolves a one-cell slot into a round prop. */
+const ROUND_CHANCE = [0.12, 0.65, 0.35];
 
 function mulberry32(seed: number) {
   let a = seed | 0;
@@ -330,7 +344,7 @@ export function generateLevel(
       const w = intRng(r, 3, compact ? 4 : 5);
       const h = intRng(r, 3, 4);
       const rect = { x: intRng(r, 1, cols - w - 1), y: intRng(r, 1, rows - h - 1), w, h };
-      if (!fits([rect], 2, 1)) continue;
+      if (!fits([rect], 1, 1)) continue;
       const id = addRoom([rect], false, true, 0);
       const room = rooms[id];
       let nearest = rooms[0];
@@ -433,7 +447,9 @@ export function generateLevel(
   merge(horizontal, true);
   merge(vertical, false);
 
-  // Props: slots along each room's walls, kept clear of doorways.
+  // SetupSlots: every wall-side cell kept clear of doorways is a slot.
+  // ResolveSlots: each room's theme fills some of them with props.
+  const slots: Slot[] = [];
   const props: Prop[] = [];
   const nearDoor = (x: number, y: number) =>
     [
@@ -463,6 +479,8 @@ export function generateLevel(
       const onWall = !inRoom(x + 1, y) || !inRoom(x - 1, y) || !inRoom(x, y + 1) || !inRoom(x, y - 1);
       if (onWall && clear(x, y)) edge.push([x, y]);
     }
+    edge.sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+    for (const [x, y] of edge) slots.push({ key: `s${room.id}-${x},${y}`, room: room.id, x, y, w: 1, h: 1 });
     const used = new Set<number>();
     const want = Math.min(4, Math.max(1, Math.round(set.size / 8)));
     for (let n = 0, tries = 0; n < want && tries < 40 && edge.length; tries++) {
@@ -483,7 +501,7 @@ export function generateLevel(
         y,
         w: long && alongX ? 2 : 1,
         h: long && !alongX ? 2 : 1,
-        round: !long && r() < 0.4,
+        round: !long && r() < ROUND_CHANCE[room.theme],
       });
       n++;
     }
@@ -493,10 +511,11 @@ export function generateLevel(
       const tx = main.x + Math.floor(main.w / 2) - 1;
       const ty = main.y + Math.floor(main.h / 2);
       if (clear(tx, ty) && clear(tx + 1, ty) && !used.has(ty * cols + tx) && !used.has(ty * cols + tx + 1)) {
+        slots.push({ key: `s${room.id}-t`, room: room.id, x: tx, y: ty, w: 2, h: 1 });
         props.push({ key: `p${room.id}-t`, room: room.id, x: tx, y: ty, w: 2, h: 1, round: false });
       }
     }
   }
 
-  return { cols, rows, rooms, links, cells, walls, doors, props };
+  return { cols, rows, rooms, links, cells, walls, doors, slots, props };
 }
