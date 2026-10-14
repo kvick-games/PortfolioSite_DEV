@@ -1,12 +1,17 @@
 [
   {
     "name": "plate",
-    "src": "/Resources/Site/img/layers/judas/plate.webp",
+    "src": "/Resources/Site/img/layers/ewa/plate.webp",
     "depth": 0
   },
   {
-    "name": "judas",
-    "src": "/Resources/Site/img/layers/judas/judas.webp",
-    "depth": 0.75
+    "name": "figure",
+    "src": "/Resources/Site/img/layers/ewa/figure.webp",
+    "depth": 0.45
+  },
+  {
+    "name": "bar",
+    "src": "/Resources/Site/img/layers/ewa/bar.webp",
+    "depth": 1
   }
 ]
