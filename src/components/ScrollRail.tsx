@@ -2,8 +2,10 @@ import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "re
 import Brand from "./Brand";
 import "./scroll-rail.css";
 
-/* The home page chapters, in page order. */
+/* The home page chapters, in page order. "top" is the start of the page. */
+const TOP = "top";
 const SECTIONS: ReadonlyArray<{ id: string; label: ReactNode }> = [
+  { id: TOP, label: "Start" },
   { id: "work", label: "God of War" },
   { id: "judas", label: "Judas" },
   { id: "dreamatron", label: <Brand /> },
@@ -43,8 +45,10 @@ export default function ScrollRail() {
       frame = 0;
       const vh = window.innerHeight;
       const line = vh * READ_LINE;
-      const tops = SECTIONS.map(
-        ({ id }) => document.getElementById(id)?.getBoundingClientRect().top ?? Infinity,
+      const tops = SECTIONS.map(({ id }) =>
+        id === TOP
+          ? -window.scrollY
+          : (document.getElementById(id)?.getBoundingClientRect().top ?? Infinity),
       );
       const atEnd =
         window.scrollY + vh >= document.documentElement.scrollHeight - 2;
@@ -67,10 +71,10 @@ export default function ScrollRail() {
       }
       if (fillRef.current) fillRef.current.style.transform = `scaleY(${progress.toFixed(4)})`;
 
-      const section = current >= 0 ? document.getElementById(SECTIONS[current].id) : null;
+      const section = current > 0 ? document.getElementById(SECTIONS[current].id) : null;
       setActive(current);
       // Out of the splash once the first chapter is well into view.
-      setShown(tops[0] < vh * 0.6);
+      setShown(tops[1] < vh * 0.6);
       setField(
         section?.classList.contains("field-night")
           ? "night"
@@ -100,13 +104,14 @@ export default function ScrollRail() {
   }, []);
 
   const go = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
-    const target = document.getElementById(id);
-    if (!target) return;
+    const target = id === TOP ? null : document.getElementById(id);
+    if (id !== TOP && !target) return;
     event.preventDefault();
     // A mouse click shouldn't leave the link focused (detail is 0 for Enter).
     if (event.detail > 0) event.currentTarget.blur();
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    target.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" });
+    const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth";
+    if (target) target.scrollIntoView({ behavior, block: "start" });
+    else window.scrollTo({ top: 0, behavior });
   };
 
   return (
@@ -123,7 +128,7 @@ export default function ScrollRail() {
         {SECTIONS.map(({ id, label }, i) => (
           <li key={id} style={{ top: `${(i / (SECTIONS.length - 1)) * 100}%` }}>
             <a
-              href={`#${id}`}
+              href={id === TOP ? "#main" : `#${id}`}
               aria-current={i === active ? "true" : undefined}
               data-passed={i < active || undefined}
               onClick={(event) => go(event, id)}
