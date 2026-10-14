@@ -58,16 +58,16 @@
 }
 
 /* Dark theme: the default, unless the visitor picks light
-   (index.html sets data-theme before first paint). The night fields sit
-   a step above the black ground so sections still read. */
+   (index.html sets data-theme before first paint). The ground and the night
+   fields are pure black; the grey step is only for small surfaces. */
 :root[data-theme="dark"] {
-  --ground: #0b0b0c;
-  --ground-2: #19191b;
-  --sheet: #19191b;
+  --ground: #000;
+  --ground-2: #161617;
+  --sheet: #161617;
   --ink: #e6e5e0;
   --ink-2: #9fa2a5;
-  --night: #141416;
-  --night-2: #1f1f22;
+  --night: #000;
+  --night-2: #1a1a1c;
   color-scheme: dark;
 }
 
@@ -415,7 +415,7 @@ figcaption {
 }
 /* At night the full vermilion field is too bright: the colour moves to the type. */
 :root[data-theme="dark"] .field-accent {
-  background: var(--ground-2);
+  background: var(--ground);
 }
 :root[data-theme="dark"] .field-accent .wordmark-giant {
   color: var(--accent);
