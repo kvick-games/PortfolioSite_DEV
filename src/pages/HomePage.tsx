@@ -234,7 +234,7 @@ function Ewa() {
             2020 to now, <Brand name="Dream Engine" />
           </p>
           <p className="statement" data-reveal>
-            Survive what waits in the dark and uncover the secrets it keeps. Classic survival horror, with tense exploration, puzzle solving and fixed cameras.
+            Deep in a frozen winter, people have started to vanish. Survive what waits in the dark and uncover the truth before you’re next.
           </p>
           <Link className="text-link" to="/portfolio?project=ewa" data-reveal>
             Watch the teaser and see more
