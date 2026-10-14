@@ -1,0 +1,60 @@
+/* Magnifier for the painting rows (PaintingLoupe.tsx). The lens is fixed to
+   the viewport, so it can never widen the page. */
+
+.painting-loupe {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 40;
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s 0.2s;
+}
+.painting-loupe.is-on {
+  visibility: visible;
+  transition: none;
+}
+
+.painting-loupe-lens {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--ground-2);
+  /* A rim in the page colour, with a hairline so it still reads on dark paint. */
+  border: 3px solid var(--ground);
+  outline: 1px solid color-mix(in srgb, var(--ink) 28%, transparent);
+  opacity: 0;
+  transform: scale(0.72);
+  transition:
+    opacity 0.18s,
+    transform 0.28s var(--ease);
+}
+.painting-loupe.is-on .painting-loupe-lens {
+  opacity: 1;
+  transform: none;
+}
+
+.painting-loupe-lens img {
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  max-width: none;
+  will-change: transform;
+}
+
+/* The lens replaces the cursor and the hover zoom while it is up. */
+.painting-loupe-area.is-looking .painting-link {
+  cursor: none;
+}
+.painting-loupe-area.is-looking .painting-link img {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .painting-loupe-lens {
+    transform: none;
+    transition: opacity 0.12s;
+  }
+}

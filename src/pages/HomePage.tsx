@@ -1,6 +1,7 @@
 import Brand from "../components/Brand";
 import { Link } from "react-router-dom";
 import MenuViewer, { type MenuView } from "../components/MenuViewer";
+import PaintingLoupe from "../components/PaintingLoupe";
 import PaintingRows from "../components/PaintingRows";
 import ScrollWordmark from "../components/ScrollWordmark";
 import { artPieces } from "../data/artPieces";
@@ -393,7 +394,9 @@ function Paintings() {
           Characters, rooms and imagined places.
         </p>
       </header>
-      <PaintingRows pieces={paintings} />
+      <PaintingLoupe>
+        <PaintingRows pieces={paintings} />
+      </PaintingLoupe>
       <div className="chapter-foot">
         <Link className="text-link" to="/art">
           See all {artPieces.length} paintings
