@@ -1,0 +1,27 @@
+[
+  {
+    "name": "plate",
+    "src": "/Resources/Site/img/layers/gow/plate.webp",
+    "depth": 0
+  },
+  {
+    "name": "troll",
+    "src": "/Resources/Site/img/layers/gow/troll.webp",
+    "depth": 0.35
+  },
+  {
+    "name": "kratos",
+    "src": "/Resources/Site/img/layers/gow/kratos.webp",
+    "depth": 0.55
+  },
+  {
+    "name": "atreus",
+    "src": "/Resources/Site/img/layers/gow/atreus.webp",
+    "depth": 0.8
+  },
+  {
+    "name": "logo",
+    "src": "/Resources/Site/img/layers/gow/logo.webp",
+    "depth": 1
+  }
+]
