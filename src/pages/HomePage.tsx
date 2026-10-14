@@ -234,7 +234,7 @@ function Ewa() {
             2020 to now, <Brand name="Dream Engine" />
           </p>
           <p className="statement" data-reveal>
-            Third-person survival horror. Explore the dark, solve what it hides, and make it out alive.
+            Survive what waits in the dark and uncover the secrets it keeps. Classic survival horror, with tense exploration, puzzle solving and fixed cameras.
           </p>
           <Link className="text-link" to="/portfolio?project=ewa" data-reveal>
             Watch the teaser and see more
