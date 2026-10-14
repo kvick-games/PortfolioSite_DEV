@@ -252,6 +252,15 @@ function Ewa() {
             Deep in a frozen winter, people have started to vanish. Survive what waits in the dark and uncover the truth.
           </p>
         </header>
+        <figure className="ewa-key" data-reveal>
+          <img
+            src={img("ewa-key-tower")}
+            alt="Painting of a car pulled over on a snowy ridge at night, a far tower rising out of the fog under a full moon"
+            width={2400}
+            height={1300}
+            loading="lazy"
+          />
+        </figure>
         <figure className="ewa-portrait" data-reveal>
           <img src={img("ewa-ewa-redacted")} alt="Red key art of a figure with redacted eyes" loading="lazy" />
           <LoopVideo src="/Resources/Site/loops/ewa-portrait.mp4" />
@@ -328,6 +337,11 @@ function Dreamatron() {
         <Brand /> is the studio I founded. Alongside our games, I’m
         designing and building creative applications for film, sound and
         games, and the interfaces that hold them together.
+      </p>
+      <p className="chapter-foot" data-reveal>
+        <a className="text-link" href="https://dreamatron.ai" target="_blank" rel="noreferrer">
+          Visit dreamatron.ai
+        </a>
       </p>
     </section>
   );

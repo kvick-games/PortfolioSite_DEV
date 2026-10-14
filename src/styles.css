@@ -749,6 +749,16 @@ figcaption {
   align-items: flex-start;
   margin-bottom: clamp(16px, 2vw, 32px);
 }
+.ewa-key {
+  grid-column: 6 / -1;
+  grid-row: 1;
+  align-self: end;
+  margin-bottom: clamp(16px, 2vw, 32px);
+}
+.ewa-key img {
+  aspect-ratio: 2400 / 1300;
+  height: auto;
+}
 .ewa-portrait {
   position: relative;
   grid-column: 1 / span 4;
@@ -1768,9 +1778,17 @@ html.theme-fading * {
     grid-row: 1;
     aspect-ratio: 4 / 5;
   }
-  .ewa-wide {
+  .ewa-key {
     grid-column: 1 / -1;
     grid-row: 2;
+    margin-bottom: 0;
+  }
+  .ewa-wide {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+  .ewa-cams {
+    grid-row: 4;
   }
   .ewa-shot--a {
     grid-column: 1 / span 6;
