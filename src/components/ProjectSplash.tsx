@@ -105,10 +105,15 @@ const panels: Panel[] = [
     title: "Level Generator",
     meta: "Solo technical demo",
     when: "2023",
-    image: img("levelgenerator-3"),
-    width: 1800,
-    height: 782,
+    image: "/Resources/Site/loops/levelgen-orbit.webp",
+    width: 1200,
+    height: 900,
     focus: "50%",
+    video: {
+      mp4: "/Resources/Site/loops/levelgen-orbit.mp4",
+      webm: "/Resources/Site/loops/levelgen-orbit.webm",
+      poster: "/Resources/Site/loops/levelgen-orbit.webp",
+    },
   },
   {
     href: "#paintings",
