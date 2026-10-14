@@ -1,0 +1,23 @@
+{
+  "source_sha256": "926d2eb9f10716970fcf03b491ce0df80c349c14147e28c848e8d6340372f2b6",
+  "full_size": [
+    3840,
+    2160
+  ],
+  "webp_size": [
+    2000,
+    1125
+  ],
+  "changed_pixels": 91529,
+  "unchanged_percent": 98.89649643132717,
+  "changed_bounds_xyxy": [
+    1257,
+    1345,
+    2566,
+    1430
+  ],
+  "webp_metadata_keys": [
+    "loop",
+    "background"
+  ]
+}
