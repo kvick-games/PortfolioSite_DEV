@@ -751,6 +751,8 @@ figcaption {
   margin-bottom: clamp(16px, 2vw, 32px);
 }
 .ewa-night {
+  position: relative;
+  overflow: hidden;
   grid-column: 5 / -1;
   grid-row: 3;
 }

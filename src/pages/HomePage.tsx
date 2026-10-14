@@ -261,6 +261,7 @@ function Ewa() {
             height={1300}
             loading="lazy"
           />
+          <LoopVideo src="/Resources/Site/loops/ewa-tower.mp4" />
         </figure>
       </div>
     </section>
