@@ -1,0 +1,451 @@
+/* Level generator sketch ------------------------------------------------- */
+
+.levelgen-pipeline.lg {
+  --lg-surface: var(--sheet);
+  --lg-line: var(--ink);
+  --lg-line-2: var(--ink-2);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  background: none;
+}
+
+.lg-stage {
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 1800 / 736;
+  overflow: hidden;
+  background: var(--lg-surface);
+}
+.lg-stage[data-view="pipeline"] {
+  background: #1e1f21;
+}
+.lg-pipeline {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.lg-pipeline img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: lg-fade 0.4s var(--ease) both;
+}
+
+/* The step rail echoes the timeline across the top of the real diagram. */
+.lg-steps {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 0;
+}
+.lg-steps ol {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lg-steps ol::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 50%;
+  height: 1px;
+  background: var(--lg-line-2);
+  opacity: 0.5;
+}
+.lg-steps button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.lg-steps button span {
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--lg-line-2);
+  border-radius: 50%;
+  background: var(--lg-surface);
+  transition:
+    background-color 0.25s,
+    border-color 0.25s,
+    transform 0.3s var(--ease);
+}
+.lg-steps button:hover span {
+  border-color: var(--lg-line);
+  transform: scale(1.25);
+}
+.lg-steps button[data-done] span {
+  border-color: var(--lg-line);
+  background: var(--lg-line);
+}
+.lg-steps button[aria-current="step"] span {
+  border-color: var(--accent);
+  background: var(--accent);
+  transform: scale(1.35);
+}
+.lg-steps button:focus-visible {
+  outline-offset: 0;
+}
+.lg-step-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--lg-line);
+  font-size: var(--size-small);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* The map. Inside the scaled group one unit is one cell. */
+.lg-map {
+  display: block;
+  flex: 1 1 0;
+  width: 100%;
+  min-height: 0;
+  --k: 1ms;
+}
+.lg-map[data-mode="step"] {
+  --k: 0.55ms;
+}
+.lg-map[data-mode="objective"] {
+  --k: 0ms;
+}
+.lg-map g > * {
+  animation-delay: calc(var(--d, 0) * var(--k) + var(--o, 0ms));
+}
+.lg-map[data-mode="objective"] .lg-cells {
+  --o: 180ms;
+}
+.lg-map[data-mode="objective"] .lg-walls {
+  --o: 480ms;
+}
+.lg-map[data-mode="objective"] .lg-doors {
+  --o: 640ms;
+}
+.lg-map[data-mode="objective"] .lg-markers {
+  --o: 760ms;
+}
+
+.lg-dot {
+  fill: var(--lg-line-2);
+  opacity: 0.4;
+}
+
+.lg-cells rect {
+  fill: var(--lg-line);
+  fill-opacity: 0.2;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lg-cell 0.42s var(--ease) both;
+  transition: fill-opacity 0.6s var(--ease);
+}
+.lg-cells rect[data-corridor] {
+  fill-opacity: 0.12;
+}
+.lg-cells.is-floor rect {
+  fill-opacity: 0.07;
+}
+.lg-cells.is-floor rect[data-corridor],
+.lg-cells.is-themed rect {
+  fill-opacity: 0;
+}
+.lg-halls path {
+  fill: var(--lg-line);
+  fill-opacity: 0.08;
+  animation: lg-fade 0.5s var(--ease) both;
+}
+
+.lg-theme polygon {
+  animation: lg-fade 0.6s var(--ease) both;
+}
+.lg-pat {
+  fill: none;
+  stroke: var(--lg-line-2);
+  stroke-width: 0.45;
+  opacity: 0.7;
+}
+
+.lg-objective-floor {
+  fill: var(--accent);
+  fill-opacity: 0.08;
+}
+.lg-objectives g {
+  animation: lg-fade 0.5s var(--ease) both;
+}
+.lg-pat-objective {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 0.5;
+  opacity: 0.75;
+}
+
+.lg-footprints,
+.lg-graph {
+  transition: opacity 0.5s var(--ease);
+}
+.lg-footprints.is-past,
+.lg-graph.is-past {
+  opacity: 0;
+}
+.lg-footprints polygon {
+  fill: none;
+  stroke: var(--lg-line);
+  stroke-width: 0.07;
+  stroke-dasharray: 1;
+  animation: lg-draw 0.7s var(--ease) both;
+}
+.lg-footprints polygon[data-bespoke] {
+  stroke-width: 0.13;
+}
+.lg-footprints polygon[data-objective] {
+  stroke: var(--accent);
+  stroke-width: 0.12;
+}
+.lg-graph line {
+  stroke: var(--lg-line);
+  stroke-width: 0.06;
+  stroke-dasharray: 1;
+  animation: lg-draw 0.5s var(--ease) both;
+}
+.lg-graph circle {
+  fill: var(--lg-line);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lg-pop 0.4s var(--ease) both;
+}
+.lg-graph circle[data-objective] {
+  fill: var(--accent);
+}
+
+.lg-walls line {
+  stroke: var(--lg-line);
+  stroke-width: 0.16;
+  stroke-linecap: square;
+  stroke-dasharray: 1;
+  animation: lg-draw 0.42s var(--ease) both;
+}
+
+.lg-doors path {
+  fill: none;
+  stroke: var(--lg-line-2);
+  stroke-width: 0.06;
+  animation: lg-fade 0.45s var(--ease) both;
+}
+
+.lg-props rect,
+.lg-props circle {
+  fill: var(--lg-surface);
+  stroke: var(--lg-line);
+  stroke-width: 0.07;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lg-pop 0.4s var(--ease) both;
+}
+
+.lg-markers > g > * {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.lg-diamond {
+  fill: var(--accent);
+  animation: lg-pop 0.45s var(--ease) both;
+}
+.lg-map .lg-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 0.08;
+  opacity: 0;
+  animation: lg-ring 1.2s cubic-bezier(0.2, 0.6, 0.3, 1) both;
+  animation-delay: calc(var(--o, 0ms) + 220ms);
+}
+
+@keyframes lg-draw {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+@keyframes lg-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes lg-cell {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+}
+@keyframes lg-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.12);
+  }
+}
+@keyframes lg-ring {
+  from {
+    opacity: 0.9;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+/* Controls */
+.lg-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+.lg-views {
+  display: flex;
+}
+.lg-views [role="tab"] {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.lg-views [role="tab"]:hover {
+  background: var(--ground-2);
+}
+.lg-views [role="tab"][aria-selected="true"] {
+  background: var(--ink);
+  color: var(--ground);
+}
+.lg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.lg-actions[hidden],
+.lg-note[hidden] {
+  display: flex;
+  visibility: hidden;
+}
+.lg-note[hidden] {
+  display: block;
+}
+.lg-seed {
+  margin-right: 6px;
+  color: var(--ink-2);
+  font-size: var(--size-small);
+  font-variant-numeric: tabular-nums;
+}
+.lg-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease),
+    background-color 0.2s,
+    color 0.2s;
+}
+.lg-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+.lg-button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+}
+.lg-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.lg-button--ink {
+  background: var(--ink);
+  color: var(--ground);
+}
+.lg-glyph {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  transform: rotate(45deg);
+}
+.lg-note {
+  color: var(--ink-2);
+  font-size: var(--size-small);
+  line-height: 1.45;
+}
+
+@media (pointer: coarse) {
+  .lg-steps button {
+    width: 36px;
+    height: 36px;
+  }
+  .lg-steps ol {
+    gap: 2px;
+  }
+  .lg-views [role="tab"],
+  .lg-button {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 720px) {
+  .lg-stage[data-view="sketch"] {
+    aspect-ratio: 1 / 1;
+  }
+  .lg-bar {
+    gap: 14px 10px;
+  }
+  .lg-actions {
+    display: contents;
+  }
+  .lg-seed {
+    margin: 0 0 0 auto;
+  }
+  .lg-actions[hidden],
+  .lg-note[hidden] {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-map *,
+  .lg-pipeline img {
+    animation: none !important;
+  }
+  .lg-ring {
+    display: none;
+  }
+}

@@ -2,6 +2,7 @@ import Brand from "../components/Brand";
 import EwaCameras, { type CameraShot } from "../components/EwaCameras";
 import JudasTrailer from "../components/JudasTrailer";
 import { Link } from "react-router-dom";
+import LevelGenSketch from "../components/LevelGenSketch";
 import MenuViewer, { type MenuView } from "../components/MenuViewer";
 import PaintingLoupe from "../components/PaintingLoupe";
 import PaintingRows from "../components/PaintingRows";
@@ -287,9 +288,7 @@ function Tools() {
             More on the Level Generator
           </Link>
         </div>
-        <figure className="levelgen-pipeline" data-reveal>
-          <img src={img("levelgenerator-mapgenpipeline")} alt="Diagram of the generation pipeline" loading="lazy" />
-        </figure>
+        <LevelGenSketch pipelineSrc={img("levelgenerator-mapgenpipeline")} />
         <ul className="levelgen-rooms" aria-label="Generated levels">
           {[
             ["levelgenerator-1", "Generated interior with wood floors"],
