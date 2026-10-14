@@ -19,12 +19,17 @@ interface YouTubeEmbedProps {
   watchUrl?: string;
 }
 
-export function ArticleShell({ title, eyebrow, details, children }: ArticleShellProps) {
+export function ArticleShell({
+  title,
+  eyebrow,
+  details,
+  children,
+}: ArticleShellProps) {
   return (
     <article className="project-article">
       <header className="project-article-header">
-        {eyebrow ? <p className="project-article-eyebrow">{eyebrow}</p> : null}
         <h1>{title}</h1>
+        {eyebrow ? <p>{eyebrow}</p> : null}
         <dl className="project-details">
           {details.map((detail) => (
             <div key={detail}>
@@ -86,11 +91,15 @@ export function ArticleHero({
   meta: string[];
 }) {
   return (
-    <section className="article-hero" style={{ backgroundImage: `url(${image})` }}>
+    <section
+      className="article-hero"
+      style={{ backgroundImage: `url(${image})` }}
+    >
       <div className="article-hero-content">
-        <p className="article-hero-kicker">{kicker}</p>
         <h2>{title}</h2>
-        <p>{description}</p>
+        <p>
+          {kicker}. {description}
+        </p>
         <ul aria-label="Hero project highlights">
           {meta.map((item) => (
             <li key={item}>{item}</li>
@@ -155,14 +164,18 @@ export function ExternalVideoLink({
   description: string;
 }) {
   return (
-    <a className="external-video-card" href={href} target="_blank" rel="noreferrer">
+    <a
+      className="external-video-card"
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+    >
       <span
         className="external-video-card-media"
         aria-hidden="true"
         style={{ backgroundImage: `url(${image})` }}
       />
       <span className="external-video-card-content">
-        <span className="external-video-card-kicker">Trailer</span>
         <span className="external-video-card-title">{title}</span>
         <span className="external-video-card-description">{description}</span>
         <span className="external-video-card-action">Watch on YouTube</span>
@@ -205,7 +218,13 @@ export function SplitFeature({
   children: ReactNode;
 }) {
   return (
-    <div className={imageFirst ? "split-feature split-feature--image-first" : "split-feature"}>
+    <div
+      className={
+        imageFirst
+          ? "split-feature split-feature--image-first"
+          : "split-feature"
+      }
+    >
       <div className="split-feature-copy">{children}</div>
       <MediaImage src={image} alt={imageAlt} />
     </div>

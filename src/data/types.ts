@@ -27,7 +27,7 @@ export interface MiscProject {
   slug: string;
   title: string;
   subtitle: string;
-  image: string;
+  image?: string;
   details: string[];
   Article: ComponentType;
 }

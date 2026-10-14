@@ -43,7 +43,9 @@ function ArtCard({
         <span className="art-gallery-card-label">
           <span className="art-gallery-card-title">{piece.title}</span>
           {piece.description ? (
-            <span className="art-gallery-card-description">{piece.description}</span>
+            <span className="art-gallery-card-description">
+              {piece.description}
+            </span>
           ) : null}
         </span>
       </button>
@@ -60,9 +62,15 @@ function ArtOverview({
 }) {
   return (
     <div className="portfolio-overview-panel" aria-hidden={isHidden}>
-      <h1 className="sr-only" id="art-title">
-        Art gallery
-      </h1>
+      <section className="page-intro">
+        <h1 id="art-title" data-reveal>
+          Pictures & places
+        </h1>
+        <p data-reveal>
+          Paintings, characters, and imagined worlds. A collection from my
+          ArtStation archive.
+        </p>
+      </section>
       <ul className="art-gallery-grid" aria-labelledby="art-title">
         {artPieces.map((piece, index) => (
           <ArtCard
@@ -110,7 +118,11 @@ function ArtPieceMedia({ piece }: { piece: ArtPiece }) {
           <div className="art-piece-media-grid">
             {extraImages.map((image, index) => (
               <figure className="media-frame" key={image}>
-                <img src={image} alt={`${piece.title} artwork ${index + 2}`} loading="lazy" />
+                <img
+                  src={image}
+                  alt={`${piece.title} artwork ${index + 2}`}
+                  loading="lazy"
+                />
               </figure>
             ))}
           </div>
@@ -135,36 +147,45 @@ function ArtPanel({
 
   if (!piece) {
     return (
-      <section className="project-panel-content project-panel-content--empty" aria-live="polite">
+      <section
+        className="project-panel-content project-panel-content--empty"
+        aria-live="polite"
+      >
         <button className="back-button" type="button" onClick={onClose}>
           Back to art
         </button>
         <h1>Artwork not found</h1>
         <p>
-          No ArtStation piece matches <code>{requestedSlug}</code>. Return to the gallery and
-          choose a piece from the current archive.
+          No ArtStation piece matches <code>{requestedSlug}</code>. Return to
+          the gallery and choose a piece from the current archive.
         </p>
       </section>
     );
   }
 
   return (
-    <section className="project-panel-content art-panel-content" aria-live="polite">
+    <section
+      className="project-panel-content art-panel-content"
+      aria-live="polite"
+    >
       <button className="back-button" type="button" onClick={onClose}>
         Back to art
       </button>
       <article className="project-article art-piece-article">
         <header className="project-article-header">
-          <p className="project-article-eyebrow">ArtStation archive</p>
           <h1>{piece.title}</h1>
           <dl className="project-details">
             <div>
               <dt className="sr-only">Image count</dt>
-              <dd>{piece.images.length > 1 ? `${piece.images.length} images` : "Single image"}</dd>
+              <dd>
+                {piece.images.length > 1
+                  ? `${piece.images.length} images`
+                  : "Single image"}
+              </dd>
             </div>
             <div>
               <dt className="sr-only">Source</dt>
-              <dd>Local archive</dd>
+              <dd>Personal artwork</dd>
             </div>
             {piece.embedUrl ? (
               <div>
@@ -176,9 +197,16 @@ function ArtPanel({
         </header>
         <div className="project-article-body">
           <ArtPieceMedia piece={piece} />
-          {piece.description ? <p className="art-piece-description">{piece.description}</p> : null}
+          {piece.description ? (
+            <p className="art-piece-description">{piece.description}</p>
+          ) : null}
           <div className="project-link-buttons">
-            <a className="project-link-button" href={piece.sourceUrl} target="_blank" rel="noreferrer">
+            <a
+              className="project-link-button"
+              href={piece.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
               View on ArtStation
             </a>
           </div>
@@ -193,7 +221,6 @@ export default function ArtPage() {
   const selectedSlug = searchParams.get("piece");
   const selectedPiece = getArtPiece(selectedSlug);
   const hasPieceQuery = selectedSlug !== null;
-  const backgroundImage = selectedPiece?.coverImage ?? artPieces[0]?.coverImage ?? "";
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -208,16 +235,23 @@ export default function ArtPage() {
   };
 
   return (
-    <main className="page-shell art-page">
+    <main id="main" tabIndex={-1} className="page-shell art-page">
       <div
-        className="fixed-project-background art-page-background"
-        aria-hidden="true"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
-      />
-      <div className={hasPieceQuery ? "portfolio-stage portfolio-stage--article" : "portfolio-stage"}>
-        <ArtOverview onSelect={handleSelect} isHidden={hasPieceQuery} />
+        className={
+          hasPieceQuery
+            ? "portfolio-stage portfolio-stage--article"
+            : "portfolio-stage"
+        }
+      >
+        {!hasPieceQuery ? (
+          <ArtOverview onSelect={handleSelect} isHidden={false} />
+        ) : null}
         <div className="portfolio-article-panel" aria-hidden={!hasPieceQuery}>
-          <ArtPanel piece={selectedPiece} requestedSlug={selectedSlug} onClose={handleClose} />
+          <ArtPanel
+            piece={selectedPiece}
+            requestedSlug={selectedSlug}
+            onClose={handleClose}
+          />
         </div>
       </div>
     </main>

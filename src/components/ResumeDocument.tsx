@@ -86,7 +86,10 @@ const skillGroups = [
 
 const contactLinks = [
   { label: "www.kvick-games.com", href: "https://www.kvick-games.com/" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/michael-nevins-690b3140/" },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/michael-nevins-690b3140/",
+  },
   { label: "ArtStation", href: "https://www.artstation.com/kvick" },
   { label: "X / kvickart", href: "https://x.com/kvickart" },
 ];
@@ -94,7 +97,11 @@ const contactLinks = [
 const educationItems = [
   {
     title: "Game Programming (BS 2024)",
-    details: ["Previously Illustration", "Academy of Art", "University San Francisco"],
+    details: [
+      "Previously Illustration",
+      "Academy of Art",
+      "University San Francisco",
+    ],
   },
   {
     title: "AI & Machine Learning Bootcamp (2023)",
@@ -108,7 +115,11 @@ export default function ResumeDocument() {
   return (
     <section className="resume-document" aria-label="Michael Nevins resume">
       <div className="resume-document-actions">
-        <button className="project-link-button" type="button" onClick={() => window.print()}>
+        <button
+          className="project-link-button"
+          type="button"
+          onClick={() => window.print()}
+        >
           Export PDF
         </button>
         <a
@@ -124,7 +135,6 @@ export default function ResumeDocument() {
       <div className="resume-sheet">
         <header className="resume-document-header">
           <div className="resume-title-block">
-            <p className="resume-kicker">Resume</p>
             <h2>MICHAEL NEVINS</h2>
             <p>Software Developer / Technical Designer</p>
           </div>
@@ -140,13 +150,15 @@ export default function ResumeDocument() {
         </header>
 
         <div className="resume-body">
-          <main className="resume-main">
+          <div className="resume-main">
             <section className="resume-section resume-section--profile">
               <h3>Profile</h3>
               <p>
-                Multi-disciplinary game developer with production experience across AAA, independent
-                games, gameplay systems, interface systems, procedural generation, and tools. Comfortable
-                working between design and engineering to turn unusual ideas into shippable systems.
+                Multi-disciplinary game developer with production experience
+                across AAA, independent games, gameplay systems, interface
+                systems, procedural generation, and tools. Comfortable working
+                between design and engineering to turn unusual ideas into
+                shippable systems.
               </p>
             </section>
 
@@ -154,7 +166,10 @@ export default function ResumeDocument() {
               <h3>Experience</h3>
               <div className="resume-timeline">
                 {experience.map((item) => (
-                  <article key={`${item.company}-${item.role}`} className="resume-entry">
+                  <article
+                    key={`${item.company}-${item.role}`}
+                    className="resume-entry"
+                  >
                     <div>
                       <h4>{item.company}</h4>
                       <p>{item.role}</p>
@@ -182,7 +197,7 @@ export default function ResumeDocument() {
                 ))}
               </div>
             </section>
-          </main>
+          </div>
 
           <aside className="resume-sidebar" aria-label="Resume sidebar">
             {skillGroups.map((group) => (

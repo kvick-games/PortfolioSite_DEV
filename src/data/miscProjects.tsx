@@ -9,9 +9,13 @@ import type { MiscProject } from "./types";
 
 function MusicVisualizerArticle() {
   return (
-    <ArticleShell title="Music Visualizer" details={["Web Audio API", "Canvas", "JavaScript"]}>
-      <p>An interactive music visualizer created with Web Audio API and Canvas.</p>
-      <MediaImage src="/Resources/Projects/Misc/musicvis.jpg" alt="Music visualizer preview" />
+    <ArticleShell
+      title="Music Visualizer"
+      details={["Web Audio API", "Canvas", "JavaScript"]}
+    >
+      <p>
+        An interactive music visualizer created with Web Audio API and Canvas.
+      </p>
       <ArticleSection title="Features">
         <FeatureList
           items={[
@@ -23,7 +27,9 @@ function MusicVisualizerArticle() {
         />
       </ArticleSection>
       <ArticleSection title="Technologies Used">
-        <FeatureList items={["JavaScript", "Web Audio API", "HTML5 Canvas", "CSS3"]} />
+        <FeatureList
+          items={["JavaScript", "Web Audio API", "HTML5 Canvas", "CSS3"]}
+        />
       </ArticleSection>
     </ArticleShell>
   );
@@ -31,12 +37,14 @@ function MusicVisualizerArticle() {
 
 function GenerativeArtArticle() {
   return (
-    <ArticleShell title="Generative Art Experiments" details={["Procedural Art", "p5.js", "WebGL"]}>
+    <ArticleShell
+      title="Generative Art Experiments"
+      details={["Procedural Art", "p5.js", "WebGL"]}
+    >
       <p>
-        A collection of generative art experiments created while exploring algorithmic art
-        generation techniques.
+        A collection of generative art experiments created while exploring
+        algorithmic art generation techniques.
       </p>
-      <MediaImage src="/Resources/Projects/Misc/generativeart.jpg" alt="Generative art preview" />
       <ArticleSection title="Techniques Explored">
         <FeatureList
           items={[
@@ -57,10 +65,13 @@ function GenerativeArtArticle() {
 
 function AiTimelineMiscArticle() {
   return (
-    <ArticleShell title="AI Model Timeline" details={["React 19", "Vite", "TypeScript", "Motion"]}>
+    <ArticleShell
+      title="AI Model Timeline"
+      details={["React 19", "Vite", "TypeScript", "Motion"]}
+    >
       <p>
-        An interactive timeline website for comparing major AI model and coding-tool releases
-        across providers.
+        An interactive timeline website for comparing major AI model and
+        coding-tool releases across providers.
       </p>
       <LinkButtons
         links={[
@@ -74,7 +85,10 @@ function AiTimelineMiscArticle() {
           },
         ]}
       />
-      <MediaImage src="/Resources/Projects/Misc/ai-model-timeline.png" alt="AI Model Timeline screenshot" />
+      <MediaImage
+        src="/Resources/Projects/Misc/ai-model-timeline.png"
+        alt="AI Model Timeline screenshot"
+      />
       <ArticleSection title="Highlights">
         <FeatureList
           items={[
@@ -93,7 +107,6 @@ export const miscProjects: MiscProject[] = [
     slug: "music-visualizer",
     title: "Music Visualizer",
     subtitle: "Audio-reactive canvas study",
-    image: "/Resources/Projects/Misc/musicvis.jpg",
     details: ["Web Audio API", "Canvas"],
     Article: MusicVisualizerArticle,
   },
@@ -101,7 +114,6 @@ export const miscProjects: MiscProject[] = [
     slug: "generative-art",
     title: "Generative Art Experiments",
     subtitle: "Procedural sketch collection",
-    image: "/Resources/Projects/Misc/generativeart.jpg",
     details: ["p5.js", "WebGL"],
     Article: GenerativeArtArticle,
   },
