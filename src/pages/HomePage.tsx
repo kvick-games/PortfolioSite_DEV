@@ -3,6 +3,7 @@ import EwaCameras, { type CameraShot } from "../components/EwaCameras";
 import JudasTrailer from "../components/JudasTrailer";
 import LayeredArt, { type ArtLayer } from "../components/LayeredArt";
 import { Link } from "react-router-dom";
+import LoopVideo from "../components/LoopVideo";
 import LevelGenSketch from "../components/LevelGenSketch";
 import MenuViewer, { type MenuView } from "../components/MenuViewer";
 import PaintingRows from "../components/PaintingRows";
@@ -82,9 +83,11 @@ const paintingSlugs = [
   "genesis-prime",
   "midnight",
 ];
-const paintings = paintingSlugs.map(
-  (slug) => artPieces.find((piece) => piece.slug === slug)!,
-);
+// The chosen pieces lead; every other painting follows in catalogue order.
+const paintings = [
+  ...paintingSlugs.map((slug) => artPieces.find((piece) => piece.slug === slug)!),
+  ...artPieces.filter((piece) => !paintingSlugs.includes(piece.slug)),
+];
 
 function Hero() {
   return <ProjectSplash />;
@@ -264,6 +267,7 @@ function Ewa() {
         </header>
         <figure className="ewa-portrait" data-reveal>
           <img src={img("ewa-ewa-redacted")} alt="Red key art of a figure with redacted eyes" loading="lazy" />
+          <LoopVideo src="/Resources/Site/loops/ewa-portrait.mp4" />
         </figure>
         <figure className="ewa-wide" data-reveal>
           <img src={img("ewa-ewa-concept-01")} alt="Concept painting of a burning furnace room" loading="lazy" />
@@ -288,18 +292,6 @@ function Tools() {
   return (
     <section className="chapter chapter--tools" id="level-generator" aria-labelledby="levelgen-title">
       <div className="levelgen">
-        <ul className="levelgen-rooms" aria-label="Generated levels">
-          {[
-            ["levelgenerator-1", "Generated interior with wood floors"],
-            ["levelgenerator-2", "Generated kitchen with peeling tiles"],
-            ["levelgenerator-5", "Generated hallway with a lit doorway"],
-            ["levelgenerator-3", "Exterior of a generated structure"],
-          ].map(([name, alt]) => (
-            <li key={name} data-reveal>
-              <img src={img(name)} alt={alt} loading="lazy" />
-            </li>
-          ))}
-        </ul>
         <div className="levelgen-copy">
           <h2 id="levelgen-title" className="chapter-title" data-reveal>
             Level Generator
@@ -322,6 +314,18 @@ function Tools() {
             More on the Level Generator
           </Link>
         </div>
+        <ul className="levelgen-rooms" aria-label="Generated levels">
+          {[
+            ["levelgenerator-1", "Generated interior with wood floors"],
+            ["levelgenerator-2", "Generated kitchen with peeling tiles"],
+            ["levelgenerator-5", "Generated hallway with a lit doorway"],
+            ["levelgenerator-3", "Exterior of a generated structure"],
+          ].map(([name, alt]) => (
+            <li key={name} data-reveal>
+              <img src={img(name)} alt={alt} loading="lazy" />
+            </li>
+          ))}
+        </ul>
         <LevelGenSketch pipelineSrc={img("levelgenerator-mapgenpipeline")} />
       </div>
     </section>
@@ -389,11 +393,6 @@ function Paintings() {
         </p>
       </header>
       <PaintingRows pieces={paintings} />
-      <div className="chapter-foot">
-        <Link className="text-link" to="/art">
-          See all {artPieces.length} paintings
-        </Link>
-      </div>
     </section>
   );
 }
@@ -408,8 +407,8 @@ function About() {
         <div className="about-text">
           <p data-reveal>
             I studied illustration and fine art at the Academy of Art
-            University in San Francisco, then moved into game programming. I’m
-            happiest where the two overlap: the screens, systems and tools
+            University in San Francisco, then graduated with a BS focused on game
+            programming. I’m happiest where the two overlap: the screens, systems and tools
             players and makers actually touch.
           </p>
           <p data-reveal>
@@ -426,20 +425,25 @@ function About() {
           <a className="button" href={contact.href} target="_blank" rel="noreferrer">
             {contact.label}
           </a>
-          <ul>
+          <ul className="resume-cards" aria-label="Résumés">
             {resumes.map((resume) => (
               <li key={resume.href}>
-                <a className="text-link" href={resume.href} target="_blank" rel="noreferrer">
-                  {resume.label}
+                <a className="resume-card" href={resume.href} target="_blank" rel="noreferrer">
+                  <img src={resume.preview} alt="" width={900} height={1165} loading="lazy" />
+                  <span className="resume-card-label">
+                    <span>
+                      {resume.role}
+                      <span className="sr-only"> résumé</span>
+                    </span>
+                    <span className="resume-card-kind">PDF</span>
+                  </span>
                 </a>
               </li>
             ))}
-            <li>
-              <Link className="text-link" to="/about">
-                More about me
-              </Link>
-            </li>
           </ul>
+          <Link className="text-link" to="/about">
+            More about me
+          </Link>
         </div>
       </div>
     </section>
@@ -455,8 +459,8 @@ export default function HomePage() {
       <GodOfWar />
       <Judas />
       <Dreamatron />
-      <Tanuki />
       <Ewa />
+      <Tanuki />
       <DreamatronTools />
       <Tools />
       <Paintings />

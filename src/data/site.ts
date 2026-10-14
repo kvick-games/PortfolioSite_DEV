@@ -6,11 +6,15 @@ export const contact = {
 export const resumes = [
   {
     label: "Résumé, technical designer (PDF)",
+    role: "Technical designer",
     href: "/Resources/Michael_Nevins_Resume_TechnicalDesigner.pdf",
+    preview: "/Resources/Site/img/resume-technicaldesigner.webp",
   },
   {
     label: "Résumé, gameplay programmer (PDF)",
+    role: "Gameplay programmer",
     href: "/Resources/Michael_Nevins_Resume_GameplayProgrammer.pdf",
+    preview: "/Resources/Site/img/resume-gameplayprogrammer.webp",
   },
 ];
 

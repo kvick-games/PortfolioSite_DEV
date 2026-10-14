@@ -37,8 +37,8 @@ const panels: Panel[] = [
     meta: "Sony Santa Monica Studio",
     when: "2016–2018",
     image: img("gow-boat"),
-    width: 1600,
-    height: 900,
+    width: 2880,
+    height: 1620,
     focus: "47%",
   },
   {
@@ -62,6 +62,20 @@ const panels: Panel[] = [
     wordmark: true,
   },
   {
+    href: "#ewa",
+    title: "EWA",
+    meta: <Brand />,
+    image: img("ewa-ewa-redacted"),
+    width: 1800,
+    height: 2044,
+    focus: "50%",
+    video: {
+      mp4: "/Resources/Site/loops/ewa-portrait.mp4",
+      webm: "/Resources/Site/loops/ewa-portrait.webm",
+      poster: "/Resources/Site/loops/ewa-portrait.webp",
+    },
+  },
+  {
     href: "#tanuki",
     title: "Tanuki",
     meta: <Brand />,
@@ -74,15 +88,6 @@ const panels: Panel[] = [
       webm: "/Resources/Site/loops/tanuki-island.webm",
       poster: "/Resources/Site/loops/tanuki-island.webp",
     },
-  },
-  {
-    href: "#ewa",
-    title: "EWA",
-    meta: <Brand />,
-    image: img("ewa-ewa-redacted"),
-    width: 1800,
-    height: 2044,
-    focus: "50%",
   },
   {
     href: "#level-generator",
