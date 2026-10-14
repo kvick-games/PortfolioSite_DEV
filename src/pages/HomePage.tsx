@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import MenuViewer, { type MenuView } from "../components/MenuViewer";
 import PaintingLoupe from "../components/PaintingLoupe";
 import PaintingRows from "../components/PaintingRows";
+import ProjectSplash from "../components/ProjectSplash";
 import ScrollWordmark from "../components/ScrollWordmark";
 import { artPieces } from "../data/artPieces";
 import { contact, resumes } from "../data/site";
@@ -71,28 +72,7 @@ const paintings = paintingSlugs.map(
 );
 
 function Hero() {
-  return (
-    <section className="hero" aria-labelledby="hero-title">
-      <h1 id="hero-title" className="display" data-reveal>
-        Interfaces for games <span>and creative tools</span>
-      </h1>
-      <div className="hero-lede">
-        <p className="statement" data-reveal>
-          I’m Michael Nevins. I designed and built menu systems for God of War
-          (2018), UI at Ghost Story Games, and now creative software at{" "}
-          <Brand />. I also paint.
-        </p>
-        <div className="hero-actions" data-reveal>
-          <a className="button" href={contact.href} target="_blank" rel="noreferrer">
-            {contact.label}
-          </a>
-          <a className="text-link" href="#work">
-            See the work
-          </a>
-        </div>
-      </div>
-    </section>
-  );
+  return <ProjectSplash />;
 }
 
 function GodOfWar() {
@@ -135,7 +115,7 @@ function GodOfWar() {
 
 function Judas() {
   return (
-    <section className="chapter chapter--judas" aria-labelledby="judas-title">
+    <section className="chapter chapter--judas" id="judas" aria-labelledby="judas-title">
       <figure className="judas-image" data-reveal>
         <img
           src={img("projects-judas-img2")}
@@ -173,7 +153,7 @@ function Judas() {
 
 function Tanuki() {
   return (
-    <section className="chapter chapter--tanuki" aria-labelledby="tanuki-title">
+    <section className="chapter chapter--tanuki" id="tanuki" aria-labelledby="tanuki-title">
       <header className="chapter-head">
         <h2 id="tanuki-title" className="chapter-title" data-reveal>
           Tanuki
@@ -226,7 +206,7 @@ function Tanuki() {
 
 function Ewa() {
   return (
-    <section className="chapter chapter--ewa field-night" aria-labelledby="ewa-title">
+    <section className="chapter chapter--ewa field-night" id="ewa" aria-labelledby="ewa-title">
       <div className="ewa-grid">
         <header className="ewa-copy">
           <h2 id="ewa-title" className="chapter-title" data-reveal>
@@ -265,7 +245,7 @@ function Ewa() {
 
 function Tools() {
   return (
-    <section className="chapter chapter--tools" aria-labelledby="levelgen-title">
+    <section className="chapter chapter--tools" id="level-generator" aria-labelledby="levelgen-title">
       <div className="levelgen">
         <div className="levelgen-copy">
           <h2 id="levelgen-title" className="chapter-title" data-reveal>
@@ -385,7 +365,7 @@ function Dreamatron() {
 
 function Paintings() {
   return (
-    <section className="chapter chapter--paint" aria-labelledby="paint-title">
+    <section className="chapter chapter--paint" id="paintings" aria-labelledby="paint-title">
       <header className="paint-head">
         <h2 id="paint-title" className="chapter-title" data-reveal>
           Paintings

@@ -1,0 +1,237 @@
+/* Opening splash: the projects as a horizontal accordion -----------------
+
+   Touch screens and phones get a plain stack of rows (the base rules below).
+   Screens with a fine pointer that can hover get the accordion, inside the
+   media query further down. */
+
+.splash {
+  padding: clamp(8px, 2vw, 24px) var(--margin) 0;
+}
+
+.splash-title {
+  font-size: clamp(30px, 8.4vw, 44px);
+  font-weight: 600;
+  font-stretch: 86%;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  text-wrap: balance;
+}
+
+.splash-strip {
+  display: grid;
+  gap: 12px;
+  margin-top: clamp(24px, 6vw, 36px);
+}
+
+.splash-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 11fr) minmax(0, 10fr);
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+}
+
+.splash-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--ground-2);
+}
+.splash-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--focus) 50%;
+}
+
+.splash-tab {
+  display: none;
+}
+
+.splash-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.splash-name {
+  font-size: clamp(22px, 6vw, 30px);
+  font-weight: 600;
+  font-stretch: 86%;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.splash-meta {
+  font-size: var(--size-small);
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+.splash-meta .brand {
+  font-size: 1em;
+}
+/* Narrow columns tighten the brand spacing, as the phone header does. */
+.splash-name .brand {
+  letter-spacing: 0.22em;
+  margin-right: -0.22em;
+}
+
+/* Tablets without hover: two columns of rows rather than one long stack. */
+@media (min-width: 721px) {
+  .splash-title {
+    font-size: clamp(36px, 4.4vw, 56px);
+  }
+  .splash-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 36px var(--gap);
+  }
+  .splash-panel {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+  }
+  .splash-media {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* The accordion ---------------------------------------------------------- */
+
+@media (hover: hover) and (pointer: fine) and (min-width: 721px) {
+  .splash {
+    display: flex;
+    flex-direction: column;
+    height: calc(100svh - var(--splash-header, 84px));
+    min-height: 560px;
+    padding-bottom: clamp(20px, 2.4vw, 36px);
+  }
+  .splash-title {
+    font-size: clamp(30px, 3.1vw, 52px);
+  }
+
+  .splash-strip {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    gap: clamp(6px, 0.55vw, 10px);
+    margin-top: clamp(20px, 2.2vw, 36px);
+  }
+
+  /* Closed panels share one width, so the bands stay true: the open panel
+     is nine times as wide as a closed one. */
+  .splash-item {
+    flex: 1 1 0;
+    min-width: 0;
+    transition: flex-grow 0.85s var(--ease);
+    animation: splash-in 0.9s var(--ease) both;
+    animation-delay: calc(var(--i) * 55ms + 80ms);
+  }
+  .splash-item.is-active {
+    flex-grow: 9;
+  }
+
+  .splash-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    height: 100%;
+  }
+
+  .splash-media {
+    flex: 1;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+  .splash-media img {
+    object-position: var(--slice) 50%;
+    filter: grayscale(1);
+    transform: scale(1.06);
+    transition:
+      object-position 0.85s var(--ease),
+      filter 0.7s var(--ease),
+      transform 1.1s var(--ease);
+  }
+  /* Closed panels sit back under a veil of the page colour; the open one
+     comes forward in full colour. */
+  .splash-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ground);
+    opacity: 0.58;
+    transition: opacity 0.7s var(--ease);
+  }
+  .is-active .splash-media img {
+    object-position: var(--focus) 50%;
+    filter: none;
+    transform: none;
+  }
+  .is-active .splash-media::after {
+    opacity: 0;
+  }
+
+  .splash-tab {
+    position: absolute;
+    z-index: 1;
+    left: 50%;
+    bottom: 18px;
+    display: block;
+    writing-mode: vertical-rl;
+    transform: translateX(-50%) rotate(180deg);
+    white-space: nowrap;
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    line-height: 1;
+    transition: opacity 0.35s var(--ease);
+  }
+  .splash-tab .brand {
+    margin: 0;
+    font-size: 0.88em;
+  }
+  .is-active .splash-tab {
+    opacity: 0;
+  }
+
+  .splash-caption {
+    flex: none;
+    gap: 8px;
+    padding-top: 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s var(--ease);
+  }
+  .is-active .splash-caption {
+    opacity: 1;
+    transition: opacity 0.5s var(--ease) 0.25s;
+  }
+  .splash-name {
+    font-size: clamp(26px, 2.2vw, 38px);
+    line-height: 0.95;
+  }
+  .splash-name .brand {
+    letter-spacing: 0.3em;
+    margin-right: -0.3em;
+  }
+}
+
+@keyframes splash-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-item,
+  .splash-media img,
+  .splash-media::after,
+  .splash-tab,
+  .splash-caption {
+    animation: none;
+    transition: none;
+  }
+}
