@@ -1,4 +1,4 @@
-import { withBrand } from "./Brand";
+import Brand, { withBrand } from "./Brand";
 import "../resume.css";
 
 const experience = [
@@ -7,7 +7,7 @@ const experience = [
     company: "DREAMATRON",
     years: "2020 - Current",
     bullets: [
-      "Building Project Tanuki, an independent game in Dream Engine with simulation-driven world systems.",
+      "Building Dream Engine and AI tools for making games, and Project Tanuki, a simulation-driven game built on them.",
       "Implemented NPC AI, utility scoring, dynamic quests, dialogue, equipment, cooking, building, farming, and fishing systems.",
       "Own broad design and engineering tasks across gameplay, tools, UI, content workflows, and production planning.",
     ],
@@ -130,9 +130,10 @@ export default function ResumeDocument() {
         <p className="resume-role">Software Developer / Technical Designer</p>
         <p className="resume-summary">
           Multi-disciplinary game developer with production experience across
-          AAA, independent games, gameplay systems, interface systems,
-          procedural generation, and tools. Comfortable working between design
-          and engineering to turn unusual ideas into shippable systems.
+          AAA, independent games, gameplay and interface systems, procedural
+          generation, and tools. Now focused on AI experimentation and on
+          building the engine and tools for the next generation of games at{" "}
+          <Brand />.
         </p>
       </header>
 

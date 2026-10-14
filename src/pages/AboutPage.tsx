@@ -1,3 +1,4 @@
+import Brand from "../components/Brand";
 import ResumeDocument from "../components/ResumeDocument";
 
 export default function AboutPage() {
@@ -12,30 +13,29 @@ export default function AboutPage() {
       <section className="about-layout" aria-label="Biography and resume">
         <div className="about-copy">
           <p>
-            I am a multi-disciplinary game developer currently working on an
-            independent game project. I am an artist at heart and possess
-            technical skills to bring anyone's vision to life.
+            I’m a game developer and an artist at heart. I built menu systems
+            for God of War (2018), worked on UI and gameplay systems at Ghost
+            Story Games, and founded <Brand />.
           </p>
           <p>
-            With a foundation in art and design, accompanied by strong technical
-            chops, I can implement unusual ideas that need to be brought to life
-            on a given day. My goal is to work on ambitious, innovative projects
-            that ask for both creative and technical problem solving.
+            Most of my work now is AI experimentation: finding out what models
+            can really do, then building the tools to put them to work. At{" "}
+            <Brand /> that means <Brand name="Dream Engine" />, the engine Tanuki
+            and EWA are built in, and creative applications for film, sound and
+            games. The aim is to help build, and define, the next generation of
+            games.
           </p>
           <p>
-            I studied Illustration and Fine Art at Academy of Art University in
-            San Francisco, CA. I later shifted my education toward a Bachelor of
-            Science focused on game programming.
+            I studied Illustration and Fine Art at the Academy of Art University
+            in San Francisco, then moved into a Bachelor of Science in game
+            programming, and later took Caltech’s AI and Machine Learning
+            bootcamp.
           </p>
           <p>
-            I have experience across C++, C#, Python, JavaScript, and a broad
-            range of game development domains. I have worked across solo
-            projects, small teams, and teams of 350+ people on God of War.
-          </p>
-          <p>
-            Currently my main development interests lie in procedural generation
-            and finding ways to reduce tedious development work so teams can
-            focus more on the design of games.
+            I write C++, C#, Python, Lua and TypeScript, and I’ve worked solo,
+            in small teams, and on a team of more than 350 on God of War. The
+            thread through all of it is the same: take tedious work off people
+            so they can spend their time on the design.
           </p>
           <div className="social-links" aria-label="External profiles">
             <a

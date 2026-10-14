@@ -382,10 +382,13 @@ function About() {
             players and makers actually touch.
           </p>
           <p data-reveal>
+            These days I’m deep in AI. I spend my time testing what models can
+            really do, and building the engine and tools at <Brand /> that I
+            think the next generation of games will be made with.
+          </p>
+          <p data-reveal>
             I write C++, Lua, Python, C# and TypeScript, and work in Unreal,
-            Unity, Houdini and Blender. Lately I’m most interested in
-            procedural generation and in tools that take repetitive work off a
-            team’s plate.
+            Unity, Houdini, Blender and now our own <Brand name="Dream Engine" />.
           </p>
         </div>
         <div className="about-links" data-reveal>
@@ -419,10 +422,10 @@ export default function HomePage() {
       <Hero />
       <GodOfWar />
       <Judas />
+      <Dreamatron />
       <Tanuki />
       <Ewa />
       <Tools />
-      <Dreamatron />
       <Paintings />
       <About />
     </main>

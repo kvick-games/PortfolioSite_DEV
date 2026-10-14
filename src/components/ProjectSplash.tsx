@@ -44,6 +44,20 @@ const panels: Panel[] = [
     focus: "50%",
   },
   {
+    href: "#dreamatron",
+    title: <Brand />,
+    meta: (
+      <>
+        AI Timeline and <Brand name="Auteur" />
+      </>
+    ),
+    image: img("dreamatron-timeline"),
+    width: 1800,
+    height: 1125,
+    focus: "50%",
+    slice: "9%",
+  },
+  {
     href: "#tanuki",
     title: "Tanuki",
     meta: (
@@ -74,20 +88,6 @@ const panels: Panel[] = [
     width: 1800,
     height: 782,
     focus: "50%",
-  },
-  {
-    href: "#dreamatron",
-    title: <Brand />,
-    meta: (
-      <>
-        AI Timeline and <Brand name="Auteur" />
-      </>
-    ),
-    image: img("dreamatron-timeline"),
-    width: 1800,
-    height: 1125,
-    focus: "50%",
-    slice: "9%",
   },
   {
     href: "#paintings",
