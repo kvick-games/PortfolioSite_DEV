@@ -1,5 +1,6 @@
 import Brand from "../components/Brand";
 import EwaCameras, { type CameraShot } from "../components/EwaCameras";
+import JudasTrailer from "../components/JudasTrailer";
 import { Link } from "react-router-dom";
 import MenuViewer, { type MenuView } from "../components/MenuViewer";
 import PaintingLoupe from "../components/PaintingLoupe";
@@ -117,13 +118,11 @@ function GodOfWar() {
 function Judas() {
   return (
     <section className="chapter chapter--judas" id="judas" aria-labelledby="judas-title">
-      <figure className="judas-image" data-reveal>
-        <img
-          src={img("projects-judas-img2")}
-          alt="Still from the Judas reveal trailer"
-          loading="lazy"
-        />
-      </figure>
+      <JudasTrailer
+        className="judas-image"
+        poster={img("projects-judas-img2")}
+        alt="Still from the Judas reveal trailer"
+      />
       <div className="judas-copy">
         <h2 id="judas-title" className="chapter-title" data-reveal>
           Judas
@@ -145,7 +144,7 @@ function Judas() {
           rel="noreferrer"
           data-reveal
         >
-          Watch the reveal trailer on YouTube
+          Open on YouTube
         </a>
       </div>
     </section>

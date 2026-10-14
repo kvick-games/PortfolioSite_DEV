@@ -1,0 +1,169 @@
+/* Judas trailer: a still that blinks open into the reveal trailer. -------- */
+
+.judas-trailer {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.judas-trailer-still,
+.judas-trailer-screen {
+  position: absolute;
+  inset: 0;
+}
+
+.judas-trailer-still {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: #000;
+  overflow: hidden;
+  cursor: pointer;
+}
+.judas-trailer-still[hidden] {
+  display: none;
+}
+.judas-trailer-still img {
+  transition: transform 1.4s var(--ease);
+}
+@media (hover: hover) {
+  .judas-trailer-still:hover img {
+    transform: scale(1.025);
+  }
+  .judas-trailer-still:hover .judas-trailer-reticle {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The play control: an accent disc, and a reticle that locks on to it. */
+.judas-trailer-play {
+  position: absolute;
+  left: clamp(18px, 2.2vw, 32px);
+  bottom: clamp(18px, 2.2vw, 32px);
+  display: grid;
+  place-items: center;
+  width: clamp(48px, 4.6vw, 72px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  transition: transform 0.35s var(--ease);
+}
+.judas-trailer-icon {
+  width: 40%;
+  margin-left: 7%;
+  fill: currentColor;
+}
+.judas-trailer-reticle {
+  position: absolute;
+  inset: -13px;
+  width: calc(100% + 26px);
+  height: calc(100% + 26px);
+  overflow: visible;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.5px;
+  stroke-dasharray: 19 6;
+  stroke-dashoffset: -3;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  transform: scale(1.4) rotate(-45deg);
+  transition:
+    transform 0.5s var(--ease),
+    opacity 0.3s var(--ease);
+}
+.judas-trailer-still:focus-visible .judas-trailer-reticle {
+  opacity: 1;
+  transform: none;
+}
+.judas-trailer-still:active .judas-trailer-play {
+  transform: scale(0.94);
+}
+
+/* The player. */
+.judas-trailer-screen iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Close sits just above the frame, clear of the player's own controls. */
+.judas-trailer-close {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 2px);
+  padding: 10px 0 10px 20px;
+  font-size: var(--size-small);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease), text-underline-offset 0.25s var(--ease);
+}
+.judas-trailer[data-phase="opening"] .judas-trailer-close,
+.judas-trailer[data-phase="open"] .judas-trailer-close {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The blink. Eyes shut to a slit, then wake: open, falter, open fully. */
+.judas-trailer[data-phase="closing"] .judas-trailer-still {
+  cursor: default;
+  animation: judas-shut 320ms cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+.judas-trailer[data-phase="closing"] .judas-trailer-screen {
+  clip-path: ellipse(45% 0 at 50% 50%);
+}
+.judas-trailer[data-phase="opening"] .judas-trailer-screen {
+  animation: judas-wake 640ms linear both;
+}
+.judas-trailer[data-phase="shutting"] .judas-trailer-screen {
+  animation: judas-shut-away 280ms cubic-bezier(0.5, 0, 0.75, 0) forwards;
+}
+.judas-trailer[data-phase="shutting"] .judas-trailer-still {
+  animation: judas-open 460ms var(--ease) 280ms both;
+}
+
+@keyframes judas-shut {
+  from {
+    clip-path: ellipse(72% 72% at 50% 50%);
+  }
+  to {
+    clip-path: ellipse(45% 0.7% at 50% 50%);
+  }
+}
+@keyframes judas-shut-away {
+  from {
+    clip-path: ellipse(72% 72% at 50% 50%);
+  }
+  to {
+    clip-path: ellipse(45% 0 at 50% 50%);
+  }
+}
+@keyframes judas-open {
+  from {
+    clip-path: ellipse(45% 0.7% at 50% 50%);
+  }
+  to {
+    clip-path: ellipse(72% 72% at 50% 50%);
+  }
+}
+@keyframes judas-wake {
+  0% {
+    clip-path: ellipse(45% 0.7% at 50% 50%);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  42% {
+    clip-path: ellipse(58% 30% at 50% 50%);
+    animation-timing-function: ease-in-out;
+  }
+  56% {
+    clip-path: ellipse(56% 21% at 50% 50%);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.1, 1);
+  }
+  100% {
+    clip-path: ellipse(72% 72% at 50% 50%);
+  }
+}
