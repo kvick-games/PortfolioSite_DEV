@@ -749,13 +749,11 @@ figcaption {
   align-items: flex-start;
   margin-bottom: clamp(16px, 2vw, 32px);
 }
-.ewa-key {
-  grid-column: 6 / -1;
-  grid-row: 1;
-  align-self: end;
-  margin-bottom: clamp(16px, 2vw, 32px);
+.ewa-night {
+  grid-column: 5 / -1;
+  grid-row: 3;
 }
-.ewa-key img {
+.ewa-night img {
   aspect-ratio: 2400 / 1300;
   height: auto;
 }
@@ -1778,17 +1776,13 @@ html.theme-fading * {
     grid-row: 1;
     aspect-ratio: 4 / 5;
   }
-  .ewa-key {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    margin-bottom: 0;
-  }
   .ewa-wide {
     grid-column: 1 / -1;
-    grid-row: 3;
+    grid-row: 2;
   }
-  .ewa-cams {
-    grid-row: 4;
+  .ewa-night {
+    grid-column: 1 / -1;
+    grid-row: 3;
   }
   .ewa-shot--a {
     grid-column: 1 / span 6;

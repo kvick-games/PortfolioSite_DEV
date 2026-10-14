@@ -1,5 +1,4 @@
 import Brand from "../components/Brand";
-import EwaCameras, { type CameraShot } from "../components/EwaCameras";
 import JudasTrailer from "../components/JudasTrailer";
 import LayeredArt, { type ArtLayer } from "../components/LayeredArt";
 import LoopVideo from "../components/LoopVideo";
@@ -227,14 +226,6 @@ function Tanuki() {
   );
 }
 
-const ewaCameraShots: CameraShot[] = [
-  { src: img("ewa-1"), alt: "In-engine screenshot of a dim, lamp-lit room, the player by the door" },
-  { src: img("ewa-4"), alt: "In-engine screenshot of a desk lamp in a dark hall" },
-  { src: img("ewa-3"), alt: "In-engine screenshot looking down a narrow wooden corridor" },
-  { src: img("ewa-5"), alt: "In-engine screenshot of a dark hall below a broken balcony" },
-  { src: img("ewa-2"), alt: "In-engine screenshot of a television glowing with static in the dark" },
-];
-
 function Ewa() {
   return (
     <section className="chapter chapter--ewa field-night" id="ewa" aria-labelledby="ewa-title">
@@ -252,15 +243,6 @@ function Ewa() {
             Deep in a frozen winter, people have started to vanish. Survive what waits in the dark and uncover the truth.
           </p>
         </header>
-        <figure className="ewa-key" data-reveal>
-          <img
-            src={img("ewa-key-tower")}
-            alt="Painting of a car pulled over on a snowy ridge at night, a far tower rising out of the fog under a full moon"
-            width={2400}
-            height={1300}
-            loading="lazy"
-          />
-        </figure>
         <figure className="ewa-portrait" data-reveal>
           <img src={img("ewa-ewa-redacted")} alt="Red key art of a figure with redacted eyes" loading="lazy" />
           <LoopVideo src="/Resources/Site/loops/ewa-portrait.mp4" />
@@ -269,16 +251,16 @@ function Ewa() {
           <img src={img("ewa-ewa-concept-01")} alt="Concept painting of a burning furnace room" loading="lazy" />
           <figcaption>Concept painting, the furnace room</figcaption>
         </figure>
-        <EwaCameras
-          shots={ewaCameraShots}
-          caption={
-            <>
-              In engine.{" "}
-              <span className="ewa-cams-hint-pointer">Move across the frame to cut between cameras.</span>
-              <span className="ewa-cams-hint-touch">Tap to cut between cameras.</span>
-            </>
-          }
-        />
+        <figure className="ewa-night" data-reveal>
+          <img
+            src={img("ewa-key-tower")}
+            alt="Painting of a car pulled over on a snowy ridge at night, a far tower rising out of the fog under a full moon"
+            width={2400}
+            height={1300}
+            loading="lazy"
+          />
+          <figcaption>Concept painting</figcaption>
+        </figure>
       </div>
     </section>
   );

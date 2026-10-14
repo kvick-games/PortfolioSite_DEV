@@ -25,10 +25,14 @@
   transform: translate(-50%, -50%);
   overflow: visible;
   fill: none;
-  stroke: var(--accent, currentColor);
+  /* Frost, not fire: a pale, greyed blue (deepened on the light theme). */
+  stroke: #5e7689;
   stroke-width: 1.3;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+:root[data-theme="dark"] .rune-glyph {
+  stroke: #b3c4d1;
 }
 .is-translating .rune-latin {
   animation: rune-latin 0.5s ease-out var(--d) forwards;
