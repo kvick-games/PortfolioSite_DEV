@@ -134,11 +134,14 @@ const FRAMES: Array<[number, number]> = [
 
 /**
  * A panel's loop. It loads with the page's other deferred pictures, plays
- * while its panel is open and rests on its current frame otherwise. Reduced
- * motion keeps the still.
+ * while its panel is open and rests on its current frame otherwise. It stays
+ * invisible over the still until its first frame is actually playing, then
+ * fades in and never hides again, so starting, pausing and looping can't
+ * flash a poster or an empty frame. Reduced motion keeps the still.
  */
 function SplashVideo({ video, playing, load }: { video: NonNullable<Panel["video"]>; playing: boolean; load: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
+  const [ready, setReady] = useState(false);
   const [still] = useState(() => matchMedia("(prefers-reduced-motion: reduce)").matches);
   useEffect(() => {
     const el = ref.current;
@@ -148,7 +151,16 @@ function SplashVideo({ video, playing, load }: { video: NonNullable<Panel["video
   }, [playing, load]);
   if (still || !load) return null;
   return (
-    <video ref={ref} className="splash-video" poster={video.poster} muted loop playsInline preload="auto" aria-hidden="true">
+    <video
+      ref={ref}
+      className={ready ? "splash-video is-ready" : "splash-video"}
+      muted
+      loop
+      playsInline
+      preload="auto"
+      aria-hidden="true"
+      onPlaying={() => setReady(true)}
+    >
       <source src={video.webm} type="video/webm" />
       <source src={video.mp4} type="video/mp4" />
     </video>

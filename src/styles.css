@@ -292,14 +292,8 @@ main:focus {
   padding: 22px var(--margin);
 }
 
-.wordmark {
-  font-weight: 600;
-  font-size: 19px;
-  text-decoration: none;
-  letter-spacing: -0.01em;
-}
-
 .site-nav {
+  grid-column: 2;
   display: flex;
   gap: clamp(18px, 2.4vw, 40px);
 }
@@ -332,6 +326,7 @@ main:focus {
   font-weight: 600;
 }
 .header-end {
+  grid-column: 3;
   justify-self: end;
   display: flex;
   align-items: center;
@@ -921,7 +916,7 @@ figcaption {
   background: var(--ink);
 }
 .dreamatron-door {
-  grid-column: 8 / -1;
+  grid-column: 1 / span 8;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -1045,19 +1040,22 @@ figcaption {
 
 .chapter--about .chapter-title {
   max-width: 14ch;
+  margin-bottom: clamp(8px, 1.2vw, 20px);
 }
 .about-columns {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--gap);
-  margin-top: clamp(32px, 3.4vw, 56px);
 }
+/* The title heads the bio, level with the résumé beside it, and the column
+   sits in from the margin, clear of the scroll rail. */
 .about-text {
   grid-column: 1 / span 6;
   display: flex;
   flex-direction: column;
   gap: 20px;
   max-width: 60ch;
+  padding-left: clamp(0px, 2.6vw, 56px);
 }
 .about-contact {
   align-self: flex-start;
@@ -1099,6 +1097,13 @@ figcaption {
 }
 .resume-summary-block :is(ol, ul) {
   list-style: none;
+}
+.resume-summary-block .resume-summary-jobs {
+  /* Optical: the first heading's leading reads as extra space under the rule. */
+  margin-top: -10px;
+}
+.resume-summary-block .resume-summary-facts {
+  padding-top: clamp(24px, 2vw, 32px);
 }
 .resume-summary-jobs {
   display: flex;
@@ -1825,6 +1830,10 @@ html.theme-fading * {
     row-gap: 12px;
     padding-top: 18px;
     padding-bottom: 18px;
+  }
+  .header-end {
+    grid-column: 1 / -1;
+    grid-row: 1;
   }
   .site-nav {
     grid-column: 1 / -1;

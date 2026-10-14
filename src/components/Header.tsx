@@ -16,9 +16,6 @@ export default function Header() {
   const onHome = pathname === "/portfolio" && !search;
   return (
     <header className="site-header">
-      <Link className="wordmark" to="/portfolio">
-        Michael Nevins
-      </Link>
       <nav className="site-nav" aria-label="Primary">
         {sections.map(({ id, label }) =>
           // On the home page each link scrolls to its section; from another

@@ -360,17 +360,6 @@ function DreamatronTools() {
     >
       <TimelineMini />
       <div className="dreamatron-private">
-        <div className="dreamatron-auteur">
-          <h3 data-reveal>
-            <Brand name="Auteur" />
-          </h3>
-          <p data-reveal>In development.</p>
-          <ul>
-            <li data-reveal>Director’s notes pinned to a moment or a range of the timeline</li>
-            <li data-reveal>Audio warping with separate lanes for timing, bounds and markers</li>
-            <li data-reveal>A compact inspector that opens effect controls in place</li>
-          </ul>
-        </div>
         <div className="dreamatron-door" data-reveal>
           <a className="button button--ink" href="/studio/">
             Open the client preview
@@ -401,11 +390,11 @@ function Paintings() {
 function About() {
   return (
     <section className="chapter chapter--about" id="about" aria-labelledby="about-title">
-      <h2 id="about-title" className="chapter-title" data-reveal>
-        Teams of 350 and teams of one
-      </h2>
       <div className="about-columns">
         <div className="about-text">
+          <h2 id="about-title" className="chapter-title" data-reveal>
+            Teams of 350 and teams of one
+          </h2>
           <p data-reveal>
             I graduated with a Bachelor of Science in computer science, focused
             on game programming. Before that I studied illustration and fine art

@@ -276,11 +276,11 @@ void main() {
   vec3 grey = vec3(l) * vec3(0.80, 0.86, 0.98);
   vec3 tint = mix(grey, c, 0.45);
   // Soft cap: dense smoke saturates toward a dim ceiling, never toward white.
-  vec3 smoke = 0.28 * (1.0 - exp(-tint * 2.2));
+  vec3 smoke = 0.15 * (1.0 - exp(-tint * 2.2));
   smoke *= 0.82 + 0.3 * clamp(light, 0.0, 1.0);
   // Thick cores sit a little in their own shadow, so dense smoke keeps its form.
   smoke *= mix(1.0, 0.7, smoothstep(0.45, 2.0, l));
-  smoke += vec3(0.80, 0.86, 1.0) * rim * min(l, 0.5) * 0.03;
+  smoke += vec3(0.80, 0.86, 1.0) * rim * min(l, 0.5) * 0.015;
 
   vec2 p = (vUv - vec2(0.56, 0.48)) * vec2(uAspect, 1.0) / max(uAspect, 1.0);
   float vignette = smoothstep(0.98, 0.18, length(p * vec2(1.0, 1.5)));
