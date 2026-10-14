@@ -40,12 +40,15 @@ export default function LevelGenStepRail({
   phase,
   rerun,
   onJump,
+  resumes = false,
   onReplay,
   onHover,
 }: {
   phase: number;
   rerun: Rerun | null;
   onJump: (step: number) => void;
+  /** After an edit, play carries on from the next step instead of starting over. */
+  resumes?: boolean;
   onReplay: () => void;
   onHover: (step: Step | null) => void;
 }) {
@@ -66,7 +69,7 @@ export default function LevelGenStepRail({
       <button
         type="button"
         className="lg-play"
-        aria-label="Replay every step from the start"
+        aria-label={resumes ? "Carry on from the next step" : "Replay every step from the start"}
         onClick={onReplay}
       >
         <PlayIcon />

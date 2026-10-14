@@ -149,62 +149,6 @@
   font-weight: 600;
 }
 
-/* Play, centred over the plan: faded in before the first run and after
-   each one finishes. */
-.lg-canvas {
-  position: relative;
-}
-.lg-replay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: grid;
-  place-items: center;
-  width: 72px;
-  height: 72px;
-  margin: -36px 0 0 -36px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: var(--lg-line);
-  color: var(--lg-surface);
-  box-shadow:
-    0 0 0 12px color-mix(in srgb, var(--lg-surface) 72%, transparent),
-    0 14px 32px -12px rgb(0 0 0 / 0.45);
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.5s var(--ease),
-    background-color 0.2s var(--ease);
-}
-.lg-replay[data-shown] {
-  opacity: 1;
-  pointer-events: auto;
-  transition-delay: 0.6s, 0s;
-}
-.lg-replay svg {
-  width: 30px;
-  margin-left: 3px;
-  fill: currentColor;
-}
-.lg-replay:hover {
-  background: var(--accent);
-}
-.lg-replay:focus-visible {
-  outline-offset: 4px;
-}
-@container lg-stage (max-width: 520px) {
-  .lg-replay {
-    width: 58px;
-    height: 58px;
-    margin: -29px 0 0 -29px;
-  }
-  .lg-replay svg {
-    width: 24px;
-  }
-}
-
 /* The floor plan. Inside the scaled group one unit is one cell. Pieces
    only ever fade: in when their step plays, out when a step removes them. */
 

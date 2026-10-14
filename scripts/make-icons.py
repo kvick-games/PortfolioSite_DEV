@@ -10,16 +10,17 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 OUT = Path(__file__).resolve().parent.parent / "public"
-TILE = (12, 13, 15)
-LINE = (236, 233, 226)
+TILE = (0, 0, 0)
+LINE = (255, 255, 255)
 SS = 8  # supersampling
 
 
 def cube(cx: float, cy: float, r: float):
-    """Hexagon outline and the near corner's three edges of an isometric cube."""
+    """Hexagon outline and the three edges that meet at the cube's near corner,
+    seen from a little below: up to the top corner, out to the lower sides."""
     hexagon = [(cx + r * math.cos(math.radians(a)), cy + r * math.sin(math.radians(a)))
                for a in (-90, -30, 30, 90, 150, 210)]
-    spokes = [hexagon[5], hexagon[1], hexagon[3]]
+    spokes = [hexagon[0], hexagon[2], hexagon[4]]
     return hexagon, spokes
 
 
@@ -32,7 +33,7 @@ def svg() -> str:
     return (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">\n'
         f'  <rect width="64" height="64" rx="14" fill="#{bytes(TILE).hex()}"/>\n'
-        f'  <path d="{outline} {inner}" fill="none" stroke="#{bytes(LINE).hex()}" stroke-width="3.6"'
+        f'  <path d="{outline} {inner}" fill="none" stroke="#{bytes(LINE).hex()}" stroke-width="3.2"'
         ' stroke-linejoin="round" stroke-linecap="round"/>\n'
         "</svg>\n"
     )
@@ -64,6 +65,6 @@ OUT.mkdir(exist_ok=True)
 icons = [raster(16, 5.6, r=23.5), raster(32, 4.2, r=22), raster(48, 3.6, r=21)]
 icons[2].save(OUT / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)], append_images=icons[:2])
 # iOS rounds the corners itself, so the touch icon is a full square.
-raster(180, 2.4, tile=False).convert("RGB").save(OUT / "apple-touch-icon.png")
-raster(512, 2.2).save(OUT / "icon-512.png")
+raster(180, 2, r=17, tile=False).convert("RGB").save(OUT / "apple-touch-icon.png")
+raster(512, 1.8, r=17).save(OUT / "icon-512.png")
 print("wrote", ", ".join(p.name for p in sorted(OUT.glob("*icon*"))))

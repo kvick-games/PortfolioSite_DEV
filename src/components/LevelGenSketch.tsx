@@ -174,6 +174,28 @@ export default function LevelGenSketch() {
     }
   }, []);
 
+  // After an edit, play carries on from the next step with the edited plan
+  // instead of starting over. Otherwise it replays every step.
+  const resume = () => {
+    if (mode !== "edit" || phase >= DONE) {
+      play();
+      return;
+    }
+    stop();
+    setMode("play");
+    setNote("");
+    // The next step starts in the same render that leaves edit mode, so
+    // what's already drawn stays put rather than fading in again.
+    const from = phase + 1;
+    setPhase(reducedMotion() ? DONE : from);
+    if (reducedMotion()) return;
+    let t = PHASE_MS[from] ?? 0;
+    for (let p = from + 1; p <= DONE; p++) {
+      later(() => setPhase(p), t);
+      t += PHASE_MS[p] ?? 0;
+    }
+  };
+
   // Start the first run once the sketch is on screen; pause loops off screen.
   useEffect(() => {
     const element = root.current;
@@ -472,11 +494,9 @@ export default function LevelGenSketch() {
           ? `Drag a point to move it, or ${touch() ? "tap" : "click"} the grid to add one.`
           : phase === 3
             ? `${touch() ? "Tap" : "Click"} an edge to cut it or bring it back.`
-            : "Drag a point to move it.");
-  const replayable =
-    (phase === 0 && mode === "play") ||
-    (phase === DONE &&
-      (mode === "play" || (mode === "objective" && !!rerun && rerun.index >= rerun.steps.length)));
+            : "Drag a point to move it.") +
+        (mode === "edit" ? " Press play to carry on from here." : "");
+
 
   const label = `Generated floor plan, seed ${seed}: ${map.rooms.length} rooms${
     counts.objective ? `, ${counts.objective} holding an objective` : ""
@@ -810,26 +830,19 @@ export default function LevelGenSketch() {
   return (
     <div className="levelgen-pipeline lg" ref={root} data-reveal>
       <div className="lg-stage">
-        <LevelGenStepRail phase={phase} rerun={rerun} onJump={jump} onReplay={play} onHover={onHover} />
+        <LevelGenStepRail
+          phase={phase}
+          rerun={rerun}
+          resumes={mode === "edit" && phase < DONE}
+          onJump={jump}
+          onReplay={resume}
+          onHover={onHover}
+        />
         <p className="lg-caption" aria-hidden="true">
           {lead ? <strong>{lead}</strong> : null} {rest}
           {hint ? <span className="lg-hint"> {hint}</span> : null}
         </p>
-        <div className="lg-canvas">
-          {floorPlan}
-          <button
-            type="button"
-            className="lg-replay"
-            data-shown={replayable || undefined}
-            inert={!replayable}
-            onClick={play}
-            aria-label={phase === 0 ? "Play the steps" : "Play the steps again"}
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M8 5.5v13l10.5-6.5z" />
-            </svg>
-          </button>
-        </div>
+        {floorPlan}
       </div>
 
       <div className="lg-bar">
