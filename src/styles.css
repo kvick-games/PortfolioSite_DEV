@@ -699,6 +699,7 @@ figcaption {
   overflow: hidden;
 }
 .tanuki-grid .tanuki-world {
+  position: relative;
   grid-column: 1 / span 8;
   grid-row: 1 / span 2;
   aspect-ratio: auto;

@@ -190,7 +190,7 @@ function Tanuki() {
         <p className="meta" data-reveal>
           <Brand />
           <br />
-          <span className="meta-lead">Made with</span><Brand name="Dream Engine" />
+          <span className="meta-lead">In development, made with</span><Brand name="Dream Engine" />
         </p>
         <p className="statement" data-reveal>
           Become a master chef. Explore an island full of possibilities, make
@@ -200,6 +200,7 @@ function Tanuki() {
       <div className="tanuki-grid">
         <figure className="tanuki-world" data-reveal>
           <img src={img("tanuki-concept-island")} alt="Concept painting of the island from the air, a village on its shore" loading="lazy" />
+          <LoopVideo src="/Resources/Site/loops/tanuki-island.mp4" />
         </figure>
         <figure data-reveal>
           <img src={img("tanuki-concept-shack")} alt="Concept painting of a mushroom-roofed shack" loading="lazy" />
@@ -239,7 +240,7 @@ function Ewa() {
           <p className="meta" data-reveal>
             <Brand />
             <br />
-            <span className="meta-lead">Made with</span><Brand name="Dream Engine" />
+            <span className="meta-lead">In development, made with</span><Brand name="Dream Engine" />
           </p>
           <p className="statement" data-reveal>
             Deep in a frozen winter, people have started to vanish. Survive what waits in the dark and uncover the truth.
